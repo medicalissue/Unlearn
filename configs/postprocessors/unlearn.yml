@@ -1,21 +1,27 @@
 postprocessor:
   name: unlearn
   postprocessor_args:
+    unlearn_mode: "fisher" # ascent, fisher
+    fisher_normalize: true   # Adaptive 정규화 사용
+    fisher_damping: 1e-8
     # Ascent 설정
     eta: 1e-3              # ascent step size (헤드만 업데이트)
-    num_steps: 1           # ascent 반복 횟수
-    temp: 1.0              # temperature (>1이면 soft pseudo-label)
+    num_steps: 1000           # ascent 반복 횟수
+    recompute_target: true
+    temp: 1              # temperature (>1이면 soft pseudo-label)
     
     # GradNorm 사용 여부
-    use_gradnorm: true     # GradNorm 계산 활성화
+    use_gradnorm: false     # GradNorm 계산 활성화
     
     # 스코어 타입 선택
-    # 옵션: "combo", "delta_energy", "delta_conf", "delta_margin", "gradnorm"
-    score_type: combo
+    # 옵션: "combo", "delta_energy", "delta_conf", "delta_margin", "gradnorm" label_consistency  # or consistency
+
+      #score_type: dentropy  # or dkl, grad_ratio, flip, alignment
+    score_type: delta_energy
     
     # Combo 스코어용 가중치
     weights:
-      denergy: 1.0         # ΔEnergy 가중치
+      denergy: 0.5         # ΔEnergy 가중치
       dconf: 0.5           # ΔConfidence 가중치
       dmargin: 0.5         # ΔMargin 가중치
       g: 0.5               # GradNorm 가중치
