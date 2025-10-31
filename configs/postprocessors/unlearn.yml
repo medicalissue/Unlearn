@@ -1,0 +1,24 @@
+postprocessor:
+  name: unlearn
+  postprocessor_args:
+    # Ascent 설정
+    eta: 1e-3              # ascent step size (헤드만 업데이트)
+    num_steps: 1           # ascent 반복 횟수
+    temp: 1.0              # temperature (>1이면 soft pseudo-label)
+    
+    # GradNorm 사용 여부
+    use_gradnorm: true     # GradNorm 계산 활성화
+    
+    # 스코어 타입 선택
+    # 옵션: "combo", "delta_energy", "delta_conf", "delta_margin", "gradnorm"
+    score_type: combo
+    
+    # Combo 스코어용 가중치
+    weights:
+      denergy: 1.0         # ΔEnergy 가중치
+      dconf: 0.5           # ΔConfidence 가중치
+      dmargin: 0.5         # ΔMargin 가중치
+      g: 0.5               # GradNorm 가중치
+  
+  APS_mode: false
+  postprocessor_sweep: {}

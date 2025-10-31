@@ -43,7 +43,7 @@ from .vim_postprocessor import VIMPostprocessor
 from .rts_postprocessor import RTSPostprocessor
 from .gen_postprocessor import GENPostprocessor
 from .relation_postprocessor import RelationPostprocessor
-
+from .unlearn_postprocessor import UnlearnPostprocessor
 
 def get_postprocessor(config: Config):
     postprocessors = {
@@ -90,6 +90,7 @@ def get_postprocessor(config: Config):
         'gen': GENPostprocessor,
         'relation': RelationPostprocessor,
         't2fnorm': T2FNormPostprocessor,
+        'unlearn': UnlearnPostprocessor,
     }
 
     return postprocessors[config.postprocessor.name](config)
