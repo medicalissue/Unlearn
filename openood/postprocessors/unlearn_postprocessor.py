@@ -343,12 +343,12 @@ class UnlearnPostprocessor(BasePostprocessor):
         # Label consistency (초기 target과 최종 target의 일관성)
         # OOD는 낮은 consistency, ID는 높은 consistency
         label_consistency = self._label_consistency(target_init, target_final)
-        # OOD 스코어로 변환: 낮은 consistency = 높은 OOD 스코어
-        inconsistency = 1.0 - label_consistency
+        # OOD 스코어로 변환: 낮은 consistency = 높은 OOD 스코어!@@@@@@@@@@@@@@@@@
+        inconsistency = label_consistency
 
         # 스코어 타입에 따라 계산
         if self.score_type in {"delta_energy", "denergy"}:
-            score = dE
+            score = -dE
         elif self.score_type in {"delta_conf", "dconf"}:
             score = -dC
         elif self.score_type in {"delta_margin", "dmargin"}:
@@ -356,7 +356,7 @@ class UnlearnPostprocessor(BasePostprocessor):
         elif self.score_type in {"delta_entropy", "dentropy"}:
             score = dH
         elif self.score_type in {"delta_kl", "dkl"}:
-            score = dKL
+            score = -dKL
         elif self.score_type == "flip":
             score = flip
         elif self.score_type == "alignment":
