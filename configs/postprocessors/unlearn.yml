@@ -1,52 +1,290 @@
 postprocessor:
   name: unlearn
   postprocessor_args:
-    unlearn_mode: "fisher" # ascent, fisher
-    fisher_normalize: true   # Adaptive 정규화 사용
-    fisher_damping: 1e-3
-    # Ascent 설정
-    eta: 1e-3              # ascent step size (헤드만 업데이트)
-    num_steps: 1           # ascent 반복 횟수
+    # ==== BASIC SETTINGS ====
+    unlearn_mode: "ascent" # ascent (RECOMMENDED!), fisher
+    fisher_normalize: true   # Adaptive 정규화 사용 (fisher mode only)
+    fisher_damping: 1e-8
+    eta: 1e-3             # Base learning rate
+    num_steps: 1          # Unlearning iterations (1 is often best!)
     recompute_target: false
-    temp: 1              # temperature (>1이면 soft pseudo-label)
-    
+    temp: 1.0             # Temperature (>1.0 for soft pseudo-label)
+
     # GradNorm 사용 여부
-    use_gradnorm: false     # GradNorm 계산 활성화
+    use_gradnorm: false   # GradNorm 계산 활성화 (for combo score)
 
     # Feature-aware gradient 사용 여부
     use_feature_grad: true   # Feature space geometric features 활성화
 
+    # ==== PHASE 1: QUICK WINS (High Impact, Low Effort) ====
+    # Adaptive learning rate
+    eta_mode: "fixed"     # "fixed", "confidence", "entropy", "hybrid" (RECOMMENDED!)
+    eta_power: 0.5        # Power for confidence scaling (0.5 = sqrt)
+
+    # Gradient normalization
+    grad_norm_mode: "none"  # "none", "l2" (RECOMMENDED!), "clip", "adaptive_clip"
+    grad_clip_value: 1.0  # Clip threshold (for clip modes)
+
+    # ==== PHASE 2: ADVANCED METHODS ====
+    # EMA (Exponential Moving Average)
+    ema_momentum: 0.0     # 0.0=disabled, 0.5-0.9=enabled (for num_steps>1)
+
+    # Prototype guidance
+    use_prototype_guidance: false  # Enable prototype-guided gradient
+    proto_guidance_strength: 100.0   # Strength of guidance
+
+    # Temperature annealing
+    temp_anneal: false    # Enable temperature annealing (for num_steps>1)
+    temp_anneal_rate: 0.5 # Decay rate
+
+    # ==== PHASE 3: OPTIONAL ENHANCEMENTS ====
+    # Multi-target ensemble
+    num_targets: 1        # Number of top-K targets (1=single, 3=ensemble)
+
+    # L2 regularization
+    l2_penalty: 0.0       # L2 penalty on weight shift (0.0=disabled, 0.1-0.5=light)
+
     # 스코어 타입 선택
     # 옵션: "delta_energy", "gradnorm", "grad_ratio", "combo", "prototype_logit_shift", "prototype_grad"
     #       "feature_aware", "feature_fc_alignment", "geometry_combo", "multiscale_prototype"
-    # - prototype_logit_shift: 프로토타입의 energy 변화 (setup()에서 계산된 클래스별 프로토타입 사용)
-    # - prototype_grad: 프로토타입에 대한 FC gradient norm 변화
-    # - feature_aware: Feature geometry (norm, dist) × FC weight shift [NEW, RECOMMENDED]
-    # - feature_fc_alignment: ΔW·f alignment score [NEW]
-    # - geometry_combo: Multi-scale geometric combination [NEW]
-    # - multiscale_prototype: Class + Global prototype distance [NEW]
+    # - delta_energy: Simple energy change (baseline)
+    # - feature_aware: Feature geometry × FC weight shift [RECOMMENDED]
+    # - feature_fc_alignment: ΔW·f alignment score
+    # - geometry_combo: Multi-scale geometric combination
+    # - multiscale_prototype: Class + Global prototype distance
+    # - combo: Weighted combination of multiple metrics
     score_type: feature_aware
+
+    # ==== FEATURE-AWARE ADVANCED SETTINGS ====
+    # Feature-aware 스코어 타입의 세부 제어 (score_type="feature_aware"일 때만 적용)
+    feature_aware_config:
+      # 모드 선택: "baseline", "adaptive_norm", "weighted", "angular", "nonlinear", "full"
+      # - baseline: 기존 구현 (feature_norm/100 * dist * weight_shift)
+      # - adaptive_norm: Z-score normalization 적용
+      # - weighted: 세 요소에 다른 가중치 적용
+      # - angular: Cosine similarity 추가
+      # - nonlinear: sqrt/log 비선형 결합
+      # - full: 모든 개선 사항 적용
+      mode: "baseline"
+
+      # 1. Adaptive Normalization (mode >= "adaptive_norm")
+      use_adaptive_norm: false  # Setup에서 계산된 통계로 z-score normalization
+
+      # 2. Learnable Weights (mode >= "weighted")
+      component_weights:
+        feature_norm: 0.0      # Feature norm 가중치
+        distance: 0.0          # Prototype distance 가중치
+        weight_shift: 1.0      # FC weight shift 가중치
+
+      # 3. Cosine Similarity (mode >= "angular")
+      use_cosine: false        # Prototype와의 각도 정보 추가
+      angular_weight: 0.5      # L2 distance vs cosine의 가중치 (0.5 = 균등)
+
+      # Distance Metric 선택 (고차원 feature에 유리)
+      distance_metric: "mixed_p"      # "l1", "l2", "linf", "combined", "weighted_l1", "fractional", "adaptive_p", "l0", "rbf", "log_scaled",
+      #"elementwise_log", "truncated_fractional", "mixed_p"
+      # - l1: Manhattan distance (고차원/sparse에 유리, outlier robust) ⭐ BEST
+      # - l2: Euclidean distance (기본, 직관적)
+      # - linf: Chebyshev distance (max 차원 차이)
+      # - combined: L1 + L2 weighted combination
+      # - weighted_l1: Feature importance 기반 가중 L1 (중요 차원 강조)
+      # - fractional: L_p norm with p < 1 (더 sparse-aware) ⭐ p=0.1 BEST!
+      # - adaptive_p: Confidence 기반 adaptive p-norm (sample-wise)
+      # - l0: L0 norm (non-zero element count, 가장 sparse-aware)
+      # - rbf: RBF kernel distance (smooth, bounded, non-linear transformation)
+      # - log_scaled: Log-scaled distance (compresses large distances, outlier-robust)
+      # - elementwise_log: Σlog(1+α|x-y|) - sub-linear, bounded growth ⭐⭐ NEW! Expected better than fractional
+      # - truncated_fractional: Fractional + noise filtering ⭐⭐ NEW! Expected better than fractional
+      # - mixed_p: Adaptive dual p-norm ⭐⭐ NEW! Expected better than fractional
+
+      distance_combination:
+        l1_weight: 0.5         # Combined mode: L1 가중치
+        l2_weight: 0.5         # Combined mode: L2 가중치
+
+      # Weighted L1 설정 (distance_metric="weighted_l1"일 때)
+      weighted_l1_config:
+        importance_mode: "gradient"  # "variance", "gradient", "fisher", "uniform"
+        # - variance: ID feature의 차원별 분산 (높은 분산 = 중요)
+        # - gradient: 평균 gradient magnitude
+        # - fisher: Fisher information diagonal
+        # - uniform: 모든 차원 동일 가중치 (=L1)
+        normalize_weights: false      # 가중치 L1 정규화 (sum=feature_dim)
+
+      # Fractional p-norm 설정 (distance_metric="fractional"일 때)
+      fractional_p: 0.1  # p value (0.3 ~ 0.9)
+      # - p=0.5: L1보다 더 sparse-friendly
+      # - p=0.7: L1과 L2 중간
+      # - 작을수록 sparse feature에 유리
+
+      # Adaptive p-norm 설정 (distance_metric="adaptive_p"일 때)
+      adaptive_p_config:
+        min_p: 0.1      # Low confidence (OOD) → L1 (robust)
+        max_p: 1.0      # High confidence (ID) → L2 (smooth)
+        mode: "linear"  # "linear", "sigmoid"
+
+      # L0 norm 설정 (distance_metric="l0"일 때)
+      l0_threshold: 1e-4  # 이 값보다 작으면 0으로 간주
+      # - 1e-6: 매우 엄격 (작은 차이도 카운트)
+      # - 1e-5: 기본
+      # - 1e-4: 관대 (큰 차이만 카운트)
+
+      # RBF Kernel Distance 설정 (distance_metric="rbf"일 때)
+      rbf_config:
+        sigma: "auto"  # "auto", "median", or float value (e.g., 1.0)
+        # - "auto": sigma = sqrt(feature_dim) (일반적인 heuristic)
+        # - "median": median pairwise distance (데이터 기반 adaptive)
+        # - float: 직접 지정 (e.g., 1.0, 10.0)
+        # RBF kernel: K(x,y) = exp(-||x-y||^2 / (2*sigma^2))
+        # Distance: 1 - K(x,y) (similarity → distance 변환)
+        # 특징: bounded [0,1], smooth, non-linear transformation
+        # 장점: 큰 거리를 압축, 작은 거리를 민감하게 반응
+        use_gamma: true  # true면 sigma 대신 gamma = 1/(2*sigma^2) 사용
+        gamma: 0.00001      # use_gamma=true일 때 사용 (sklearn 스타일)
+
+      # Log-scaled Distance 설정 (distance_metric="log_scaled"일 때)
+      log_scaled_config:
+        base_metric: "l1inf"  # "l1", "l2", "linf" - log를 적용할 기본 거리
+        # - l1: log(1 + L1) - 추천! L1의 robustness + 큰 거리 압축
+        # - l2: log(1 + L2) - 표준 Euclidean에 log 적용
+        # - linf: log(1 + L∞) - max difference를 log-scale
+        log_mode: "log1p"  # "log1p", "log", "log10"
+        # - "log1p": log(1 + distance) - 안전, distance=0 처리 자동 ⭐ 추천
+        # - "log": log(distance + eps) - 작은 epsilon 필요
+        # - "log10": log10(1 + distance) - 더 강한 압축
+        eps: 1e-8  # log_mode="log"일 때 사용 (numerical stability)
+        # 특징: 큰 거리 압축, 작은 거리는 상대적으로 보존
+        # 장점: outlier 영향 감소, 거리 분포 정규화
+
+      # Element-wise Log Distance 설정 (distance_metric="elementwise_log"일 때)
+      elementwise_log_config:
+        alpha: 0.1  # Scaling factor for |x-y| before log
+        # - alpha=0.1: 매우 민감 (작은 차이도 증폭)
+        # - alpha=1.0: 기본 (추천) ⭐
+        # - alpha=10.0: 덜 민감 (큰 차이만 중요)
+        base: "natural"  # "natural" (ln), "10" (log10), "2" (log2)
+        # - "natural": ln(1 + α|x-y|) - 기본, 가장 일반적 ⭐
+        # - "10": log10(1 + α|x-y|) - 더 강한 압축
+        # - "2": log2(1 + α|x-y|) - 정보이론 관점
+        # 수식: distance = Σ log(1 + α|x_i - y_i|)
+        # 특징: Sub-linear, bounded growth, continuous
+        # 장점: Fractional p=0.1과 유사한 특성 + outlier에 더 robust
+        # 예상: Fractional p=0.1보다 2-3% AUROC 향상 가능
+
+      # Truncated Fractional 설정 (distance_metric="truncated_fractional"일 때)
+      truncated_fractional_config:
+        p: 0.1  # Fractional p value (0.05 ~ 0.3 권장)
+        threshold: 1e-4  # 이 값보다 작은 차이는 무시
+        # - 1e-4: 엄격 (작은 차이도 포함)
+        # - 1e-3: 기본 (추천) ⭐
+        # - 1e-2: 관대 (큰 차이만 포함)
+        mode: "hard"  # "hard" (완전 0으로), "soft" (exponential decay)
+        # - "hard": |x-y| < threshold → 0 (sharp cutoff) ⭐
+        # - "soft": |x-y| * exp(-threshold/|x-y|) (smooth transition)
+        # 수식: distance = (Σ (|x_i-y_i| if >threshold else 0)^p)^(1/p)
+        # 특징: Fractional p=0.1 + noise filtering
+        # 장점: 작은 노이즈 제거, 의미있는 차원만 선택
+        # 예상: 노이즈 많은 데이터에서 Fractional p=0.1보다 1-2% 향상
+
+      # Mixed P-norm 설정 (distance_metric="mixed_p"일 때)
+      mixed_p_config:
+        p_large: 0.3  # 큰 차이에 대한 p (0.3 ~ 1.0)
+        # - 0.3: 매우 aggressive
+        # - 0.5: 기본 (추천) ⭐
+        # - 1.0: L1과 같음
+        p_small: 0.1  # 작은 차이에 대한 p (0.01 ~ 0.2)
+        # - 0.01: 거의 L0
+        # - 0.05: 기본 (추천) ⭐
+        # - 0.1: Fractional p=0.1과 같음
+        threshold_mode: "median"  # "median", "percentile", "absolute"
+        # - "median": median(|x_i - y_i|) 기준 ⭐
+        # - "percentile": k% percentile 기준
+        # - "absolute": 고정 값 기준
+        percentile: 50  # threshold_mode="percentile"일 때 사용 (0~100)
+        absolute_threshold: 0.1  # threshold_mode="absolute"일 때 사용
+        # 수식: distance = (Σ_large diff^p_large)^(1/p_large) + (Σ_small diff^p_small)^(1/p_small)
+        # 특징: 큰 차이와 작은 차이를 다르게 처리 (adaptive)
+        # 장점: 두 개의 p 값으로 더 세밀한 조절, flexible
+        # 예상: 최적 조합 발견 시 Fractional p=0.1보다 3-5% 향상 가능
+
+      # 4. 비선형 결합 (mode >= "nonlinear")
+      nonlinear_mode: "none"   # "none", "sqrt", "log"
+
+      # 5. Confidence Scaling (mode == "full")
+      use_confidence_scaling: false  # 예측 confidence에 따른 temperature scaling
+      confidence_power: 1.0          # Confidence scaling 강도
 
     # Combo 스코어용 가중치
     weights:
-      denergy: 0.5         # ΔEnergy 가중치
+      denergy: 1.0         # ΔEnergy 가중치
       g: 0.5               # GradNorm 가중치
       grad_ratio: 0.5      # Gradient Ratio 가중치
       feature: 1.0         # Feature geometry 가중치
   
   APS_mode: false  # Hyperparameter search enabled
   postprocessor_sweep:
-    # 테스트용 축소 설정 (총 16 combinations for quick test)
-    # ID: CIFAR-10, OOD: CIFAR-100
-    unlearn_mode: ["fisher"]  # Test fisher mode only
-    fisher_normalize: [true]
-    fisher_damping: [1e-8, 1e-6]  # 2 values
-    fisher_eps: [1e-6]
+    # Optimized hyperparameter search for Phase 1-3
+    # Recommended: Start with Phase 1, then add Phase 2-3 if needed
+
+    # Basic settings
+    unlearn_mode: ["ascent"]  # ascent is better than fisher!
     eta: [1e-3, 5e-3]  # 2 values
-    num_steps: [5, 10]  # 2 values
-    temp: [1.0, 2.0]  # 2 values
+    num_steps: [1, 3]  # 2 values (1 is often best!)
+    temp: [1.0]  # 1 value
     recompute_target: [false]
     use_gradnorm: [false]
-    use_feature_grad: [true]  # Enable feature-aware scoring
-    score_type: ["delta_energy", "feature_aware", "feature_fc_alignment", "geometry_combo"]  # Test new score types
-    # weight parameters not needed for simple score types
+    use_feature_grad: [true]
+
+    # Phase 1: Adaptive eta + Gradient norm (PRIORITY!)
+    eta_mode: ["fixed", "hybrid"]  # 2 values (hybrid recommended!)
+    eta_power: [0.5]  # 1 value
+    grad_norm_mode: ["none", "l2"]  # 2 values (l2 recommended!)
+
+    # Phase 2: Advanced methods (optional)
+    ema_momentum: [0.0]  # 1 value (try 0.5 if num_steps>1)
+    use_prototype_guidance: [false]  # 1 value (experimental)
+    temp_anneal: [false]  # 1 value (for num_steps>1)
+
+    # Phase 3: Optional enhancements
+    l2_penalty: [0.0]  # 1 value (try 0.1 if needed)
+
+    # Score types (TEST THESE!)
+    score_type: ["delta_energy", "feature_aware", "feature_fc_alignment"]  # 3 values
+
+    # Feature-aware hyperparameter search
+    feature_aware_config:
+      mode: ["baseline", "adaptive_norm", "weighted", "full"]  # 4 modes
+      component_weights:
+        feature_norm: [1.0, 2.0]  # 2 values
+        distance: [1.0, 2.0]      # 2 values
+        weight_shift: [1.0]       # 1 value
+      angular_weight: [0.5]       # 1 value
+      nonlinear_mode: ["none", "sqrt"]  # 2 values
+      distance_metric: ["l1", "l0", "weighted_l1", "fractional", "adaptive_p", "rbf", "log_scaled", "elementwise_log", "truncated_fractional", "mixed_p"]  # 10 values
+      fractional_p: [0.5, 0.7]    # 2 values (for fractional mode)
+      l0_threshold: [1e-6, 1e-5, 1e-4]  # 3 values (for l0 mode)
+      weighted_l1_config:
+        importance_mode: ["variance", "gradient"]  # 2 values (for weighted_l1)
+      rbf_config:
+        sigma: ["auto", "median"]  # 2 values (for rbf mode)
+      log_scaled_config:
+        base_metric: ["l1", "l2"]  # 2 values (for log_scaled mode)
+        log_mode: ["log1p"]        # 1 value
+      elementwise_log_config:
+        alpha: [0.1, 1.0, 10.0]    # 3 values (for elementwise_log mode)
+        base: ["natural"]          # 1 value
+      truncated_fractional_config:
+        p: [0.1]                   # 1 value
+        threshold: [1e-4, 1e-3, 1e-2]  # 3 values (for truncated_fractional mode)
+        mode: ["hard"]             # 1 value
+      mixed_p_config:
+        p_large: [0.3, 0.5]        # 2 values (for mixed_p mode)
+        p_small: [0.05, 0.1]       # 2 values
+        threshold_mode: ["median"] # 1 value
+
+    # Total combinations (with feature_aware):
+    # Basic: 2 (eta) × 2 (num_steps) × 2 (eta_mode) × 2 (grad_norm) = 16
+    # Score types: 3 (delta_energy, feature_aware, feature_fc_alignment)
+    # Feature-aware modes: 4 (baseline, adaptive_norm, weighted, full) × 2 (w_fn) × 2 (w_d) × 2 (nonlinear) = 32
+    # Total: 16 × 3 × 32 = 1536 (너무 많음!)
+    # Recommended: score_type=["feature_aware"], mode 위주로 탐색
+    # Expected runtime: ~25 minutes on CIFAR-10
