@@ -1,24 +1,42 @@
 postprocessor:
   name: unlearn
   postprocessor_args:
+    unlearn_mode: "fisher" # ascent, fisher
+    fisher_normalize: true   # Adaptive 정규화 사용
+    fisher_damping: 1e-8
     # Ascent 설정
-    eta: 1e-3              # ascent step size (헤드만 업데이트)
-    num_steps: 1           # ascent 반복 횟수
-    temp: 1.0              # temperature (>1이면 soft pseudo-label)
+    eta: 100              # ascent step size (헤드만 업데이트)
+    num_steps: 10           # ascent 반복 횟수
+    recompute_target: false
+    temp: 1              # temperature (>1이면 soft pseudo-label)
     
     # GradNorm 사용 여부
-    use_gradnorm: true     # GradNorm 계산 활성화
+    use_gradnorm: false     # GradNorm 계산 활성화
     
     # 스코어 타입 선택
-    # 옵션: "combo", "delta_energy", "delta_conf", "delta_margin", "gradnorm"
-    score_type: combo
+    # 옵션: "delta_energy", "gradnorm", "grad_ratio", "combo", "prototype_logit_shift", "prototype_grad"
+    # - prototype_logit_shift: 프로토타입의 energy 변화 (setup()에서 계산된 클래스별 프로토타입 사용)
+    # - prototype_grad: 프로토타입에 대한 FC gradient norm 변화
+    score_type: prototype_logit_shift
     
     # Combo 스코어용 가중치
     weights:
-      denergy: 1.0         # ΔEnergy 가중치
-      dconf: 0.5           # ΔConfidence 가중치
-      dmargin: 0.5         # ΔMargin 가중치
+      denergy: 0.5         # ΔEnergy 가중치
       g: 0.5               # GradNorm 가중치
+      grad_ratio: 0.5      # Gradient Ratio 가중치
   
-  APS_mode: false
-  postprocessor_sweep: {}
+  APS_mode: false  # Hyperparameter search enabled
+  postprocessor_sweep:
+    # 테스트용 축소 설정 (총 16 combinations for quick test)
+    # ID: CIFAR-10, OOD: CIFAR-100
+    unlearn_mode: ["fisher"]  # Test fisher mode only
+    fisher_normalize: [true]
+    fisher_damping: [1e-8, 1e-6]  # 2 values
+    fisher_eps: [1e-6]
+    eta: [1e-3, 5e-3]  # 2 values
+    num_steps: [5, 10]  # 2 values
+    temp: [1.0, 2.0]  # 2 values
+    recompute_target: [false]
+    use_gradnorm: [false]
+    score_type: ["delta_energy", "prototype_logit_shift", "prototype_grad"]  # Test all score types
+    # weight parameters not needed for delta_energy score type
