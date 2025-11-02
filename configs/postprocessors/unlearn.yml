@@ -81,7 +81,7 @@ postprocessor:
       angular_weight: 0.5      # L2 distance vs cosine의 가중치 (0.5 = 균등)
 
       # Distance Metric 선택 (고차원 feature에 유리)
-      distance_metric: "mixed_p"      # "l1", "l2", "linf", "combined", "weighted_l1", "fractional", "adaptive_p", "l0", "rbf", "log_scaled",
+      distance_metric: "rbf"      # "l1", "l2", "linf", "combined", "weighted_l1", "fractional", "adaptive_p", "l0", "rbf", "log_scaled",
       #"elementwise_log", "truncated_fractional", "mixed_p"
       # - l1: Manhattan distance (고차원/sparse에 유리, outlier robust) ⭐ BEST
       # - l2: Euclidean distance (기본, 직관적)
