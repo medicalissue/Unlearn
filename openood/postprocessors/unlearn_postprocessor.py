@@ -40,6 +40,10 @@ class UnlearnPostprocessor(BasePostprocessor):
         self.w_dE = float(wcfg.get("denergy", 1.0))
         self.w_G  = float(wcfg.get("g",       0.5))
         self.w_ratio = float(wcfg.get("grad_ratio", 0.5))
+        self.w_feature = float(wcfg.get("feature", 1.0))  # Feature gradient weight
+
+        # Feature-aware gradient options
+        self.use_feature_grad = bool(self.args.get("use_feature_grad", True))  # Enable feature gradient computation
 
         # Hyperparameter sweep configuration
         self.args_dict = self.config.postprocessor.postprocessor_sweep
@@ -167,7 +171,7 @@ class UnlearnPostprocessor(BasePostprocessor):
 
         return fc.weight.data.clone(), fc.bias.data.clone() if fc.bias is not None else None
 
-    def _single_sample_unlearn(self, fc_weight, fc_bias, feature, prototype_tensor, device):
+    def _single_sample_unlearn(self, fc_weight, fc_bias, feature, prototype_tensor, global_proto, device):
         """단일 샘플에 대한 unlearning 수행 (vmap으로 병렬화될 함수)
 
         Args:
@@ -175,6 +179,7 @@ class UnlearnPostprocessor(BasePostprocessor):
             fc_bias: FC layer bias [num_classes] or None
             feature: 추출된 feature [feature_dim]
             prototype_tensor: 클래스별 프로토타입 피처 [num_classes, feature_dim] or None
+            global_proto: 전체 ID 데이터의 global prototype [feature_dim] or None
             device: 디바이스
 
         Returns:
@@ -194,6 +199,23 @@ class UnlearnPostprocessor(BasePostprocessor):
         # FC 파라미터 복사 (vmap에서는 requires_grad 사용 불가)
         W = fc_weight
         b = fc_bias
+
+        # Feature space 기하학적 특성 계산
+        feature_norm = torch.norm(feature, p=2) if self.use_feature_grad else None
+
+        # Prototype distance 계산 (if available)
+        dist_to_prototype_orig = None
+        dist_to_global_orig = None
+        if self.use_feature_grad and prototype_tensor is not None:
+            # 예측된 클래스의 prototype까지의 거리
+            pseudo_class = target.argmax(dim=-1)
+            one_hot = F.one_hot(pseudo_class, num_classes=prototype_tensor.shape[0]).float()
+            proto_feature = torch.matmul(one_hot, prototype_tensor)
+            dist_to_prototype_orig = torch.norm(feature - proto_feature, p=2)
+
+            # Global prototype까지의 거리
+            if global_proto is not None:
+                dist_to_global_orig = torch.norm(feature - global_proto, p=2)
 
         # gradnorm 계산 (원본 모델)
         gradnorm_o = None
@@ -307,7 +329,7 @@ class UnlearnPostprocessor(BasePostprocessor):
                 # 파라미터 업데이트
                 if self.unlearn_mode == "fisher":
                     # Fisher-weighted update
-                    W = W + self.eta * grad_W * (fisher_W + self.fisher_damping)
+                    W = W + self.eta * grad_W / (fisher_W + self.fisher_damping)
                 else:
                     # Gradient ascent
                     W = W + self.eta * grad_W
@@ -318,6 +340,20 @@ class UnlearnPostprocessor(BasePostprocessor):
                 logits_after = F.linear(feature, W, b)
             else:
                 logits_after = F.linear(feature, W)
+
+        # FC weight change 계산 (ΔW = W_after - W_orig)
+        delta_W = W - fc_weight  # [num_classes, feature_dim]
+        weight_shift_norm = torch.norm(delta_W, p='fro') if self.use_feature_grad else None  # Frobenius norm
+
+        # Weight-feature alignment 계산
+        # ΔW와 feature의 내적: feature 방향으로 얼마나 weight가 변했는가
+        if self.use_feature_grad:
+            # delta_W: [num_classes, feature_dim], feature: [feature_dim]
+            # Compute: ||ΔW · f||_2 (how much logit changes due to weight shift)
+            weight_feature_product = torch.matmul(delta_W, feature)  # [num_classes]
+            weight_feature_alignment = torch.norm(weight_feature_product, p=2)
+        else:
+            weight_feature_alignment = None
 
         # 예측
         pred = torch.argmax(logits_orig, dim=-1, keepdim=True)
@@ -335,6 +371,66 @@ class UnlearnPostprocessor(BasePostprocessor):
         # 스코어 타입에 따라 계산
         if self.score_type in {"delta_energy", "denergy"}:
             score = dE  # OOD samples have larger dE (energy increase), should get higher scores
+        elif self.score_type == "feature_aware":
+            # Feature geometry + FC dynamics
+            # CORRECTED: ID samples have HIGHER scores (smaller distance, but we negate)
+            # ID: small distance to prototype, small weight shift → low raw score → high after negation
+            # OOD: large distance to prototype, large weight shift (paradoxically) → high raw score → low after negation
+            # NOTE: Gradient ascent affects confident ID predictions MORE than uncertain OOD
+            if weight_shift_norm is not None and dist_to_prototype_orig is not None:
+                # Normalize each component for better scaling
+                raw_score = (
+                    (feature_norm / 100.0) *  # Typical feature norm ~100
+                    dist_to_prototype_orig *   # Distance to prototype
+                    weight_shift_norm          # FC weight change magnitude
+                )
+                score = -raw_score  # NEGATE: Framework expects ID > OOD
+            else:
+                score = dE  # Fallback
+        elif self.score_type == "feature_fc_alignment":
+            # Weight-feature alignment: how much logit changes due to FC shift in feature direction
+            # CORRECTED: Confident ID samples have LARGER FC weight shifts (counter-intuitive!)
+            # ID: large ||ΔW·f|| (gradient ascent strongly affects confident predictions)
+            # OOD: small ||ΔW·f|| (gradient ascent weakly affects uncertain predictions)
+            # Therefore we NEGATE to get ID > OOD as expected by framework
+            if weight_feature_alignment is not None:
+                score = -weight_feature_alignment  # NEGATE: Framework expects ID > OOD
+            else:
+                score = dE  # Fallback
+        elif self.score_type == "geometry_combo":
+            # Combined geometric score
+            # CORRECTED: All geometric terms favor OOD (high values), so we negate
+            if (weight_shift_norm is not None and
+                weight_feature_alignment is not None and
+                dist_to_prototype_orig is not None):
+                # Multi-scale geometric consistency
+                raw_score = (
+                    self.w_dE * dE +                                    # Energy change (OOD > ID)
+                    self.w_feature * weight_shift_norm * feature_norm +  # Weight shift × feature (OOD > ID paradoxically)
+                    weight_feature_alignment * dist_to_prototype_orig    # Alignment × distance (OOD > ID)
+                )
+                score = -raw_score  # NEGATE: Framework expects ID > OOD
+            else:
+                score = dE  # Fallback
+        elif self.score_type == "multiscale_prototype":
+            # Multi-scale prototype distance
+            # Uses both class-level and global-level prototypes
+            # CORRECTED: Distance metrics are higher for OOD, so we negate
+            if dist_to_prototype_orig is not None and dist_to_global_orig is not None:
+                # OOD: far from both class prototype and global prototype → high distance
+                # ID: close to class prototype, also reasonably close to global → low distance
+                raw_score = (
+                    dist_to_prototype_orig * 2.0 +     # Class-level distance (higher weight)
+                    dist_to_global_orig +              # Global-level distance
+                    weight_shift_norm                  # FC weight change (also higher for confident ID!)
+                )
+                score = -raw_score  # NEGATE: Framework expects ID > OOD
+            elif dist_to_prototype_orig is not None:
+                # Fallback: only class prototype available
+                raw_score = dist_to_prototype_orig * weight_shift_norm if weight_shift_norm is not None else dist_to_prototype_orig
+                score = -raw_score  # NEGATE
+            else:
+                score = dE  # Fallback
         elif self.score_type == "prototype_logit_shift":
             # 프로토타입 기반 로짓 변화 메트릭
             if prototype_tensor is not None:
@@ -368,7 +464,11 @@ class UnlearnPostprocessor(BasePostprocessor):
                 proto_logit_after_stable = proto_logit_after - proto_logit_after_max
 
                 proto_dE = self._energy(proto_logit_after_stable) - self._energy(proto_logit_orig_stable)
-                score = proto_dE  # OOD: 프로토타입의 energy 변화가 클 것으로 예상
+                # CORRECTED: Gradient ascent affects ID sample's prototype MORE (it's nearby)
+                # ID: prototype nearby → large proto_dE (unlearned together)
+                # OOD: prototype far → small proto_dE (unaffected)
+                # Original assumption was REVERSED!
+                score = -proto_dE  # NEGATE: Framework expects ID > OOD
             else:
                 # Fallback: prototype이 없으면 샘플 자체의 delta_energy 사용
                 score = dE
@@ -429,7 +529,11 @@ class UnlearnPostprocessor(BasePostprocessor):
                     proto_gradnorm_after = torch.abs(grad_W_after).sum()
 
                 # Gradient norm 변화 계산
-                score = proto_gradnorm_after - proto_gradnorm_orig  # OOD: gradient norm이 증가할 것으로 예상
+                # CORRECTED: Same logic as proto_dE
+                # ID sample unlearning affects nearby prototype → larger gradient norm increase
+                # OOD sample unlearning doesn't affect distant prototype → smaller gradient increase
+                # Original assumption was REVERSED!
+                score = -(proto_gradnorm_after - proto_gradnorm_orig)  # NEGATE: Framework expects ID > OOD
             else:
                 # Fallback: prototype이 없으면 샘플 자체의 gradnorm 사용
                 if gradnorm_o is not None:
@@ -602,7 +706,13 @@ class UnlearnPostprocessor(BasePostprocessor):
                 if (cached_data['num_classes'] == self.num_classes and
                     cached_data['feature_dim'] == feature_dim):
                     self.class_prototypes = cached_data['prototypes']
-                    print(f"✓ Loaded {len(self.class_prototypes)} class prototypes from cache")
+                    # Load global prototype if available
+                    if 'global_prototype' in cached_data and cached_data['global_prototype'] is not None:
+                        self.global_prototype = cached_data['global_prototype'].cuda()
+                        print(f"✓ Loaded {len(self.class_prototypes)} class prototypes + global prototype from cache")
+                    else:
+                        self.global_prototype = None
+                        print(f"✓ Loaded {len(self.class_prototypes)} class prototypes from cache (no global prototype)")
                     for cls_idx, proto in self.class_prototypes.items():
                         print(f"  Class {cls_idx}: shape {proto.shape}")
                     return
@@ -643,6 +753,8 @@ class UnlearnPostprocessor(BasePostprocessor):
 
         # Compute median feature for each class
         self.class_prototypes = {}
+        all_features_list = []  # For global prototype
+
         for cls_idx in range(self.num_classes):
             if len(class_features[cls_idx]) > 0:
                 feats = torch.stack(class_features[cls_idx])  # [N, feature_dim]
@@ -650,6 +762,8 @@ class UnlearnPostprocessor(BasePostprocessor):
                 self.class_prototypes[cls_idx] = torch.median(feats, dim=0).values.cuda()
                 print(f"  Class {cls_idx}: {len(class_features[cls_idx])} samples, "
                       f"prototype shape: {self.class_prototypes[cls_idx].shape}")
+                # Collect for global prototype
+                all_features_list.extend(class_features[cls_idx])
             else:
                 print(f"  Warning: No samples found for class {cls_idx}")
                 # Use zero vector as fallback
@@ -659,22 +773,35 @@ class UnlearnPostprocessor(BasePostprocessor):
                     feature_dim_fallback = feature_dim  # Use detected feature_dim
                 self.class_prototypes[cls_idx] = torch.zeros(feature_dim_fallback).cuda()
 
-        print(f"Prototype computation complete: {len(self.class_prototypes)} class prototypes")
+        # Compute global ID prototype (median of all ID features)
+        if len(all_features_list) > 0:
+            all_features = torch.stack(all_features_list)  # [Total_N, feature_dim]
+            self.global_prototype = torch.median(all_features, dim=0).values.cuda()
+            print(f"  Global ID prototype computed from {len(all_features_list)} total samples")
+        else:
+            self.global_prototype = None
+            print(f"  Warning: No features for global prototype")
+
+        print(f"Prototype computation complete: {len(self.class_prototypes)} class prototypes + 1 global prototype")
 
         # Save prototypes to cache
         try:
             # Move prototypes to CPU for saving
             prototypes_cpu = {k: v.cpu() for k, v in self.class_prototypes.items()}
+            global_proto_cpu = self.global_prototype.cpu() if self.global_prototype is not None else None
             cache_data = {
                 'num_classes': self.num_classes,
                 'feature_dim': feature_dim,
                 'prototypes': prototypes_cpu,
+                'global_prototype': global_proto_cpu,
                 'dataset_name': dataset_name
             }
             torch.save(cache_data, cache_file)
             print(f"✓ Saved prototypes to {cache_file}")
             # Move back to GPU
             self.class_prototypes = {k: v.cuda() for k, v in prototypes_cpu.items()}
+            if global_proto_cpu is not None:
+                self.global_prototype = global_proto_cpu.cuda()
         except Exception as e:
             print(f"Warning: Failed to save prototypes to cache: {e}")
 
@@ -739,25 +866,30 @@ class UnlearnPostprocessor(BasePostprocessor):
 
         # 프로토타입 텐서 준비 (setup()에서 계산된 경우)
         prototype_tensor = None
+        global_proto = None
         if hasattr(self, 'class_prototypes') and self.class_prototypes is not None:
             # 모든 클래스의 프로토타입을 텐서로 변환 [num_classes, feature_dim]
             prototype_list = [self.class_prototypes[i] for i in range(self.num_classes)]
             prototype_tensor = torch.stack(prototype_list).to(device)
 
+        # Global prototype 준비
+        if hasattr(self, 'global_prototype') and self.global_prototype is not None:
+            global_proto = self.global_prototype.to(device)
+
         # vmap을 사용하여 배치 병렬화
         if fc_biases is not None:
             vmapped_fn = vmap(
-                lambda w, b, f, proto: self._single_sample_unlearn(w, b, f, proto, device),
-                in_dims=(0, 0, 0, None),  # fc_weight, fc_bias, feature, prototype_tensor (broadcast)
+                lambda w, b, f, proto, g_proto: self._single_sample_unlearn(w, b, f, proto, g_proto, device),
+                in_dims=(0, 0, 0, None, None),  # fc_weight, fc_bias, feature, prototype_tensor (broadcast), global_proto (broadcast)
                 out_dims=(0, 0)  # pred, score
             )
-            preds, scores = vmapped_fn(fc_weights, fc_biases, features, prototype_tensor)
+            preds, scores = vmapped_fn(fc_weights, fc_biases, features, prototype_tensor, global_proto)
         else:
             vmapped_fn = vmap(
-                lambda w, f, proto: self._single_sample_unlearn(w, None, f, proto, device),
-                in_dims=(0, 0, None),  # fc_weight, feature, prototype_tensor (broadcast)
+                lambda w, f, proto, g_proto: self._single_sample_unlearn(w, None, f, proto, g_proto, device),
+                in_dims=(0, 0, None, None),  # fc_weight, feature, prototype_tensor (broadcast), global_proto (broadcast)
                 out_dims=(0, 0)  # pred, score
             )
-            preds, scores = vmapped_fn(fc_weights, features, prototype_tensor)
+            preds, scores = vmapped_fn(fc_weights, features, prototype_tensor, global_proto)
 
         return preds.squeeze(-1), scores

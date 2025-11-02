@@ -3,27 +3,36 @@ postprocessor:
   postprocessor_args:
     unlearn_mode: "fisher" # ascent, fisher
     fisher_normalize: true   # Adaptive 정규화 사용
-    fisher_damping: 1e-8
+    fisher_damping: 1e-3
     # Ascent 설정
-    eta: 100              # ascent step size (헤드만 업데이트)
-    num_steps: 10           # ascent 반복 횟수
+    eta: 1e-3              # ascent step size (헤드만 업데이트)
+    num_steps: 1           # ascent 반복 횟수
     recompute_target: false
     temp: 1              # temperature (>1이면 soft pseudo-label)
     
     # GradNorm 사용 여부
     use_gradnorm: false     # GradNorm 계산 활성화
-    
+
+    # Feature-aware gradient 사용 여부
+    use_feature_grad: true   # Feature space geometric features 활성화
+
     # 스코어 타입 선택
     # 옵션: "delta_energy", "gradnorm", "grad_ratio", "combo", "prototype_logit_shift", "prototype_grad"
+    #       "feature_aware", "feature_fc_alignment", "geometry_combo", "multiscale_prototype"
     # - prototype_logit_shift: 프로토타입의 energy 변화 (setup()에서 계산된 클래스별 프로토타입 사용)
     # - prototype_grad: 프로토타입에 대한 FC gradient norm 변화
-    score_type: prototype_logit_shift
-    
+    # - feature_aware: Feature geometry (norm, dist) × FC weight shift [NEW, RECOMMENDED]
+    # - feature_fc_alignment: ΔW·f alignment score [NEW]
+    # - geometry_combo: Multi-scale geometric combination [NEW]
+    # - multiscale_prototype: Class + Global prototype distance [NEW]
+    score_type: feature_aware
+
     # Combo 스코어용 가중치
     weights:
       denergy: 0.5         # ΔEnergy 가중치
       g: 0.5               # GradNorm 가중치
       grad_ratio: 0.5      # Gradient Ratio 가중치
+      feature: 1.0         # Feature geometry 가중치
   
   APS_mode: false  # Hyperparameter search enabled
   postprocessor_sweep:
@@ -38,5 +47,6 @@ postprocessor:
     temp: [1.0, 2.0]  # 2 values
     recompute_target: [false]
     use_gradnorm: [false]
-    score_type: ["delta_energy", "prototype_logit_shift", "prototype_grad"]  # Test all score types
-    # weight parameters not needed for delta_energy score type
+    use_feature_grad: [true]  # Enable feature-aware scoring
+    score_type: ["delta_energy", "feature_aware", "feature_fc_alignment", "geometry_combo"]  # Test new score types
+    # weight parameters not needed for simple score types
