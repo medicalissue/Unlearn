@@ -387,10 +387,11 @@ class UnlearnPostprocessor(BasePostprocessor):
         log_terms = log_g_squared - log_F_powered
 
         # Use LogSumExp trick for numerical stability: log(sum(exp(x))) = max(x) + log(sum(exp(x - max(x))))
+        # Return log(energy) instead of energy to prevent overflow with high fisher_power
         max_log = torch.max(log_terms)
-        energy = torch.exp(max_log) * torch.sum(torch.exp(log_terms - max_log))
+        log_energy = max_log + torch.log(torch.sum(torch.exp(log_terms - max_log)))
 
-        return energy
+        return log_energy
 
     def _compute_energy_at_step(self, W_base, b_base, W_current, b_current,
                                 prototype_tensor, logits_orig, device):
@@ -710,12 +711,13 @@ class UnlearnPostprocessor(BasePostprocessor):
             # OOD samples: low growth rate → low score
             score = -growth_rate
         elif self.score_type == "fisher_energy":
-            # Compute Fisher-weighted unlearning energy: S(x) = g(x)^T F^{-1} g(x)
-            # ID samples: low Fisher energy (gradient aligns with ID distribution)
-            # OOD samples: high Fisher energy (gradient doesn't align with ID)
-            fisher_energy = self._compute_fisher_energy(feature, W_base, b_base, target)
-            # Return negated energy so higher score = more OOD
-            score = -fisher_energy
+            # Compute Fisher-weighted unlearning energy: S(x) = g(x)^T F^{-p} g(x)
+            # Returns log(energy) for numerical stability with high fisher_power
+            # ID samples: low log Fisher energy (gradient aligns with ID distribution)
+            # OOD samples: high log Fisher energy (gradient doesn't align with ID)
+            log_fisher_energy = self._compute_fisher_energy(feature, W_base, b_base, target)
+            # Return negated log-energy so higher score = more OOD
+            score = -log_fisher_energy
         else:
             # Default: use energy change
             if b is not None:
