@@ -4,11 +4,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-try:
-    from torch.func import grad
-except ImportError:
-    from functorch import grad
-
 from .base_postprocessor import BasePostprocessor
 from .info import num_classes_dict
 
@@ -231,68 +226,6 @@ class UnlearnPostprocessor(BasePostprocessor):
         # Save to cache
         self._save_fisher_matrix(cache_path)
 
-    def _compute_fisher_energy(self, feature, fc_weight, fc_bias, target):
-        """Compute Fisher-weighted energy: S(x) = g(x)^T F^{-p} g(x).
-
-        Uses log-space computation for numerical stability with high powers.
-
-        Args:
-            feature: Sample feature [feature_dim]
-            fc_weight: FC layer weight [num_classes, feature_dim]
-            fc_bias: FC layer bias [num_classes] or None
-            target: Pseudo-label target [num_classes] (for NLL loss)
-
-        Returns:
-            log_energy: log(Fisher energy) for numerical stability
-        """
-        eps_g = 1e-10  # Epsilon for gradients
-        eps_f = 1e-8   # Epsilon for Fisher values
-
-        # Compute gradient g(x) = ∇_θ [-log p(y*|x)] (NLL loss)
-        if fc_bias is not None:
-            def loss_fn(params):
-                W_inner, b_inner = params
-                out = F.linear(feature, W_inner, b_inner)
-                log_probs = F.log_softmax(out, dim=-1)
-                hard = target.argmax(dim=-1, keepdim=True)
-                loss = -torch.gather(log_probs, -1, hard).squeeze(-1)
-                return loss
-
-            grads = grad(loss_fn)((fc_weight, fc_bias))
-            grad_W, grad_b = grads[0], grads[1]
-            g_x = torch.cat([grad_W.flatten(), grad_b.flatten()])
-
-            # Get Fisher matrix (global)
-            fisher_W = self.fisher_W_tensor
-            fisher_b = self.fisher_b_tensor
-            F_vec = torch.cat([fisher_W.flatten(), fisher_b.flatten()])
-        else:
-            def loss_fn(W_inner):
-                out = F.linear(feature, W_inner)
-                log_probs = F.log_softmax(out, dim=-1)
-                hard = target.argmax(dim=-1, keepdim=True)
-                loss = -torch.gather(log_probs, -1, hard).squeeze(-1)
-                return loss
-
-            grad_W = grad(loss_fn)(fc_weight)
-            g_x = grad_W.flatten()
-
-            # Get Fisher matrix (global)
-            fisher_W = self.fisher_W_tensor
-            F_vec = fisher_W.flatten()
-
-        # Compute log(S(x)) = log(sum(g^2 / F^p)) using LogSumExp for stability
-        # log(g^2 / F^p) = 2*log|g| - p*log F
-        log_g_squared = 2.0 * torch.log(torch.abs(g_x) + eps_g)
-        log_F_powered = self.fisher_power * torch.log(F_vec + eps_f)
-        log_terms = log_g_squared - log_F_powered
-
-        # LogSumExp trick: log(sum(exp(x))) = max(x) + log(sum(exp(x - max(x))))
-        max_log = torch.max(log_terms)
-        log_energy = max_log + torch.log(torch.sum(torch.exp(log_terms - max_log)))
-
-        return log_energy
-
     @torch.no_grad()
     def postprocess(self, net: nn.Module, data: Any):
         """Compute OOD scores for a batch of test samples.
@@ -316,23 +249,53 @@ class UnlearnPostprocessor(BasePostprocessor):
             features = output
             logits = fc(features)
 
-        # Get FC layer parameters
-        fc_weight = fc.weight.data.clone()
-        fc_bias = fc.bias.data.clone() if fc.bias is not None else None
-
         # Predictions
         pred = logits.argmax(dim=1).cpu()
 
-        # Compute pseudo-labels (soft targets with temperature=1.0)
-        targets = F.softmax(logits, dim=-1)
+        # Compute gradient of NLL w.r.t. logits (batched)
+        probs = F.softmax(logits, dim=-1)  # [batch, num_classes]
+        pred_labels = logits.argmax(dim=-1)  # [batch]
+        grad_logits = probs.clone()
+        grad_logits[torch.arange(len(pred_labels)), pred_labels] -= 1.0
 
-        # Compute Fisher energy for each sample
-        conf_list = []
-        for i in range(len(features)):
-            log_fisher_energy = self._compute_fisher_energy(features[i], fc_weight, fc_bias, targets[i])
-            # Negated log-energy (higher = more OOD)
-            conf_list.append(-log_fisher_energy)
+        # Compute gradient w.r.t. FC parameters (batched)
+        # ∇_W L = grad_logits^T ⊗ features
+        grad_W_batch = torch.einsum('bc,bd->bcd', grad_logits, features)  # [batch, num_classes, feature_dim]
 
-        conf = torch.stack(conf_list).cpu()
+        has_bias = fc.bias is not None
+        if has_bias:
+            grad_b_batch = grad_logits  # [batch, num_classes]
+            # Flatten and concatenate
+            g_batch = torch.cat([
+                grad_W_batch.reshape(len(features), -1),  # [batch, num_classes * feature_dim]
+                grad_b_batch  # [batch, num_classes]
+            ], dim=1)  # [batch, num_classes * feature_dim + num_classes]
+
+            # Fisher matrix (flattened)
+            F_vec = torch.cat([
+                self.fisher_W_tensor.flatten(),
+                self.fisher_b_tensor.flatten()
+            ])  # [num_classes * feature_dim + num_classes]
+        else:
+            # No bias
+            g_batch = grad_W_batch.reshape(len(features), -1)  # [batch, num_classes * feature_dim]
+            F_vec = self.fisher_W_tensor.flatten()  # [num_classes * feature_dim]
+
+        # Compute Fisher Energy: S(x) = sum(g^2 / F^p) for each sample
+        # Log-space: log(g^2 / F^p) = 2*log|g| - p*log(F)
+        eps_g = 1e-10
+        eps_f = 1e-8
+        log_g_squared = 2.0 * torch.log(torch.abs(g_batch) + eps_g)  # [batch, dim]
+        log_F_powered = self.fisher_power * torch.log(F_vec + eps_f)  # [dim]
+        log_terms = log_g_squared - log_F_powered.unsqueeze(0)  # [batch, dim]
+
+        # LogSumExp for each sample
+        max_log = torch.max(log_terms, dim=1, keepdim=True)[0]  # [batch, 1]
+        log_energy = max_log.squeeze(1) + torch.log(
+            torch.sum(torch.exp(log_terms - max_log), dim=1)
+        )  # [batch]
+
+        # Negated log-energy (higher = more OOD)
+        conf = -log_energy.cpu()
 
         return pred, conf
