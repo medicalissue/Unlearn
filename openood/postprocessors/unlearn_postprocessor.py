@@ -375,10 +375,20 @@ class UnlearnPostprocessor(BasePostprocessor):
             F_vec = fisher_W.flatten()  # [D]
 
         # Compute S(x) = g(x)^T F^{-p} g(x)
-        # Use element-wise division as approximation: g^T F^{-p} g ≈ sum(g^2 / F^p)
-        # This avoids expensive matrix inversion and is equivalent when F is diagonal
-        # fisher_power: 1.0 = standard F^{-1}, 2.0 = F^{-2}, etc.
-        energy = torch.sum((g_x ** 2) / ((F_vec + 1e-8) ** self.fisher_power))
+        # Use log-space computation for numerical stability with high powers
+        # energy = sum(g^2 / F^p) = sum(exp(2*log|g| - p*log F))
+
+        eps_g = 1e-10  # Epsilon for gradients
+        eps_f = 1e-8   # Epsilon for Fisher values
+
+        # Compute log(g^2 / F^p) = 2*log|g| - p*log F
+        log_g_squared = 2.0 * torch.log(torch.abs(g_x) + eps_g)
+        log_F_powered = self.fisher_power * torch.log(F_vec + eps_f)
+        log_terms = log_g_squared - log_F_powered
+
+        # Use LogSumExp trick for numerical stability: log(sum(exp(x))) = max(x) + log(sum(exp(x - max(x))))
+        max_log = torch.max(log_terms)
+        energy = torch.exp(max_log) * torch.sum(torch.exp(log_terms - max_log))
 
         return energy
 
