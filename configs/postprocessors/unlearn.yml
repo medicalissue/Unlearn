@@ -9,6 +9,7 @@ postprocessor:
     score_type: "prototype_coupling"
 
     prototype_coupling_config:
-      use_all_prototypes: true
-      top_k: 5
+      use_all_prototypes: false
+      top_k: 10
       eigenvalue_mode: "participation_ratio"
+      prototype_aggregation: "mean"  # "mean" or "median"

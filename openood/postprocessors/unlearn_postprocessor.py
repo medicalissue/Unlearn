@@ -30,6 +30,7 @@ class UnlearnPostprocessor(BasePostprocessor):
         self.use_all_prototypes = bool(pc_cfg.get("use_all_prototypes", False))
         self.top_k = int(pc_cfg.get("top_k", 5))
         self.eigenvalue_mode = str(pc_cfg.get("eigenvalue_mode", "participation_ratio"))
+        self.prototype_aggregation = str(pc_cfg.get("prototype_aggregation", "median"))  # "mean" or "median"
 
         # Will be set in setup()
         self.prototypes = None
@@ -255,14 +256,17 @@ class UnlearnPostprocessor(BasePostprocessor):
         all_features = torch.cat(all_features, dim=0)  # [N, feat_dim]
         all_labels = torch.cat(all_labels, dim=0)  # [N]
 
-        # Compute prototypes by class (using median like reference code)
+        # Compute prototypes by class
         prototypes = []
         for c in range(self.num_classes):
             mask = (all_labels == c)
             if mask.sum() > 0:
                 class_features = all_features[mask]
-                # Use median instead of mean for robustness
-                prototype = torch.median(class_features, dim=0).values
+                # Aggregate based on config: mean or median
+                if self.prototype_aggregation == "mean":
+                    prototype = class_features.mean(dim=0)
+                else:  # median (default)
+                    prototype = torch.median(class_features, dim=0).values
                 print(f"  Class {c}: {mask.sum().item()} samples")
             else:
                 # Handle empty classes
@@ -271,7 +275,7 @@ class UnlearnPostprocessor(BasePostprocessor):
             prototypes.append(prototype)
 
         self.prototypes = torch.stack(prototypes)
-        print(f"✓ Computed {self.num_classes} class prototypes using median")
+        print(f"✓ Computed {self.num_classes} class prototypes using {self.prototype_aggregation}")
 
     def postprocess(self, net: nn.Module, data: Any):
         """Compute OOD scores for a batch using vmap for parallelization.
