@@ -33,6 +33,13 @@ class UnlearnPostprocessor(BasePostprocessor):
         self.eigenvalue_mode = str(pc_cfg.get("eigenvalue_mode", "participation_ratio"))
         self.prototype_aggregation = str(pc_cfg.get("prototype_aggregation", "median"))  # "mean" or "median"
 
+        # Max samples per class for prototype computation
+        max_samples = pc_cfg.get("max_samples_per_class", None)
+        if max_samples == "full" or max_samples is None:
+            self.max_samples_per_class = None  # Use all samples
+        else:
+            self.max_samples_per_class = int(max_samples)
+
         # Will be set in setup()
         self.prototypes = None
 
@@ -48,7 +55,12 @@ class UnlearnPostprocessor(BasePostprocessor):
         """Get the path to the cached prototype file."""
         cache_dir = os.path.join(data_root, 'prototypes')
         os.makedirs(cache_dir, exist_ok=True)
-        filename = f"{self.config.dataset.name}_prototypes_{self.prototype_aggregation}.pt"
+        # Include sample limit in filename (different limits = different prototypes)
+        if self.max_samples_per_class is None:
+            sample_suffix = "full"
+        else:
+            sample_suffix = f"samples{self.max_samples_per_class}"
+        filename = f"{self.config.dataset.name}_prototypes_{self.prototype_aggregation}_{sample_suffix}.pt"
         return os.path.join(cache_dir, filename)
 
     def _save_prototypes(self, path: str):
@@ -58,6 +70,7 @@ class UnlearnPostprocessor(BasePostprocessor):
             'dataset_name': self.config.dataset.name,
             'num_classes': self.num_classes,
             'aggregation_method': self.prototype_aggregation,
+            'max_samples_per_class': self.max_samples_per_class,
         }, path)
         print(f"✓ Saved prototypes to {path}")
 
@@ -71,6 +84,8 @@ class UnlearnPostprocessor(BasePostprocessor):
             f"Number of classes mismatch: {checkpoint['num_classes']} vs {self.num_classes}"
         assert checkpoint['aggregation_method'] == self.prototype_aggregation, \
             f"Aggregation method mismatch: {checkpoint['aggregation_method']} vs {self.prototype_aggregation}"
+        assert checkpoint.get('max_samples_per_class', None) == self.max_samples_per_class, \
+            f"Sample limit mismatch: {checkpoint.get('max_samples_per_class', None)} vs {self.max_samples_per_class}"
         return checkpoint['prototypes'].cuda()
 
     def _get_fc_params(self, net):
@@ -281,58 +296,100 @@ class UnlearnPostprocessor(BasePostprocessor):
         else:
             raise ValueError("Neither training nor validation data available for setup")
 
-        # Accumulate features per class - use lists for efficiency
-        all_features = []
-        all_labels = []
+        # Accumulate features per class with sample limiting during extraction
+        if self.max_samples_per_class is None:
+            # Extract all features (original behavior)
+            all_features = []
+            all_labels = []
 
-        print("Computing class prototypes...")
-        with torch.no_grad():
-            for batch in tqdm.tqdm(data_loader, desc="Extracting features"):
-                data = batch['data'].cuda()
-                labels = batch['label'].cuda()
+            print("Computing class prototypes...")
+            with torch.no_grad():
+                for batch in tqdm.tqdm(data_loader, desc="Extracting features"):
+                    data = batch['data'].cuda()
+                    labels = batch['label'].cuda()
 
-                _, features = net(data, return_feature=True)
+                    _, features = net(data, return_feature=True)
 
-                all_features.append(features)
-                all_labels.append(labels)
+                    all_features.append(features)
+                    all_labels.append(labels)
 
-        # Concatenate all features and labels
-        all_features = torch.cat(all_features, dim=0)  # [N, feat_dim]
-        all_labels = torch.cat(all_labels, dim=0)  # [N]
-
-        # Compute prototypes using vectorized operations (parallel)
-        if self.prototype_aggregation == "mean":
-            # Fully vectorized mean computation
-            print("Computing prototypes using vectorized mean...")
-            # Create binary masks for all classes at once [num_classes, N]
-            masks = torch.stack([all_labels == c for c in range(self.num_classes)])  # [C, N]
-
-            # Broadcast and compute weighted sum: [C, N, 1] * [1, N, D] = [C, N, D]
-            class_features_masked = masks.unsqueeze(-1).float() * all_features.unsqueeze(0)  # [C, N, D]
-
-            # Sum over samples and divide by count
-            counts = masks.sum(dim=1, keepdim=True).float()  # [C, 1]
-            prototypes = class_features_masked.sum(dim=1) / (counts + 1e-10)  # [C, D]
-
-            # Print sample counts
-            for c in range(self.num_classes):
-                count = int(counts[c].item())
-                if count > 0:
-                    print(f"  Class {c}: {count} samples")
-                else:
-                    print(f"  Warning: No samples found for class {c}")
-
-            self.prototypes = prototypes
+            # Concatenate all features and labels
+            all_features = torch.cat(all_features, dim=0)  # [N, feat_dim]
+            all_labels = torch.cat(all_labels, dim=0)  # [N]
         else:
-            # Median computation (keep loop-based for simplicity)
-            print("Computing prototypes using median...")
+            # Extract limited samples per class (efficient for small max_samples_per_class)
+            print(f"Computing class prototypes (extracting max {self.max_samples_per_class} samples per class)...")
+            class_features = {c: [] for c in range(self.num_classes)}
+            samples_per_class = {c: 0 for c in range(self.num_classes)}
+
+            target_total = self.max_samples_per_class * self.num_classes
+            pbar = tqdm.tqdm(total=target_total, desc="Extracting features")
+
+            with torch.no_grad():
+                for batch in data_loader:
+                    # Check if we've collected enough samples for all classes
+                    if all(samples_per_class[c] >= self.max_samples_per_class for c in range(self.num_classes)):
+                        break
+
+                    data = batch['data'].cuda()
+                    labels = batch['label'].cuda()
+
+                    # Extract features for the entire batch
+                    _, features = net(data, return_feature=True)
+
+                    # Store features per class (only if needed)
+                    for feat, lbl in zip(features, labels):
+                        c = lbl.item()
+                        if samples_per_class[c] < self.max_samples_per_class:
+                            class_features[c].append(feat)
+                            samples_per_class[c] += 1
+                            pbar.update(1)
+
+            pbar.close()
+
+            # Convert to all_features format for compatibility with prototype computation
+            all_features = []
+            all_labels = []
+            for c in range(self.num_classes):
+                if len(class_features[c]) > 0:
+                    class_feats = torch.stack(class_features[c])
+                    all_features.append(class_feats)
+                    all_labels.append(torch.full((len(class_feats),), c, dtype=torch.long, device=class_feats.device))
+
+            if len(all_features) > 0:
+                all_features = torch.cat(all_features, dim=0)
+                all_labels = torch.cat(all_labels, dim=0)
+            else:
+                raise ValueError("No features extracted from dataset")
+
+        # Compute prototypes using loop-based approach (memory efficient)
+        # Note: if max_samples_per_class is set, samples are already limited during extraction
+        if self.prototype_aggregation == "mean":
+            print(f"Computing prototypes using mean...")
             prototypes = []
             for c in range(self.num_classes):
                 mask = (all_labels == c)
                 if mask.sum() > 0:
                     class_features = all_features[mask]
+                    num_available = len(class_features)
+                    print(f"  Class {c}: {num_available} samples")
+                    prototype = class_features.mean(dim=0)
+                else:
+                    print(f"  Warning: No samples found for class {c}")
+                    prototype = torch.zeros(all_features.shape[1], device=all_features.device)
+                prototypes.append(prototype)
+            self.prototypes = torch.stack(prototypes)
+        else:
+            # Median computation
+            print(f"Computing prototypes using median...")
+            prototypes = []
+            for c in range(self.num_classes):
+                mask = (all_labels == c)
+                if mask.sum() > 0:
+                    class_features = all_features[mask]
+                    num_available = len(class_features)
+                    print(f"  Class {c}: {num_available} samples")
                     prototype = torch.median(class_features, dim=0).values
-                    print(f"  Class {c}: {mask.sum().item()} samples")
                 else:
                     print(f"  Warning: No samples found for class {c}")
                     prototype = torch.zeros(all_features.shape[1], device=all_features.device)

@@ -145,7 +145,7 @@ evaluator = Evaluator(
     batch_size=args.
     batch_size,  # for certain methods the results can be slightly affected by batch size
     shuffle=True,
-    num_workers=8)
+    num_workers=24)
 
 # load pre-computed scores if exists
 if os.path.isfile(os.path.join(root, 'scores', f'{postprocessor_name}.pkl')):

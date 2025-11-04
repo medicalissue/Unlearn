@@ -2,14 +2,15 @@ postprocessor:
   name: unlearn
   postprocessor_args:
     unlearn_mode: "ascent"
-    eta: 1e-3
-    num_steps: 1000
+    eta: 1e-2
+    num_steps: 100
     temp: 1.0
 
     score_type: "prototype_coupling"
 
     prototype_coupling_config:
-      use_all_prototypes: false
-      top_k: 5
+      use_all_prototypes: true
+      top_k: 10
       eigenvalue_mode: "participation_ratio"
       prototype_aggregation: "mean"  # "mean" or "median"
+      max_samples_per_class: full  # null/"full" for all samples, or integer N for max N samples per class
