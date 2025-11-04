@@ -144,12 +144,12 @@ DATA_INFO = {
     'imagenet200': {
         'num_classes': 200,
         'id': {
-            'train': {
-                'data_dir':
-                'images_largescale/',
-                'imglist_path':
-                'benchmark_imglist/imagenet200/train_imagenet200.txt'
-            },
+            # 'train': {
+            #     'data_dir':
+            #     'images_largescale/',
+            #     'imglist_path':
+            #     'benchmark_imglist/imagenet200/train_imagenet200.txt'
+            # },
             'val': {
                 'data_dir': 'images_largescale/',
                 'imglist_path':
