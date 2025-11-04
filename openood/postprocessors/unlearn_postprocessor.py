@@ -179,13 +179,23 @@ class UnlearnPostprocessor(BasePostprocessor):
         # Build coupling matrix: C = delta_grads @ delta_grads.T [K, K]
         coupling_matrix = torch.matmul(delta_grads, delta_grads.T)  # [K, K]
 
-        # Compute participation ratio: PR = (trace(C))^2 / trace(C^2)
+        # Compute trace of coupling matrix
         trace_C = torch.trace(coupling_matrix)
-        trace_C2 = torch.trace(torch.matmul(coupling_matrix, coupling_matrix))
-        pr = (trace_C ** 2) / (trace_C2 + 1e-10)
 
-        # Return negated score (lower PR = ID → higher score)
-        return -pr
+        # Choose eigenvalue-based metric
+        if self.eigenvalue_mode == "log_trace":
+            # log(trace(C)) - measures total variance/energy
+            # ID samples: HIGH trace → HIGH score (negated)
+            # OOD samples: LOW trace → LOW score (negated)
+            score = -torch.log(trace_C + 1e-10)
+        else:  # "participation_ratio" (default)
+            # Compute participation ratio: PR = (trace(C))^2 / trace(C^2)
+            trace_C2 = torch.trace(torch.matmul(coupling_matrix, coupling_matrix))
+            pr = (trace_C ** 2) / (trace_C2 + 1e-10)
+            # Return negated score (lower PR = ID → higher score)
+            score = -pr
+
+        return score
 
     def _single_sample_unlearn(self, fc_weight, fc_bias, feature, prototype_tensor,
                               global_proto, device):

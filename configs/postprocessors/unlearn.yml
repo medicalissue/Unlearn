@@ -3,7 +3,7 @@ postprocessor:
   postprocessor_args:
     unlearn_mode: "ascent"
     eta: 1e-2
-    num_steps: 100
+    num_steps: 110
     temp: 1.0
 
     score_type: "prototype_coupling"
@@ -11,6 +11,6 @@ postprocessor:
     prototype_coupling_config:
       use_all_prototypes: true
       top_k: 10
-      eigenvalue_mode: "participation_ratio"
+      eigenvalue_mode: "log_trace"  # "participation_ratio" or "log_trace"
       prototype_aggregation: "mean"  # "mean" or "median"
       max_samples_per_class: full  # null/"full" for all samples, or integer N for max N samples per class
