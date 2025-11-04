@@ -26,6 +26,9 @@ class UnlearnPostprocessor(BasePostprocessor):
         self.temp = float(self.args.get("temp", 1.0))
         self.score_type = str(self.args.get("score_type", "prototype_coupling"))
 
+        # APS support: store sweep configuration
+        self.args_dict = self.config.postprocessor.postprocessor_sweep
+
         # Prototype coupling config
         pc_cfg = self.args.get("prototype_coupling_config", {}) or {}
         self.use_all_prototypes = bool(pc_cfg.get("use_all_prototypes", False))
@@ -580,6 +583,24 @@ class UnlearnPostprocessor(BasePostprocessor):
 
         return score
 
+    def set_hyperparam(self, hyperparam: list):
+        """Set hyperparameters for APS (Automatic Parameter Search).
+
+        Args:
+            hyperparam: List of [eta, num_steps]
+        """
+        self.eta = float(hyperparam[0])
+        self.num_steps = int(hyperparam[1])
+        print(f"Set hyperparameters: eta={self.eta}, num_steps={self.num_steps}")
+
+    def get_hyperparam(self):
+        """Get current hyperparameters for APS.
+
+        Returns:
+            List of [eta, num_steps]
+        """
+        return [self.eta, self.num_steps]
+
     def setup(self, net: nn.Module, id_loader_dict, ood_loader_dict):
         """Compute class prototypes from ID training data."""
         import tqdm
@@ -889,8 +910,8 @@ class UnlearnPostprocessor(BasePostprocessor):
             self._save_class_stats(stats_cache_path)
             print(f"✓ Computed class-conditional statistics for {self.num_classes} classes")
 
-        # Compute Fisher Information Matrix for fisher mode
-        if self.unlearn_mode == "fisher":
+        # Compute Fisher Information Matrix for fisher mode or fisher_energy score
+        if self.unlearn_mode == "fisher" or self.score_type == "fisher_energy":
             fisher_cache_path = self._get_fisher_cache_path(data_root)
 
             # Try to load cached Fisher matrices
@@ -900,9 +921,9 @@ class UnlearnPostprocessor(BasePostprocessor):
                 return
 
             if self.fisher_mode == "global":
-                print("Computing global Fisher Information Matrix for fisher mode...")
+                print("Computing global Fisher Information Matrix...")
             else:
-                print("Computing Fisher Information Matrix per class for fisher mode...")
+                print("Computing Fisher Information Matrix per class...")
 
             # Use training data for Fisher computation
             if 'train' in id_loader_dict:

@@ -1,7 +1,7 @@
 postprocessor:
   name: unlearn
   postprocessor_args:
-    unlearn_mode: "fisher"  # "ascent" or "fisher"
+    unlearn_mode: "ascent"  # "ascent" or "fisher"
     eta: 1000
     num_steps: 100
     temp: 1.0
@@ -13,5 +13,12 @@ postprocessor:
       top_k: 1
       eigenvalue_mode: "participation_ratio"  # "participation_ratio", "log_trace", or "log_trace_normalized"
       prototype_aggregation: "mean"  # "mean" or "median"
-      fisher_mode: "global"  # "global" or "classwise" (for fisher unlearn_mode)
+      fisher_mode: "classwise"  # "global" or "classwise" (for fisher unlearn_mode)
       max_samples_per_class: full  # null/"full" for all samples, or integer N for max N samples per class
+
+  APS_mode: True  # Set to True to enable automatic parameter search
+
+  postprocessor_sweep:
+    eta: [1e-5, 1e-4, 1e-3]      # 3 values: learning rate for gradient updates
+    num_steps: [50, 100, 200]    # 3 values: number of unlearning iterations
+    # Total combinations: 3 × 3 = 9
