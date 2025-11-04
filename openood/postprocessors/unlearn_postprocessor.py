@@ -25,6 +25,15 @@ class UnlearnPostprocessor(BasePostprocessor):
         self.num_steps = int(self.args.get("num_steps", 100))
         self.temp = float(self.args.get("temp", 1.0))
         self.score_type = str(self.args.get("score_type", "prototype_coupling"))
+        self.fisher_loss_type = str(self.args.get("fisher_loss_type", "nll"))
+
+        # Fisher loss hyperparameters
+        self.fisher_loss_params = self.args.get("fisher_loss_params", {}) or {}
+        self.gamma = float(self.fisher_loss_params.get("gamma", 2.0))
+        self.margin = float(self.fisher_loss_params.get("margin", 0.5))
+        self.margin_temp = float(self.fisher_loss_params.get("margin_temp", 0.1))
+        self.beta = float(self.fisher_loss_params.get("beta", 0.1))
+        self.fisher_power = float(self.fisher_loss_params.get("fisher_power", 1.0))
 
         # APS support: store sweep configuration
         self.args_dict = self.config.postprocessor.postprocessor_sweep
@@ -181,20 +190,86 @@ class UnlearnPostprocessor(BasePostprocessor):
             feature: Sample feature [feature_dim]
             fc_weight: FC layer weight [num_classes, feature_dim]
             fc_bias: FC layer bias [num_classes] or None
-            target: Pseudo-label target [num_classes]
+            target: Pseudo-label target [num_classes] (only used for "nll" loss)
 
         Returns:
             energy: Fisher-weighted energy (scalar)
         """
         # Compute gradient g(x) = ∇_θ ℓ(x; θ)
         if fc_bias is not None:
-            def loss_fn(params):
-                W_inner, b_inner = params
-                out = F.linear(feature, W_inner, b_inner)
-                log_probs = F.log_softmax(out, dim=-1)
-                hard = target.argmax(dim=-1, keepdim=True)
-                loss = -torch.gather(log_probs, -1, hard).squeeze(-1)
-                return loss
+            # Define loss function based on fisher_loss_type
+            if self.fisher_loss_type == "kl_uniform":
+                def loss_fn(params):
+                    W_inner, b_inner = params
+                    out = F.linear(feature, W_inner, b_inner)
+                    probs = F.softmax(out, dim=-1)
+                    num_classes = probs.shape[-1]
+                    uniform = torch.ones_like(probs) / num_classes
+                    # KL(softmax || uniform)
+                    loss = F.kl_div(uniform.log(), probs, reduction='sum')
+                    return loss
+            elif self.fisher_loss_type == "neg_entropy":
+                def loss_fn(params):
+                    W_inner, b_inner = params
+                    out = F.linear(feature, W_inner, b_inner)
+                    log_probs = F.log_softmax(out, dim=-1)
+                    probs = F.softmax(out, dim=-1)
+                    # Negative entropy
+                    loss = torch.sum(probs * log_probs)
+                    return loss
+            elif self.fisher_loss_type == "energy":
+                def loss_fn(params):
+                    W_inner, b_inner = params
+                    out = F.linear(feature, W_inner, b_inner)
+                    # Negative energy (negative logsumexp)
+                    loss = -torch.logsumexp(out, dim=-1)
+                    return loss
+            elif self.fisher_loss_type == "focal":
+                def loss_fn(params):
+                    W_inner, b_inner = params
+                    out = F.linear(feature, W_inner, b_inner)
+                    probs = F.softmax(out, dim=-1)
+                    hard = probs.argmax(dim=-1, keepdim=True)
+                    p_target = torch.gather(probs, -1, hard).squeeze(-1)
+                    # Focal loss: -(1 - p_y*)^gamma * log(p_y*)
+                    focal_weight = (1.0 - p_target) ** self.gamma
+                    loss = -focal_weight * torch.log(p_target + 1e-8)
+                    return loss
+            elif self.fisher_loss_type == "margin":
+                def loss_fn(params):
+                    W_inner, b_inner = params
+                    out = F.linear(feature, W_inner, b_inner)
+                    # Get top-2 logits (vmap-safe using sort)
+                    sorted_logits, _ = torch.sort(out, dim=-1, descending=True)
+                    logit_top1 = sorted_logits[0]
+                    logit_top2 = sorted_logits[1]
+                    # Margin gap: (top1 - top2 - margin)
+                    margin_gap = logit_top1 - logit_top2 - self.margin
+                    # Smooth hinge: -log(sigmoid(gap / temp))
+                    loss = -torch.log(torch.sigmoid(margin_gap / self.margin_temp) + 1e-8)
+                    return loss
+            elif self.fisher_loss_type == "conf_penalty":
+                def loss_fn(params):
+                    W_inner, b_inner = params
+                    out = F.linear(feature, W_inner, b_inner)
+                    probs = F.softmax(out, dim=-1)
+                    log_probs = F.log_softmax(out, dim=-1)
+                    # NLL part
+                    hard = probs.argmax(dim=-1, keepdim=True)
+                    nll = -torch.gather(log_probs, -1, hard).squeeze(-1)
+                    # Entropy part (negative for penalty)
+                    entropy = -torch.sum(probs * log_probs, dim=-1)
+                    # Confidence-penalized: NLL - beta * entropy
+                    loss = nll - self.beta * entropy
+                    return loss
+            else:  # "nll" (default, original implementation)
+                def loss_fn(params):
+                    W_inner, b_inner = params
+                    out = F.linear(feature, W_inner, b_inner)
+                    log_probs = F.log_softmax(out, dim=-1)
+                    hard = target.argmax(dim=-1, keepdim=True)
+                    loss = -torch.gather(log_probs, -1, hard).squeeze(-1)
+                    return loss
 
             grads = grad(loss_fn)((fc_weight, fc_bias))
             grad_W, grad_b = grads[0], grads[1]
@@ -218,12 +293,72 @@ class UnlearnPostprocessor(BasePostprocessor):
             F_vec = torch.cat([fisher_W.flatten(), fisher_b.flatten()])  # [D]
 
         else:
-            def loss_fn(W_inner):
-                out = F.linear(feature, W_inner)
-                log_probs = F.log_softmax(out, dim=-1)
-                hard = target.argmax(dim=-1, keepdim=True)
-                loss = -torch.gather(log_probs, -1, hard).squeeze(-1)
-                return loss
+            # Define loss function based on fisher_loss_type (without bias)
+            if self.fisher_loss_type == "kl_uniform":
+                def loss_fn(W_inner):
+                    out = F.linear(feature, W_inner)
+                    probs = F.softmax(out, dim=-1)
+                    num_classes = probs.shape[-1]
+                    uniform = torch.ones_like(probs) / num_classes
+                    # KL(softmax || uniform)
+                    loss = F.kl_div(uniform.log(), probs, reduction='sum')
+                    return loss
+            elif self.fisher_loss_type == "neg_entropy":
+                def loss_fn(W_inner):
+                    out = F.linear(feature, W_inner)
+                    log_probs = F.log_softmax(out, dim=-1)
+                    probs = F.softmax(out, dim=-1)
+                    # Negative entropy
+                    loss = torch.sum(probs * log_probs)
+                    return loss
+            elif self.fisher_loss_type == "energy":
+                def loss_fn(W_inner):
+                    out = F.linear(feature, W_inner)
+                    # Negative energy (negative logsumexp)
+                    loss = -torch.logsumexp(out, dim=-1)
+                    return loss
+            elif self.fisher_loss_type == "focal":
+                def loss_fn(W_inner):
+                    out = F.linear(feature, W_inner)
+                    probs = F.softmax(out, dim=-1)
+                    hard = probs.argmax(dim=-1, keepdim=True)
+                    p_target = torch.gather(probs, -1, hard).squeeze(-1)
+                    # Focal loss: -(1 - p_y*)^gamma * log(p_y*)
+                    focal_weight = (1.0 - p_target) ** self.gamma
+                    loss = -focal_weight * torch.log(p_target + 1e-8)
+                    return loss
+            elif self.fisher_loss_type == "margin":
+                def loss_fn(W_inner):
+                    out = F.linear(feature, W_inner)
+                    # Get top-2 logits (vmap-safe using sort)
+                    sorted_logits, _ = torch.sort(out, dim=-1, descending=True)
+                    logit_top1 = sorted_logits[0]
+                    logit_top2 = sorted_logits[1]
+                    # Margin gap: (top1 - top2 - margin)
+                    margin_gap = logit_top1 - logit_top2 - self.margin
+                    # Smooth hinge: -log(sigmoid(gap / temp))
+                    loss = -torch.log(torch.sigmoid(margin_gap / self.margin_temp) + 1e-8)
+                    return loss
+            elif self.fisher_loss_type == "conf_penalty":
+                def loss_fn(W_inner):
+                    out = F.linear(feature, W_inner)
+                    probs = F.softmax(out, dim=-1)
+                    log_probs = F.log_softmax(out, dim=-1)
+                    # NLL part
+                    hard = probs.argmax(dim=-1, keepdim=True)
+                    nll = -torch.gather(log_probs, -1, hard).squeeze(-1)
+                    # Entropy part (negative for penalty)
+                    entropy = -torch.sum(probs * log_probs, dim=-1)
+                    # Confidence-penalized: NLL - beta * entropy
+                    loss = nll - self.beta * entropy
+                    return loss
+            else:  # "nll" (default, original implementation)
+                def loss_fn(W_inner):
+                    out = F.linear(feature, W_inner)
+                    log_probs = F.log_softmax(out, dim=-1)
+                    hard = target.argmax(dim=-1, keepdim=True)
+                    loss = -torch.gather(log_probs, -1, hard).squeeze(-1)
+                    return loss
 
             grad_W = grad(loss_fn)(fc_weight)
             g_x = grad_W.flatten()  # [D]
@@ -239,10 +374,11 @@ class UnlearnPostprocessor(BasePostprocessor):
 
             F_vec = fisher_W.flatten()  # [D]
 
-        # Compute S(x) = g(x)^T F^{-1} g(x)
-        # Use element-wise division as approximation: g^T F^{-1} g ≈ sum(g^2 / F)
+        # Compute S(x) = g(x)^T F^{-p} g(x)
+        # Use element-wise division as approximation: g^T F^{-p} g ≈ sum(g^2 / F^p)
         # This avoids expensive matrix inversion and is equivalent when F is diagonal
-        energy = torch.sum((g_x ** 2) / (F_vec + 1e-8))
+        # fisher_power: 1.0 = standard F^{-1}, 2.0 = F^{-2}, etc.
+        energy = torch.sum((g_x ** 2) / ((F_vec + 1e-8) ** self.fisher_power))
 
         return energy
 
