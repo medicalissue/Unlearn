@@ -1,4 +1,5 @@
 from typing import Any
+import os
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -42,6 +43,35 @@ class UnlearnPostprocessor(BasePostprocessor):
     def _pseudo_target(self, logit_row: torch.Tensor) -> torch.Tensor:
         """Compute soft pseudo-label target with temperature."""
         return F.softmax(logit_row / self.temp, dim=-1)
+
+    def _get_prototype_cache_path(self, data_root: str) -> str:
+        """Get the path to the cached prototype file."""
+        cache_dir = os.path.join(data_root, 'prototypes')
+        os.makedirs(cache_dir, exist_ok=True)
+        filename = f"{self.config.dataset.name}_prototypes_{self.prototype_aggregation}.pt"
+        return os.path.join(cache_dir, filename)
+
+    def _save_prototypes(self, path: str):
+        """Save prototypes to disk."""
+        torch.save({
+            'prototypes': self.prototypes.cpu(),
+            'dataset_name': self.config.dataset.name,
+            'num_classes': self.num_classes,
+            'aggregation_method': self.prototype_aggregation,
+        }, path)
+        print(f"✓ Saved prototypes to {path}")
+
+    def _load_prototypes(self, path: str) -> torch.Tensor:
+        """Load prototypes from disk."""
+        checkpoint = torch.load(path)
+        # Verify metadata
+        assert checkpoint['dataset_name'] == self.config.dataset.name, \
+            f"Dataset mismatch: {checkpoint['dataset_name']} vs {self.config.dataset.name}"
+        assert checkpoint['num_classes'] == self.num_classes, \
+            f"Number of classes mismatch: {checkpoint['num_classes']} vs {self.num_classes}"
+        assert checkpoint['aggregation_method'] == self.prototype_aggregation, \
+            f"Aggregation method mismatch: {checkpoint['aggregation_method']} vs {self.prototype_aggregation}"
+        return checkpoint['prototypes'].cuda()
 
     def _get_fc_params(self, net):
         """Extract final FC layer parameters."""
@@ -228,6 +258,20 @@ class UnlearnPostprocessor(BasePostprocessor):
         import tqdm
         net.eval()
 
+        # Determine data root path
+        if hasattr(self.config.dataset, 'data_root') and self.config.dataset.data_root is not None:
+            data_root = self.config.dataset.data_root
+        else:
+            data_root = './data'
+
+        # Try to load cached prototypes
+        cache_path = self._get_prototype_cache_path(data_root)
+        if os.path.exists(cache_path):
+            print(f"Loading cached prototypes from {cache_path}")
+            self.prototypes = self._load_prototypes(cache_path)
+            print(f"✓ Loaded {self.num_classes} class prototypes using {self.prototype_aggregation}")
+            return
+
         # Use train data if available, otherwise fall back to val data
         if 'train' in id_loader_dict:
             data_loader = id_loader_dict['train']
@@ -256,25 +300,47 @@ class UnlearnPostprocessor(BasePostprocessor):
         all_features = torch.cat(all_features, dim=0)  # [N, feat_dim]
         all_labels = torch.cat(all_labels, dim=0)  # [N]
 
-        # Compute prototypes by class
-        prototypes = []
-        for c in range(self.num_classes):
-            mask = (all_labels == c)
-            if mask.sum() > 0:
-                class_features = all_features[mask]
-                # Aggregate based on config: mean or median
-                if self.prototype_aggregation == "mean":
-                    prototype = class_features.mean(dim=0)
-                else:  # median (default)
-                    prototype = torch.median(class_features, dim=0).values
-                print(f"  Class {c}: {mask.sum().item()} samples")
-            else:
-                # Handle empty classes
-                print(f"  Warning: No samples found for class {c}")
-                prototype = torch.zeros(all_features.shape[1], device=all_features.device)
-            prototypes.append(prototype)
+        # Compute prototypes using vectorized operations (parallel)
+        if self.prototype_aggregation == "mean":
+            # Fully vectorized mean computation
+            print("Computing prototypes using vectorized mean...")
+            # Create binary masks for all classes at once [num_classes, N]
+            masks = torch.stack([all_labels == c for c in range(self.num_classes)])  # [C, N]
 
-        self.prototypes = torch.stack(prototypes)
+            # Broadcast and compute weighted sum: [C, N, 1] * [1, N, D] = [C, N, D]
+            class_features_masked = masks.unsqueeze(-1).float() * all_features.unsqueeze(0)  # [C, N, D]
+
+            # Sum over samples and divide by count
+            counts = masks.sum(dim=1, keepdim=True).float()  # [C, 1]
+            prototypes = class_features_masked.sum(dim=1) / (counts + 1e-10)  # [C, D]
+
+            # Print sample counts
+            for c in range(self.num_classes):
+                count = int(counts[c].item())
+                if count > 0:
+                    print(f"  Class {c}: {count} samples")
+                else:
+                    print(f"  Warning: No samples found for class {c}")
+
+            self.prototypes = prototypes
+        else:
+            # Median computation (keep loop-based for simplicity)
+            print("Computing prototypes using median...")
+            prototypes = []
+            for c in range(self.num_classes):
+                mask = (all_labels == c)
+                if mask.sum() > 0:
+                    class_features = all_features[mask]
+                    prototype = torch.median(class_features, dim=0).values
+                    print(f"  Class {c}: {mask.sum().item()} samples")
+                else:
+                    print(f"  Warning: No samples found for class {c}")
+                    prototype = torch.zeros(all_features.shape[1], device=all_features.device)
+                prototypes.append(prototype)
+            self.prototypes = torch.stack(prototypes)
+
+        # Save prototypes for future use
+        self._save_prototypes(cache_path)
         print(f"✓ Computed {self.num_classes} class prototypes using {self.prototype_aggregation}")
 
     def postprocess(self, net: nn.Module, data: Any):
