@@ -9,6 +9,6 @@ postprocessor:
     score_type: "prototype_coupling"
 
     prototype_coupling_config:
-      use_all_prototypes: false
+      use_all_prototypes: true
       top_k: 5
       eigenvalue_mode: "participation_ratio"
