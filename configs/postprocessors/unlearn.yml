@@ -1,32 +1,4 @@
 postprocessor:
   name: unlearn
   postprocessor_args:
-    unlearn_mode: "ascent"  # "ascent" or "fisher"
-    eta: 1000
-    num_steps: 0
-    temp: 1.0
-
-    score_type: "fisher_energy"  # "prototype_coupling", "energy_growth_rate", or "fisher_energy"
-    fisher_loss_type: "nll"  # Loss function for fisher_energy: "nll", "kl_uniform", "neg_entropy", "energy", "focal", "margin", "conf_penalty"
-
-    fisher_loss_params:
-      gamma: 5.0        # focal loss: focusing parameter
-      margin: 0.1       # margin loss: margin threshold
-      margin_temp: 0.1  # margin loss: temperature for smooth hinge
-      beta: 0.2         # conf_penalty: entropy penalty weight
-      fisher_power: 8.0 # Fisher energy power: S(x) = g^T F^{-p} g (1.0=standard, 2.0=F^{-2})
-
-    prototype_coupling_config:
-      use_all_prototypes: true
-      top_k: 1
-      eigenvalue_mode: "participation_ratio"  # "participation_ratio", "log_trace", or "log_trace_normalized"
-      prototype_aggregation: "mean"  # "mean" or "median"
-      fisher_mode: "global"  # "global" or "classwise" (for fisher unlearn_mode)
-      max_samples_per_class: full  # null/"full" for all samples, or integer N for max N samples per class
-
-  APS_mode: False  # Set to True to enable automatic parameter search
-
-  postprocessor_sweep:
-    eta: [1e-5, 1e-4, 1e-3]      # 3 values: learning rate for gradient updates
-    num_steps: [50, 100, 200]    # 3 values: number of unlearning iterations
-    # Total combinations: 3 × 3 = 9
+    fisher_power: 9.0  # Fisher energy power: S(x) = g^T F^{-p} g

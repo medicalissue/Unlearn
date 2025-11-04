@@ -38,7 +38,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--arch',
                     default='resnet50',
                     choices=['resnet50', 'swin-t', 'vit-b-16', 'regnet'])
-parser.add_argument('--tvs-version', default=1, choices=[1, 2])
+parser.add_argument('--tvs-version', type=int, default=1, choices=[1, 2])
 parser.add_argument('--ckpt-path', default=None)
 parser.add_argument('--tvs-pretrained', action='store_true')
 parser.add_argument('--postprocessor', default='msp')
