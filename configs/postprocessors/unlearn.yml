@@ -14,7 +14,7 @@ postprocessor:
       margin: 0.1       # margin loss: margin threshold
       margin_temp: 0.1  # margin loss: temperature for smooth hinge
       beta: 0.2         # conf_penalty: entropy penalty weight
-      fisher_power: 7.0 # Fisher energy power: S(x) = g^T F^{-p} g (1.0=standard, 2.0=F^{-2})
+      fisher_power: 8.0 # Fisher energy power: S(x) = g^T F^{-p} g (1.0=standard, 2.0=F^{-2})
 
     prototype_coupling_config:
       use_all_prototypes: true
