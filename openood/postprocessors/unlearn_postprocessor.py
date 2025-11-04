@@ -41,6 +41,9 @@ class UnlearnPostprocessor(BasePostprocessor):
         self.w_G  = float(wcfg.get("g",       0.5))
         self.w_ratio = float(wcfg.get("grad_ratio", 0.5))
         self.w_feature = float(wcfg.get("feature", 1.0))  # Feature gradient weight
+        self.w_prototype_coupling = float(wcfg.get("prototype_coupling", 1.0))  # Prototype coupling weight
+        self.w_gradient_alignment = float(wcfg.get("gradient_alignment", 1.0))  # Gradient alignment weight
+        self.w_confidence_entropy = float(wcfg.get("confidence_entropy", 1.0))  # Confidence-entropy weight
 
         # Feature-aware gradient options
         self.use_feature_grad = bool(self.args.get("use_feature_grad", True))  # Enable feature gradient computation
@@ -161,6 +164,47 @@ class UnlearnPostprocessor(BasePostprocessor):
 
         # Feature importance weights (for weighted_l1, initialized in setup)
         self.feature_importance = None  # [feature_dim] tensor
+
+        # Cross-Prototype Gradient Coupling settings
+        pc_cfg = self.args.get("prototype_coupling_config", {}) or {}
+        self.pc_use_all_prototypes: bool = bool(pc_cfg.get("use_all_prototypes", True))
+        self.pc_top_k: int = int(pc_cfg.get("top_k", 5))
+        self.pc_eigenvalue_mode: str = str(pc_cfg.get("eigenvalue_mode", "concentration")).lower()
+        self.pc_gpr_q: float = float(pc_cfg.get("gpr_q", 2.0))  # For generalized_pr mode
+
+        # Magnitude-weighted PR settings
+        mwpr_cfg = pc_cfg.get("magnitude_weighted_pr_config", {}) or {}
+        self.pc_mwpr_q: float = float(mwpr_cfg.get("q", 2.0))
+        self.pc_mwpr_combine_mode: str = str(mwpr_cfg.get("combine_mode", "multiply")).lower()
+
+        # Spectrum stats settings
+        spectrum_cfg = pc_cfg.get("spectrum_stats_config", {}) or {}
+        spectrum_weights = spectrum_cfg.get("weights", {}) or {}
+        self.pc_spectrum_w_total_energy: float = float(spectrum_weights.get("total_energy", 1.0))
+        self.pc_spectrum_w_max_eig: float = float(spectrum_weights.get("max_eigenvalue", 0.5))
+        self.pc_spectrum_w_gini: float = float(spectrum_weights.get("gini", 0.3))
+        self.pc_spectrum_w_variance: float = float(spectrum_weights.get("variance", 0.2))
+
+        # Dual metric settings
+        dual_cfg = pc_cfg.get("dual_metric_config", {}) or {}
+        self.pc_dual_alpha: float = float(dual_cfg.get("alpha", 0.7))
+        self.pc_dual_beta: float = float(dual_cfg.get("beta", 0.3))
+
+        # Gradient Alignment settings
+        ga_cfg = self.args.get("gradient_alignment_config", {}) or {}
+        self.ga_normalize_grads: bool = bool(ga_cfg.get("normalize_grads", True))
+        self.ga_use_absolute: bool = bool(ga_cfg.get("use_absolute", False))
+
+        # Trajectory-based OOD detection settings
+        traj_cfg = self.args.get("trajectory_config", {}) or {}
+        self.traj_enabled: bool = bool(traj_cfg.get("enabled", False))
+
+        # Trajectory component weights
+        traj_weights = traj_cfg.get("weights", {}) or {}
+        self.traj_w_energy: float = float(traj_weights.get("energy", 1.0))
+        self.traj_w_weight: float = float(traj_weights.get("weight", 1.0))
+        self.traj_w_gradient: float = float(traj_weights.get("gradient", 1.0))
+        self.traj_w_coupling: float = float(traj_weights.get("coupling", 1.0))
 
         # Hyperparameter sweep configuration
         self.args_dict = self.config.postprocessor.postprocessor_sweep
@@ -952,6 +996,132 @@ class UnlearnPostprocessor(BasePostprocessor):
             print(f"  Warning: Unknown RBF sigma mode '{mode}', using auto")
             return self._compute_rbf_sigma(net, id_loader_dict, "auto")
 
+    def _compute_coupling_metric(self, W_base, b_base, W_current, b_current,
+                                  prototype_tensor, proto_indices, device):
+        """Compute coupling matrix eigenvalue metric for given FC parameters.
+
+        This is the core logic extracted from prototype_coupling score type,
+        allowing us to compute the metric at any point during unlearning trajectory.
+
+        Args:
+            W_base: Base FC weight [num_classes, feature_dim]
+            b_base: Base FC bias [num_classes] or None
+            W_current: Current FC weight [num_classes, feature_dim]
+            b_current: Current FC bias [num_classes] or None
+            prototype_tensor: Class prototypes [num_classes, feature_dim]
+            proto_indices: Indices of prototypes to use [K]
+            device: torch device
+
+        Returns:
+            metric: Eigenvalue metric value (scalar tensor)
+        """
+        num_classes = prototype_tensor.shape[0]
+
+        # Collect FULL gradient vectors for all selected prototypes (before and after)
+        grad_vecs_base = []
+        grad_vecs_current = []
+
+        for i in range(proto_indices.shape[0]):
+            # Get prototype index (vmap-safe: use one-hot indexing)
+            idx = proto_indices[i]
+            one_hot_i = F.one_hot(idx, num_classes=num_classes).float()
+            proto_feature_i = torch.matmul(one_hot_i, prototype_tensor)
+
+            # Compute FULL gradient on BASE FC with this prototype
+            if b_base is not None:
+                def proto_loss_i_base(params):
+                    W_inner, b_inner = params
+                    out = F.linear(proto_feature_i, W_inner, b_inner)
+                    log_probs = F.log_softmax(out, dim=-1)
+                    hard = idx.unsqueeze(-1)
+                    loss = -torch.gather(log_probs, -1, hard).squeeze(-1)
+                    return loss
+                grads_i_base = grad(proto_loss_i_base)((W_base, b_base))
+                grad_vec_i_base = torch.cat([grads_i_base[0].flatten(), grads_i_base[1].flatten()])
+            else:
+                def proto_loss_i_base(W_inner):
+                    out = F.linear(proto_feature_i, W_inner)
+                    log_probs = F.log_softmax(out, dim=-1)
+                    hard = idx.unsqueeze(-1)
+                    loss = -torch.gather(log_probs, -1, hard).squeeze(-1)
+                    return loss
+                grad_W_i_base = grad(proto_loss_i_base)(W_base)
+                grad_vec_i_base = grad_W_i_base.flatten()
+
+            # Compute FULL gradient on CURRENT FC with this prototype
+            if b_current is not None:
+                def proto_loss_i_current(params):
+                    W_inner, b_inner = params
+                    out = F.linear(proto_feature_i, W_inner, b_inner)
+                    log_probs = F.log_softmax(out, dim=-1)
+                    hard = idx.unsqueeze(-1)
+                    loss = -torch.gather(log_probs, -1, hard).squeeze(-1)
+                    return loss
+                grads_i_current = grad(proto_loss_i_current)((W_current, b_current))
+                grad_vec_i_current = torch.cat([grads_i_current[0].flatten(), grads_i_current[1].flatten()])
+            else:
+                def proto_loss_i_current(W_inner):
+                    out = F.linear(proto_feature_i, W_inner)
+                    log_probs = F.log_softmax(out, dim=-1)
+                    hard = idx.unsqueeze(-1)
+                    loss = -torch.gather(log_probs, -1, hard).squeeze(-1)
+                    return loss
+                grad_W_i_current = grad(proto_loss_i_current)(W_current)
+                grad_vec_i_current = grad_W_i_current.flatten()
+
+            grad_vecs_base.append(grad_vec_i_base)
+            grad_vecs_current.append(grad_vec_i_current)
+
+        # Stack into matrices [num_prototypes, param_size]
+        grad_vecs_base = torch.stack(grad_vecs_base)  # [K, D]
+        grad_vecs_current = torch.stack(grad_vecs_current)  # [K, D]
+
+        # Compute gradient change vectors [num_prototypes, param_size]
+        delta_grads = grad_vecs_current - grad_vecs_base  # [K, D]
+
+        # Build coupling matrix: C = delta_grads @ delta_grads.T [K, K]
+        coupling_matrix = torch.matmul(delta_grads, delta_grads.T)  # [K, K]
+
+        # Compute metric based on eigenvalue mode
+        # (Using the same logic as prototype_coupling score type)
+        if self.pc_eigenvalue_mode == "participation_ratio":
+            trace_C = torch.trace(coupling_matrix)
+            trace_C2 = torch.trace(torch.matmul(coupling_matrix, coupling_matrix))
+            pr = (trace_C ** 2) / (trace_C2 + 1e-10)
+            metric = pr  # Not negated here - we'll handle sign in caller
+
+        elif self.pc_eigenvalue_mode == "spectral_entropy":
+            eigenvalues = torch.linalg.eigvalsh(coupling_matrix)
+            abs_eigs = torch.abs(eigenvalues)
+            eig_sum = abs_eigs.sum() + 1e-10
+            eig_probs = abs_eigs / eig_sum
+            entropy = -(eig_probs * torch.log(eig_probs + 1e-10)).sum()
+            metric = entropy  # Not negated here
+
+        elif self.pc_eigenvalue_mode == "gini_coefficient":
+            grad_norms = torch.norm(delta_grads, p=2, dim=1)
+            K = grad_norms.shape[0]
+            diff_matrix = torch.abs(grad_norms.unsqueeze(0) - grad_norms.unsqueeze(1))
+            mean_grad = grad_norms.mean() + 1e-10
+            gini = diff_matrix.sum() / (2 * K * K * mean_grad)
+            metric = gini
+
+        elif self.pc_eigenvalue_mode == "max_mean_ratio":
+            grad_norms = torch.norm(delta_grads, p=2, dim=1)
+            max_norm = grad_norms.max()
+            mean_norm = grad_norms.mean() + 1e-10
+            ratio = max_norm / mean_norm
+            metric = ratio
+
+        else:
+            # Default: participation ratio
+            trace_C = torch.trace(coupling_matrix)
+            trace_C2 = torch.matmul(coupling_matrix, coupling_matrix).trace()
+            pr = (trace_C ** 2) / (trace_C2 + 1e-10)
+            metric = pr
+
+        return metric
+
     def _get_fc_params(self, net):
         """FC layer의 파라미터만 추출"""
         # 마지막 FC layer 파라미터 추출
@@ -1085,6 +1255,47 @@ class UnlearnPostprocessor(BasePostprocessor):
                     fisher_W_mean = fisher_W.mean()
                     fisher_W = fisher_W / (fisher_W_mean + self.fisher_eps)
 
+        # Trajectory 통계 초기화 (for trajectory-based score types)
+        # Energy trajectory
+        E_prev = self._energy(logits_orig)
+        dE_prev = torch.tensor(0.0, device=device)
+        sum_abs_ddE = torch.tensor(0.0, device=device)
+        sum_ddE_sq = torch.tensor(0.0, device=device)
+
+        # Weight update trajectory
+        W_prev = fc_weight
+        delta_W_prev = None
+        sum_delta_norm = torch.tensor(0.0, device=device)
+        sum_direction_cos = torch.tensor(0.0, device=device)
+        first_delta_norm = None
+
+        # Gradient magnitude trajectory
+        g_0 = gradnorm_o if self.use_gradnorm else torch.tensor(0.0, device=device)
+        g_final = torch.tensor(0.0, device=device)
+
+        # Coupling evolution trajectory (FULL version - per-step coupling computation)
+        # Determine proto indices once (reuse for all steps)
+        proto_indices = None
+        if prototype_tensor is not None:
+            num_classes = prototype_tensor.shape[0]
+            if self.pc_use_all_prototypes:
+                # Use all prototypes (limit to 10 for efficiency)
+                proto_indices = torch.arange(min(num_classes, 10), device=device)
+            else:
+                # Use top-K predicted classes
+                _, top_k_indices = torch.topk(logits_orig, k=min(self.pc_top_k, num_classes), dim=-1)
+                proto_indices = top_k_indices[:min(10, top_k_indices.shape[0])]
+
+        # Coupling metric trajectory statistics
+        coupling_metric_prev = None
+        sum_coupling_metric = torch.tensor(0.0, device=device)
+        sum_coupling_metric_sq = torch.tensor(0.0, device=device)
+        sum_abs_coupling_diff = torch.tensor(0.0, device=device)
+        coupling_step_count = 0
+
+        # Counters
+        traj_step_count = 0
+
         # Unlearning 수행
         target_final = target  # 마지막 target 저장용
         for step in range(max(1, self.num_steps)):
@@ -1169,6 +1380,73 @@ class UnlearnPostprocessor(BasePostprocessor):
                 else:
                     # Gradient ascent
                     W = W + eta_current * grad_W_guided
+
+            # Trajectory 통계 누적 (end of each unlearning step)
+            traj_step_count = traj_step_count + 1
+
+            # [1] Energy trajectory
+            with torch.no_grad():
+                if b is not None:
+                    logits_curr = F.linear(feature, W, b)
+                else:
+                    logits_curr = F.linear(feature, W)
+                E_curr = self._energy(logits_curr)
+                dE_curr = E_curr - E_prev
+                ddE = dE_curr - dE_prev
+                sum_abs_ddE = sum_abs_ddE + torch.abs(ddE)
+                sum_ddE_sq = sum_ddE_sq + ddE ** 2
+                E_prev = E_curr
+                dE_prev = dE_curr
+
+            # [2] Weight update trajectory
+            delta_W_curr = W - W_prev
+            delta_norm_curr = torch.norm(delta_W_curr, p='fro')
+            sum_delta_norm = sum_delta_norm + delta_norm_curr
+
+            # Track first delta norm
+            if step == 0:
+                first_delta_norm = delta_norm_curr
+
+            # Direction consistency (skip first step)
+            if delta_W_prev is not None:
+                # Cosine similarity between consecutive weight updates
+                cos_sim = torch.sum(delta_W_curr * delta_W_prev) / (
+                    torch.norm(delta_W_curr) * torch.norm(delta_W_prev) + 1e-10
+                )
+                sum_direction_cos = sum_direction_cos + cos_sim
+
+            delta_W_prev = delta_W_curr
+            W_prev = W
+
+            # [3] Gradient magnitude (already stored in grads)
+            if b is not None:
+                g_final = torch.abs(grads[0]).sum() + torch.abs(grads[1]).sum()
+            else:
+                g_final = torch.abs(grad_W).sum()
+
+            # [4] Coupling evolution (FULL version - per-step coupling metric computation)
+            # Only compute if needed for coupling-related score types
+            if (self.score_type in ["coupling_evolution", "trajectory_combo"] and
+                prototype_tensor is not None and proto_indices is not None):
+                # Compute coupling metric at current step
+                coupling_metric_curr = self._compute_coupling_metric(
+                    fc_weight, fc_bias,  # Base (original)
+                    W, b,  # Current (after this step)
+                    prototype_tensor,
+                    proto_indices,
+                    device
+                )
+
+                # Update coupling statistics
+                sum_coupling_metric = sum_coupling_metric + coupling_metric_curr
+                sum_coupling_metric_sq = sum_coupling_metric_sq + coupling_metric_curr ** 2
+
+                # Track step-to-step changes
+                if coupling_metric_prev is not None:
+                    sum_abs_coupling_diff = sum_abs_coupling_diff + torch.abs(coupling_metric_curr - coupling_metric_prev)
+
+                coupling_metric_prev = coupling_metric_curr
+                coupling_step_count = coupling_step_count + 1
 
         # Phase 2.1: EMA smoothing of final weights
         W, b = self._ema_update(W, b, fc_weight, fc_bias)
@@ -1485,6 +1763,545 @@ class UnlearnPostprocessor(BasePostprocessor):
                     score = gradnorm_val - gradnorm_o
                 else:
                     score = torch.tensor(0.0, device=device)
+        elif self.score_type == "prototype_coupling":
+            # Cross-Prototype Gradient Coupling (IMPROVED)
+            # Uses FULL gradient vectors to build true coupling matrix
+            # Measures eigenvalue concentration, participation ratio, or gradient alignment
+            # CORRECTED: ID samples have DIFFUSE changes (stable, uniform), OOD have CONCENTRATED changes
+            # ID: diffuse changes (high participation ratio, high alignment) → high score
+            # OOD: concentrated changes (low participation ratio, low alignment) → low score
+            if prototype_tensor is not None:
+                num_classes = prototype_tensor.shape[0]
+                pseudo_class = target.argmax(dim=-1)
+
+                # Determine which prototypes to use
+                if self.pc_use_all_prototypes:
+                    # Use all prototypes
+                    proto_indices = torch.arange(num_classes, device=device)
+                else:
+                    # Use top-K predicted classes (based on original logits)
+                    _, top_k_indices = torch.topk(logits_orig, k=min(self.pc_top_k, num_classes), dim=-1)
+                    proto_indices = top_k_indices
+
+                # Collect FULL gradient vectors for all selected prototypes (before and after)
+                grad_vecs_orig = []
+                grad_vecs_after = []
+
+                for i in range(proto_indices.shape[0]):
+                    # Get prototype index (vmap-safe: use one-hot indexing)
+                    idx = proto_indices[i] if self.pc_use_all_prototypes else proto_indices[i]
+                    one_hot_i = F.one_hot(idx, num_classes=num_classes).float()
+                    proto_feature_i = torch.matmul(one_hot_i, prototype_tensor)
+
+                    # Compute FULL gradient on ORIGINAL FC with this prototype
+                    if b is not None:
+                        def proto_loss_i_orig(params):
+                            W_inner, b_inner = params
+                            out = F.linear(proto_feature_i, W_inner, b_inner)
+                            log_probs = F.log_softmax(out, dim=-1)
+                            hard = idx.unsqueeze(-1)
+                            loss = -torch.gather(log_probs, -1, hard).squeeze(-1)
+                            return loss
+                        grads_i_orig = grad(proto_loss_i_orig)((fc_weight, fc_bias))
+                        # Flatten to single vector [param_size]
+                        grad_vec_i_orig = torch.cat([grads_i_orig[0].flatten(), grads_i_orig[1].flatten()])
+                    else:
+                        def proto_loss_i_orig(W_inner):
+                            out = F.linear(proto_feature_i, W_inner)
+                            log_probs = F.log_softmax(out, dim=-1)
+                            hard = idx.unsqueeze(-1)
+                            loss = -torch.gather(log_probs, -1, hard).squeeze(-1)
+                            return loss
+                        grad_W_i_orig = grad(proto_loss_i_orig)(fc_weight)
+                        grad_vec_i_orig = grad_W_i_orig.flatten()
+
+                    # Compute FULL gradient on UPDATED FC with this prototype
+                    if b is not None:
+                        def proto_loss_i_after(params):
+                            W_inner, b_inner = params
+                            out = F.linear(proto_feature_i, W_inner, b_inner)
+                            log_probs = F.log_softmax(out, dim=-1)
+                            hard = idx.unsqueeze(-1)
+                            loss = -torch.gather(log_probs, -1, hard).squeeze(-1)
+                            return loss
+                        grads_i_after = grad(proto_loss_i_after)((W, b))
+                        # Flatten to single vector [param_size]
+                        grad_vec_i_after = torch.cat([grads_i_after[0].flatten(), grads_i_after[1].flatten()])
+                    else:
+                        def proto_loss_i_after(W_inner):
+                            out = F.linear(proto_feature_i, W_inner)
+                            log_probs = F.log_softmax(out, dim=-1)
+                            hard = idx.unsqueeze(-1)
+                            loss = -torch.gather(log_probs, -1, hard).squeeze(-1)
+                            return loss
+                        grad_W_i_after = grad(proto_loss_i_after)(W)
+                        grad_vec_i_after = grad_W_i_after.flatten()
+
+                    grad_vecs_orig.append(grad_vec_i_orig)
+                    grad_vecs_after.append(grad_vec_i_after)
+
+                # Stack into matrices [num_prototypes, param_size]
+                grad_vecs_orig = torch.stack(grad_vecs_orig)  # [K, D]
+                grad_vecs_after = torch.stack(grad_vecs_after)  # [K, D]
+
+                # Compute gradient change vectors [num_prototypes, param_size]
+                delta_grads = grad_vecs_after - grad_vecs_orig  # [K, D]
+
+                # Build coupling matrix: C = delta_grads @ delta_grads.T [K, K]
+                coupling_matrix = torch.matmul(delta_grads, delta_grads.T)  # [K, K]
+
+                # Compute score based on eigenvalue mode
+                if self.pc_eigenvalue_mode == "participation_ratio":
+                    # Participation Ratio: PR = (trace(C))^2 / trace(C^2)
+                    # Measures effective number of participating prototypes
+                    # CORRECTED: ID samples couple strongly with specific prototype (LOW PR)
+                    #            OOD samples couple weakly with many prototypes (HIGH PR)
+                    # ID: low PR (strongly coupled to specific prototype) → high score (NEGATE)
+                    # OOD: high PR (weakly coupled to many prototypes) → low score (NEGATE)
+                    trace_C = torch.trace(coupling_matrix)
+                    trace_C2 = torch.trace(torch.matmul(coupling_matrix, coupling_matrix))
+                    # Prevent division by zero
+                    pr = (trace_C ** 2) / (trace_C2 + 1e-10)
+                    score = -pr  # NEGATED: Lower PR = higher score (ID)
+
+                elif self.pc_eigenvalue_mode == "direction_alignment":
+                    # Gradient Direction Alignment
+                    # Measures average cosine similarity between all pairs of gradient changes
+                    # ID: high alignment (all prototypes change in similar directions) → high score
+                    # OOD: low alignment (prototypes change in different directions) → low score
+
+                    # Normalize gradient change vectors [K, D]
+                    delta_grads_norm = delta_grads / (torch.norm(delta_grads, p=2, dim=1, keepdim=True) + 1e-10)
+
+                    # Correlation matrix: normalized coupling [K, K]
+                    correlation_matrix = torch.matmul(delta_grads_norm, delta_grads_norm.T)
+
+                    # Average off-diagonal elements (exclude diagonal which is always 1.0)
+                    # NOTE: Assume K > 1 (typically K = num_classes >= 2)
+                    K = correlation_matrix.shape[0]
+                    total_sum = correlation_matrix.sum()
+                    diagonal_sum = torch.trace(correlation_matrix)
+                    off_diagonal_sum = total_sum - diagonal_sum
+                    avg_alignment = off_diagonal_sum / (K * (K - 1) + 1e-10)
+                    score = avg_alignment  # Higher alignment = higher score (ID)
+
+                elif self.pc_eigenvalue_mode == "spectral_entropy":
+                    # Spectral Entropy: Entropy of eigenvalue distribution
+                    # Measures uniformity of eigenvalue spectrum
+                    # CORRECTED: ID samples have concentrated eigenvalues (LOW entropy)
+                    #            OOD samples have uniform eigenvalues (HIGH entropy)
+                    # ID: low entropy (largest eigenvalue dominant) → high score (NEGATE)
+                    # OOD: high entropy (eigenvalues spread uniformly) → low score (NEGATE)
+
+                    # Compute eigenvalues of coupling matrix (symmetric, so use eigvalsh)
+                    eigenvalues = torch.linalg.eigvalsh(coupling_matrix)  # [K]
+
+                    # Take absolute values and normalize to probability distribution
+                    abs_eigs = torch.abs(eigenvalues)
+                    eig_sum = abs_eigs.sum() + 1e-10  # Add epsilon to prevent division by zero
+
+                    # Always compute (no data-dependent branching for vmap compatibility)
+                    eig_probs = abs_eigs / eig_sum
+                    # Compute Shannon entropy
+                    entropy = -(eig_probs * torch.log(eig_probs + 1e-10)).sum()
+                    score = -entropy  # NEGATED: Lower entropy = higher score (ID)
+
+                elif self.pc_eigenvalue_mode == "gini_coefficient":
+                    # Gini Coefficient: Measures gradient inequality (경제학적 불평등 측정)
+                    # Inspired by economics: measures inequality in gradient norms
+                    # ID: high Gini (gradient inequality, dominant prototype exists) → high score
+                    # OOD: low Gini (gradient equality, all prototypes similar) → low score
+                    # Formula: Gini = Σᵢ Σⱼ |gᵢ - gⱼ| / (2K² × mean(g))
+
+                    # Compute gradient norms for each prototype
+                    grad_norms = torch.norm(delta_grads, p=2, dim=1)  # [K]
+                    K = grad_norms.shape[0]
+
+                    # Compute pairwise absolute differences: |gᵢ - gⱼ| for all i, j
+                    # diff_matrix[i,j] = |grad_norms[i] - grad_norms[j]|
+                    diff_matrix = torch.abs(grad_norms.unsqueeze(0) - grad_norms.unsqueeze(1))  # [K, K]
+
+                    # Gini coefficient formula
+                    mean_grad = grad_norms.mean() + 1e-10  # Prevent division by zero
+                    gini = diff_matrix.sum() / (2 * K * K * mean_grad)
+
+                    score = gini  # Higher Gini = higher inequality = ID → high score
+
+                elif self.pc_eigenvalue_mode == "principal_dominance":
+                    # Principal Component Dominance: λ₁ / Σλᵢ
+                    # Measures how much the largest eigenvalue dominates
+                    # CORRECTED: ID samples have uniform eigenvalues (LOW dominance)
+                    #            OOD samples have concentrated eigenvalues (HIGH dominance)
+                    # ID: low dominance (eigenvalues spread uniformly) → high score (NEGATE)
+                    # OOD: high dominance (largest eigenvalue dominates) → low score (NEGATE)
+                    # Equivalent to "explained variance ratio" in PCA
+
+                    # Compute eigenvalues (already available from coupling matrix)
+                    eigenvalues = torch.linalg.eigvalsh(coupling_matrix)  # [K]
+
+                    # Take absolute values
+                    abs_eigs = torch.abs(eigenvalues)
+                    largest_eig = abs_eigs.max()
+                    eig_sum = abs_eigs.sum() + 1e-10  # Prevent division by zero
+
+                    # Dominance ratio
+                    dominance = largest_eig / eig_sum
+
+                    score = -dominance  # NEGATED: Lower dominance = higher score (ID)
+
+                elif self.pc_eigenvalue_mode == "max_mean_ratio":
+                    # Max-Mean Ratio: max(||Δgᵢ||) / mean(||Δgᵢ||)
+                    # Simple and intuitive measure of gradient inequality
+                    # ID: high ratio (one prototype has much larger gradient) → high score
+                    # OOD: low ratio (all prototypes have similar gradients) → low score
+
+                    # Compute gradient norms for each prototype
+                    grad_norms = torch.norm(delta_grads, p=2, dim=1)  # [K]
+
+                    # Max-mean ratio
+                    max_norm = grad_norms.max()
+                    mean_norm = grad_norms.mean() + 1e-10  # Prevent division by zero
+                    ratio = max_norm / mean_norm
+
+                    score = ratio  # Higher ratio = ID → high score
+
+                elif self.pc_eigenvalue_mode == "ipr":
+                    # Inverse Participation Ratio (IPR)
+                    # Physics: Anderson localization theory
+                    # IPR = tr(C²) / (tr(C))² = 1/PR
+                    # Range: [1/K, 1]
+                    # ID: 1/K (delocalized, low IPR) → high score (NEGATE)
+                    # OOD: 1 (localized, high IPR) → low score (NEGATE)
+
+                    trace_C = torch.trace(coupling_matrix)
+                    trace_C2 = torch.trace(torch.matmul(coupling_matrix, coupling_matrix))
+
+                    # IPR = 1/PR
+                    ipr = trace_C2 / ((trace_C ** 2) + 1e-10)
+
+                    score = -ipr  # NEGATED: Lower IPR = higher score (ID)
+
+                elif self.pc_eigenvalue_mode == "generalized_pr":
+                    # Generalized Participation Ratio (GPR)
+                    # Physics: Renyi entropy, Multifractal analysis
+                    # PR_q = (Σλᵢ^q)^(1/(1-q))
+                    # q is hyperparameter (self.pc_gpr_q)
+                    # Special cases:
+                    # - q=0: K (total number)
+                    # - q=1: exp(Shannon entropy)
+                    # - q=2: Standard PR (current implementation)
+                    # - q→∞: 1/λ_max
+                    # q < 2: more sensitive to small eigenvalues
+                    # q > 2: more sensitive to large eigenvalues
+
+                    q = self.pc_gpr_q
+                    eigenvalues = torch.linalg.eigvalsh(coupling_matrix)  # [K]
+                    abs_eigs = torch.abs(eigenvalues)
+
+                    # Handle special cases for numerical stability
+                    if abs(q - 1.0) < 1e-6:
+                        # Special case q=1: exp(Shannon entropy)
+                        probs = abs_eigs / (abs_eigs.sum() + 1e-10)
+                        entropy = -(probs * torch.log(probs + 1e-10)).sum()
+                        pr_q = torch.exp(entropy)
+                    elif abs(q - 2.0) < 1e-6:
+                        # Special case q=2: Standard PR (fast path)
+                        trace_C = torch.trace(coupling_matrix)
+                        trace_C2 = torch.trace(torch.matmul(coupling_matrix, coupling_matrix))
+                        pr_q = (trace_C ** 2) / (trace_C2 + 1e-10)
+                    else:
+                        # General case
+                        sum_q = (abs_eigs ** q).sum()
+                        pr_q = sum_q ** (1.0 / (1.0 - q + 1e-10))
+
+                    # ID: low PR_q → high score (NEGATE)
+                    # OOD: high PR_q → low score (NEGATE)
+                    score = -pr_q  # NEGATED
+
+                elif self.pc_eigenvalue_mode == "magnitude_weighted_pr":
+                    # Magnitude-Weighted Participation Ratio
+                    # Combines eigenvalue MAGNITUDE (size) with DISTRIBUTION (shape)
+                    # Key insight: ID has small + uniform eigenvalues, OOD has large + concentrated
+                    # magnitude × distribution captures both signals
+
+                    eigenvalues = torch.linalg.eigvalsh(coupling_matrix)
+                    abs_eigs = torch.abs(eigenvalues)
+
+                    # 1. Magnitude: Lp-norm of eigenvalues
+                    q_mag = self.pc_mwpr_q
+                    if torch.isinf(torch.tensor(q_mag)):
+                        # q=inf: max eigenvalue
+                        magnitude = abs_eigs.max()
+                    else:
+                        # General Lp norm: (Σλᵢ^q)^(1/q)
+                        magnitude = (abs_eigs ** q_mag).sum() ** (1.0 / q_mag)
+
+                    # 2. Distribution: Standard PR (shape only)
+                    trace_C = torch.trace(coupling_matrix)
+                    trace_C2 = torch.trace(torch.matmul(coupling_matrix, coupling_matrix))
+                    pr = (trace_C ** 2) / (trace_C2 + 1e-10)
+
+                    # 3. Combine magnitude and distribution
+                    if self.pc_mwpr_combine_mode == "multiply":
+                        # Multiplicative: amplifies ID/OOD difference
+                        # OOD: large magnitude × high PR = very high
+                        # ID: small magnitude × low PR = very low
+                        score = -(magnitude * pr)  # NEGATED
+                    elif self.pc_mwpr_combine_mode == "add":
+                        # Additive: more stable
+                        score = -(magnitude + pr)  # NEGATED
+                    elif self.pc_mwpr_combine_mode == "log_add":
+                        # Log-scale magnitude for better balance
+                        score = -(torch.log(magnitude + 1.0) + pr)  # NEGATED
+                    else:
+                        score = -(magnitude * pr)  # Default: multiply, NEGATED
+
+                elif self.pc_eigenvalue_mode == "spectrum_stats":
+                    # Spectrum Statistics: Comprehensive multi-metric approach
+                    # Combines multiple statistical measures of eigenvalue distribution
+                    # Ensemble of magnitude and shape signals
+
+                    eigenvalues = torch.linalg.eigvalsh(coupling_matrix)
+                    abs_eigs = torch.abs(eigenvalues)
+
+                    # 1. Total Energy: Σλᵢ (overall coupling strength)
+                    total_energy = abs_eigs.sum()
+
+                    # 2. Max Eigenvalue: max(λᵢ) (dominant mode strength)
+                    max_eigenvalue = abs_eigs.max()
+
+                    # 3. Gini Coefficient: gradient inequality
+                    K = abs_eigs.shape[0]
+                    diff_matrix = torch.abs(abs_eigs.unsqueeze(0) - abs_eigs.unsqueeze(1))
+                    gini = diff_matrix.sum() / (2 * K * K * (abs_eigs.mean() + 1e-10))
+
+                    # 4. Variance: spread of eigenvalues
+                    variance = abs_eigs.var()
+
+                    # Weighted combination
+                    score = (self.pc_spectrum_w_total_energy * total_energy +
+                            self.pc_spectrum_w_max_eig * max_eigenvalue +
+                            self.pc_spectrum_w_gini * gini +
+                            self.pc_spectrum_w_variance * variance)
+
+                elif self.pc_eigenvalue_mode == "dual_metric":
+                    # Dual Metric: Magnitude + Shape with tunable weights
+                    # Simple and interpretable two-component model
+                    # α × magnitude + β × shape
+
+                    eigenvalues = torch.linalg.eigvalsh(coupling_matrix)
+                    abs_eigs = torch.abs(eigenvalues)
+
+                    # Magnitude score: total trace (coupling strength)
+                    magnitude_score = abs_eigs.sum()
+
+                    # Shape score: negative PR (distribution measure)
+                    trace_C = torch.trace(coupling_matrix)
+                    trace_C2 = torch.trace(torch.matmul(coupling_matrix, coupling_matrix))
+                    pr = (trace_C ** 2) / (trace_C2 + 1e-10)
+                    shape_score = -pr  # Negated
+
+                    # Weighted combination
+                    score = self.pc_dual_alpha * magnitude_score + self.pc_dual_beta * shape_score
+
+                elif self.pc_eigenvalue_mode == "log_magnitude_pr":
+                    # Log-Magnitude + PR: Additive combination with log-scaled magnitude
+                    # More stable than multiplicative, compresses magnitude range
+
+                    eigenvalues = torch.linalg.eigvalsh(coupling_matrix)
+                    abs_eigs = torch.abs(eigenvalues)
+
+                    # Log-magnitude: log(Σλᵢ)
+                    log_magnitude = torch.log(abs_eigs.sum() + 1e-8)
+
+                    # PR score (negated)
+                    trace_C = torch.trace(coupling_matrix)
+                    trace_C2 = torch.trace(torch.matmul(coupling_matrix, coupling_matrix))
+                    pr = (trace_C ** 2) / (trace_C2 + 1e-10)
+                    pr_score = -pr
+
+                    # Additive combination
+                    score = log_magnitude + pr_score
+
+                elif self.pc_eigenvalue_mode == "effective_rank":
+                    # Effective Rank
+                    # Physics: Information theory + Statistical mechanics
+                    # ER = exp(H) = exp(-Σpᵢ·log(pᵢ))
+                    # Range: [1, K]
+                    # ID: K (high ER, uniform eigenvalues) → high score
+                    # OOD: 1 (low ER, concentrated eigenvalues) → low score
+                    # Interpretation: "Effective number of eigenvalues" (geometric mean)
+
+                    eigenvalues = torch.linalg.eigvalsh(coupling_matrix)  # [K]
+                    abs_eigs = torch.abs(eigenvalues)
+
+                    # Normalize to probability distribution
+                    probs = abs_eigs / (abs_eigs.sum() + 1e-10)
+
+                    # Compute Shannon entropy
+                    entropy = -(probs * torch.log(probs + 1e-10)).sum()
+
+                    # Effective rank = exp(entropy)
+                    eff_rank = torch.exp(entropy)
+
+                    score = eff_rank  # Higher ER = higher score (ID)
+
+                elif self.pc_eigenvalue_mode == "quantum_purity":
+                    # Quantum Purity
+                    # Physics: Quantum mechanics (density matrix purity)
+                    # Purity = tr(ρ²) = Σ(λᵢ/Σλⱼ)²
+                    # Range: [1/K, 1]
+                    # ID: 1/K (maximally mixed state) → high score (NEGATE)
+                    # OOD: 1 (pure state) → low score (NEGATE)
+                    # Interpretation: Quantum mechanical "mixedness" measure
+
+                    eigenvalues = torch.linalg.eigvalsh(coupling_matrix)  # [K]
+                    abs_eigs = torch.abs(eigenvalues)
+
+                    # Normalize to probability distribution (density matrix eigenvalues)
+                    probs = abs_eigs / (abs_eigs.sum() + 1e-10)
+
+                    # Purity = Σpᵢ²
+                    purity = (probs ** 2).sum()
+
+                    score = -purity  # NEGATED: Lower purity (mixed) = higher score (ID)
+
+                elif self.pc_eigenvalue_mode == "concentration":
+                    # Legacy mode: Use variance of gradient norms (for backward compatibility)
+                    # ID: low variance (diffuse) → high score (NEGATE)
+                    # OOD: high variance (concentrated) → low score (NEGATE)
+                    grad_norms = torch.norm(delta_grads, p=2, dim=1)  # [K]
+                    mean_norm = grad_norms.mean()
+                    variance = ((grad_norms - mean_norm) ** 2).mean()
+                    score = -variance  # NEGATED
+
+                elif self.pc_eigenvalue_mode == "entropy":
+                    # Legacy mode: Shannon entropy of gradient norm distribution (for backward compatibility)
+                    # ID: high entropy (diffuse) → high score
+                    # OOD: low entropy (concentrated) → low score
+                    grad_norms = torch.norm(delta_grads, p=2, dim=1)  # [K]
+                    abs_norms = torch.abs(grad_norms)
+                    probs = abs_norms / (abs_norms.sum() + 1e-10)
+                    entropy = -(probs * torch.log(probs + 1e-10)).sum()
+                    score = entropy  # NO negation: higher entropy = higher score
+
+                else:
+                    # Default: use participation_ratio
+                    trace_C = torch.trace(coupling_matrix)
+                    trace_C2 = torch.trace(torch.matmul(coupling_matrix, coupling_matrix))
+                    pr = (trace_C ** 2) / (trace_C2 + 1e-10)
+                    score = pr
+            else:
+                # Fallback: use delta_energy
+                score = -dE
+        elif self.score_type == "gradient_alignment":
+            # Sample-Prototype Gradient Alignment
+            # Measures cosine similarity between sample gradient and prototype gradient
+            # ID: high alignment (sample and prototype gradients point in same direction)
+            # OOD: low alignment (different directions)
+            if prototype_tensor is not None:
+                pseudo_class = target.argmax(dim=-1)
+
+                # Get predicted class prototype
+                one_hot = F.one_hot(pseudo_class, num_classes=prototype_tensor.shape[0]).float()
+                proto_feature = torch.matmul(one_hot, prototype_tensor)
+
+                # Compute gradient on SAMPLE feature (after unlearning)
+                if b is not None:
+                    def sample_loss_fn(params):
+                        W_inner, b_inner = params
+                        out = F.linear(feature, W_inner, b_inner)
+                        log_probs = F.log_softmax(out, dim=-1)
+                        hard = pseudo_class.unsqueeze(-1)
+                        loss = -torch.gather(log_probs, -1, hard).squeeze(-1)
+                        return loss
+                    grads_sample = grad(sample_loss_fn)((W, b))
+                    # Flatten gradients
+                    grad_sample_flat = torch.cat([grads_sample[0].flatten(), grads_sample[1].flatten()])
+                else:
+                    def sample_loss_fn(W_inner):
+                        out = F.linear(feature, W_inner)
+                        log_probs = F.log_softmax(out, dim=-1)
+                        hard = pseudo_class.unsqueeze(-1)
+                        loss = -torch.gather(log_probs, -1, hard).squeeze(-1)
+                        return loss
+                    grad_sample = grad(sample_loss_fn)(W)
+                    grad_sample_flat = grad_sample.flatten()
+
+                # Compute gradient on PROTOTYPE feature (after unlearning)
+                if b is not None:
+                    def proto_loss_fn(params):
+                        W_inner, b_inner = params
+                        out = F.linear(proto_feature, W_inner, b_inner)
+                        log_probs = F.log_softmax(out, dim=-1)
+                        hard = pseudo_class.unsqueeze(-1)
+                        loss = -torch.gather(log_probs, -1, hard).squeeze(-1)
+                        return loss
+                    grads_proto = grad(proto_loss_fn)((W, b))
+                    # Flatten gradients
+                    grad_proto_flat = torch.cat([grads_proto[0].flatten(), grads_proto[1].flatten()])
+                else:
+                    def proto_loss_fn(W_inner):
+                        out = F.linear(proto_feature, W_inner)
+                        log_probs = F.log_softmax(out, dim=-1)
+                        hard = pseudo_class.unsqueeze(-1)
+                        loss = -torch.gather(log_probs, -1, hard).squeeze(-1)
+                        return loss
+                    grad_proto = grad(proto_loss_fn)(W)
+                    grad_proto_flat = grad_proto.flatten()
+
+                # Compute cosine similarity
+                if self.ga_normalize_grads:
+                    # L2 normalize
+                    grad_sample_norm = grad_sample_flat / (torch.norm(grad_sample_flat, p=2) + 1e-10)
+                    grad_proto_norm = grad_proto_flat / (torch.norm(grad_proto_flat, p=2) + 1e-10)
+                    cosine_sim = torch.dot(grad_sample_norm, grad_proto_norm)
+                else:
+                    # Raw dot product
+                    cosine_sim = torch.dot(grad_sample_flat, grad_proto_flat)
+                    cosine_sim = cosine_sim / (torch.norm(grad_sample_flat, p=2) * torch.norm(grad_proto_flat, p=2) + 1e-10)
+
+                # Apply absolute if configured
+                if self.ga_use_absolute:
+                    score = torch.abs(cosine_sim)
+                else:
+                    score = cosine_sim
+
+                # ID samples should have HIGH alignment → high score
+                # OOD samples should have LOW alignment → low score
+                # No negation needed
+            else:
+                # Fallback: use delta_energy
+                score = -dE
+        elif self.score_type == "confidence_entropy_combo":
+            # Confidence Drop × Entropy Change
+            # Measures output-space changes (not weight-space)
+            # CORRECTED: ID samples remain confident (small changes), OOD samples lose confidence
+            # ID: small conf_drop × small entropy_increase → high score (NEGATE)
+            # OOD: large conf_drop × large entropy_increase → low score (NEGATE)
+
+            # Stabilize logits
+            logits_orig_stable = logits_orig - logits_orig.max(dim=-1, keepdim=True).values
+            logits_after_stable = logits_after - logits_after.max(dim=-1, keepdim=True).values
+
+            # Compute softmax
+            softmax_orig = F.softmax(logits_orig_stable, dim=-1)
+            softmax_after = F.softmax(logits_after_stable, dim=-1)
+
+            # Confidence drop
+            conf_orig = softmax_orig.max(dim=-1).values
+            conf_after = softmax_after.max(dim=-1).values
+            conf_drop = conf_orig - conf_after  # Positive if confidence decreased
+
+            # Entropy change
+            entropy_orig = -(softmax_orig * torch.log(softmax_orig + 1e-10)).sum(dim=-1)
+            entropy_after = -(softmax_after * torch.log(softmax_after + 1e-10)).sum(dim=-1)
+            entropy_increase = entropy_after - entropy_orig  # Positive if entropy increased
+
+            # Combined score: multiplicative
+            # ID: small conf_drop × small entropy_increase → high score (NEGATE)
+            # OOD: large conf_drop × large entropy_increase → low score (NEGATE)
+            score = -(conf_drop * entropy_increase)  # NEGATED
         elif self.score_type in {"gradnorm", "g"}:
             # gradnorm 후처리 - 업데이트된 파라미터로 계산
             if b is not None:
@@ -1540,6 +2357,149 @@ class UnlearnPostprocessor(BasePostprocessor):
                 score = ratio - 1.0  # OOD has higher ratio (less gradient reduction)
             else:
                 score = gradnorm_after  # gradnorm_o가 없으면 after만 사용
+        elif self.score_type == "energy_curvature":
+            # Energy Trajectory Curvature
+            # ID: smooth energy decrease → low curvature (high score after negation)
+            # OOD: irregular energy changes → high curvature (low score after negation)
+            if traj_step_count > 1:
+                # Mean absolute curvature
+                mean_curvature = sum_abs_ddE / max(1, traj_step_count - 1)
+                # Curvature variance (for additional signal)
+                curvature_variance = sum_ddE_sq / max(1, traj_step_count - 1) - mean_curvature ** 2
+                # Lower curvature = smoother = ID → negate for higher score
+                score = -(mean_curvature + 0.1 * curvature_variance)
+            else:
+                # Fallback to delta_energy if only 1 step
+                score = -dE
+        elif self.score_type == "weight_convergence":
+            # Weight Update Convergence Pattern
+            # ID: consistent direction, decreasing magnitude → high score
+            # OOD: inconsistent direction, stable magnitude → low score
+            if traj_step_count > 1:
+                # Convergence rate: (first_norm - final_norm) / first_norm
+                if first_delta_norm is not None and first_delta_norm > 1e-10:
+                    convergence_rate = (first_delta_norm - delta_norm_curr) / first_delta_norm
+                else:
+                    convergence_rate = torch.tensor(0.0, device=device)
+
+                # Direction consistency: average cosine similarity
+                if traj_step_count > 1:
+                    direction_consistency = sum_direction_cos / max(1, traj_step_count - 1)
+                else:
+                    direction_consistency = torch.tensor(0.0, device=device)
+
+                # Combine: higher convergence + higher consistency = ID
+                score = 0.5 * convergence_rate + 0.5 * direction_consistency
+            else:
+                # Fallback to delta_energy
+                score = -dE
+        elif self.score_type == "gradient_decay":
+            # Gradient Magnitude Decay Rate
+            # ID: fast gradient decay (rapid convergence) → high decay rate → high score
+            # OOD: slow gradient decay (flat landscape) → low decay rate → low score
+            if traj_step_count > 0 and g_0 > 1e-10:
+                # Exponential decay rate: λ ≈ (log(g_0) - log(g_final)) / num_steps
+                decay_rate = (torch.log(g_0 + 1e-10) - torch.log(g_final + 1e-10)) / max(1, traj_step_count)
+                score = decay_rate  # Higher decay = faster convergence = ID
+            else:
+                # Fallback to delta_energy
+                score = -dE
+        elif self.score_type == "coupling_evolution":
+            # Prototype Coupling Evolution (FULL VERSION)
+            # Measures how coupling metric evolves across trajectory
+            # Uses the SAME eigenvalue analysis as prototype_coupling, but tracks it over time
+            # ID: stable coupling pattern → low variance, consistent metric
+            # OOD: unstable coupling pattern → high variance, erratic metric
+
+            if coupling_step_count > 1:
+                # Compute statistics of coupling metric trajectory
+                mean_coupling = sum_coupling_metric / coupling_step_count
+                var_coupling = sum_coupling_metric_sq / coupling_step_count - mean_coupling ** 2
+
+                # Step-to-step instability
+                mean_coupling_diff = sum_abs_coupling_diff / max(1, coupling_step_count - 1)
+
+                # Combined score based on trajectory stability
+                # Interpretation depends on eigenvalue mode:
+                # - participation_ratio, spectral_entropy: ID has LOW and STABLE values
+                # - gini_coefficient, max_mean_ratio: ID has HIGH and STABLE values
+
+                # Use mode-specific logic
+                if self.pc_eigenvalue_mode in ["participation_ratio", "spectral_entropy", "ipr"]:
+                    # Lower metric = ID, so stable LOW values → high score
+                    # Use: -mean_coupling (lower = better) AND -var_coupling (stable = better)
+                    score = -(mean_coupling + 0.5 * var_coupling + 0.3 * mean_coupling_diff)
+                elif self.pc_eigenvalue_mode in ["gini_coefficient", "max_mean_ratio"]:
+                    # Higher metric = ID, so stable HIGH values → high score
+                    # Use: +mean_coupling (higher = better) AND -var_coupling (stable = better)
+                    score = mean_coupling - (0.5 * var_coupling + 0.3 * mean_coupling_diff)
+                else:
+                    # Default: assume lower metric = ID (like PR)
+                    score = -(mean_coupling + 0.5 * var_coupling + 0.3 * mean_coupling_diff)
+
+            else:
+                # Fallback to delta_energy if only 1 step or coupling not computed
+                score = -dE
+        elif self.score_type == "trajectory_combo":
+            # Combination of all trajectory-based signals
+            # Weighted sum of energy_curvature, weight_convergence, gradient_decay, coupling_evolution
+
+            score_components = []
+
+            # [1] Energy curvature
+            if traj_step_count > 1:
+                mean_curvature = sum_abs_ddE / max(1, traj_step_count - 1)
+                curvature_variance = sum_ddE_sq / max(1, traj_step_count - 1) - mean_curvature ** 2
+                energy_score = -(mean_curvature + 0.1 * curvature_variance)
+            else:
+                energy_score = -dE
+            score_components.append(self.traj_w_energy * energy_score)
+
+            # [2] Weight convergence
+            if traj_step_count > 1:
+                if first_delta_norm is not None and first_delta_norm > 1e-10:
+                    convergence_rate = (first_delta_norm - delta_norm_curr) / first_delta_norm
+                else:
+                    convergence_rate = torch.tensor(0.0, device=device)
+
+                if traj_step_count > 1:
+                    direction_consistency = sum_direction_cos / max(1, traj_step_count - 1)
+                else:
+                    direction_consistency = torch.tensor(0.0, device=device)
+
+                weight_score = 0.5 * convergence_rate + 0.5 * direction_consistency
+            else:
+                weight_score = -dE
+            score_components.append(self.traj_w_weight * weight_score)
+
+            # [3] Gradient decay
+            if traj_step_count > 0 and g_0 > 1e-10:
+                decay_rate = (torch.log(g_0 + 1e-10) - torch.log(g_final + 1e-10)) / max(1, traj_step_count)
+                gradient_score = decay_rate
+            else:
+                gradient_score = -dE
+            score_components.append(self.traj_w_gradient * gradient_score)
+
+            # [4] Coupling evolution (FULL VERSION)
+            if coupling_step_count > 1:
+                # Use FULL coupling metric trajectory (computed in loop)
+                mean_coupling = sum_coupling_metric / coupling_step_count
+                var_coupling = sum_coupling_metric_sq / coupling_step_count - mean_coupling ** 2
+                mean_coupling_diff = sum_abs_coupling_diff / max(1, coupling_step_count - 1)
+
+                # Mode-specific scoring (same logic as coupling_evolution)
+                if self.pc_eigenvalue_mode in ["participation_ratio", "spectral_entropy", "ipr"]:
+                    coupling_score = -(mean_coupling + 0.5 * var_coupling + 0.3 * mean_coupling_diff)
+                elif self.pc_eigenvalue_mode in ["gini_coefficient", "max_mean_ratio"]:
+                    coupling_score = mean_coupling - (0.5 * var_coupling + 0.3 * mean_coupling_diff)
+                else:
+                    coupling_score = -(mean_coupling + 0.5 * var_coupling + 0.3 * mean_coupling_diff)
+            else:
+                coupling_score = -dE
+            score_components.append(self.traj_w_coupling * coupling_score)
+
+            # Combine all components
+            score = sum(score_components)
         else:
             # combo - delta_energy, gradnorm, grad_ratio의 가중 합
             # CORRECTED: dE is negative (ID more negative than OOD), so negate to get ID > OOD

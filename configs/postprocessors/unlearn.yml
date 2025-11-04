@@ -5,8 +5,8 @@ postprocessor:
     unlearn_mode: "ascent" # ascent (RECOMMENDED!), fisher
     fisher_normalize: true   # Adaptive 정규화 사용 (fisher mode only)
     fisher_damping: 1e-8
-    eta: 1e-3             # Base learning rate
-    num_steps: 1          # Unlearning iterations (1 is often best!)
+    eta: 1e-2             # Base learning rate
+    num_steps: 100          # Unlearning iterations (1 is often best!)
     recompute_target: false
     temp: 1.0             # Temperature (>1.0 for soft pseudo-label)
 
@@ -47,13 +47,23 @@ postprocessor:
     # 스코어 타입 선택
     # 옵션: "delta_energy", "gradnorm", "grad_ratio", "combo", "prototype_logit_shift", "prototype_grad"
     #       "feature_aware", "feature_fc_alignment", "geometry_combo", "multiscale_prototype"
+    #       "prototype_coupling", "gradient_alignment", "confidence_entropy_combo"
+    #       "energy_curvature", "weight_convergence", "gradient_decay", "coupling_evolution", "trajectory_combo"
     # - delta_energy: Simple energy change (baseline)
     # - feature_aware: Feature geometry × FC weight shift [RECOMMENDED]
     # - feature_fc_alignment: ΔW·f alignment score
     # - geometry_combo: Multi-scale geometric combination
     # - multiscale_prototype: Class + Global prototype distance
+    # - prototype_coupling: Cross-prototype gradient eigenvalue concentration [MOST ELEGANT]
+    # - gradient_alignment: Sample-prototype gradient cosine similarity
+    # - confidence_entropy_combo: Confidence drop × Entropy change
+    # - energy_curvature: Energy trajectory smoothness (requires num_steps > 1) [NEW]
+    # - weight_convergence: Weight update convergence pattern (requires num_steps > 1) [NEW]
+    # - gradient_decay: Gradient magnitude decay rate (requires num_steps > 1) [NEW]
+    # - coupling_evolution: Prototype coupling evolution (requires num_steps > 1) [NEW]
+    # - trajectory_combo: Weighted combination of all trajectory signals (requires num_steps > 1) [NEW]
     # - combo: Weighted combination of multiple metrics
-    score_type: feature_aware
+    score_type: prototype_coupling #coupling_evolution #prototype_coupling
 
     # ==== FEATURE-AWARE ADVANCED SETTINGS ====
     # Feature-aware 스코어 타입의 세부 제어 (score_type="feature_aware"일 때만 적용)
@@ -219,7 +229,137 @@ postprocessor:
       g: 0.5               # GradNorm 가중치
       grad_ratio: 0.5      # Gradient Ratio 가중치
       feature: 1.0         # Feature geometry 가중치
-  
+      prototype_coupling: 1.0  # Cross-prototype coupling 가중치
+      gradient_alignment: 1.0  # Sample-prototype alignment 가중치
+      confidence_entropy: 1.0  # Confidence-entropy combo 가중치
+
+    # ==== TRAJECTORY-BASED OOD DETECTION SETTINGS ====
+    # Trajectory-based score types analyze the unlearning dynamics across multiple steps
+    # Options: "energy_curvature", "weight_convergence", "gradient_decay", "coupling_evolution", "trajectory_combo"
+    # - energy_curvature: Measures smoothness of energy trajectory (2nd derivative)
+    #   * ID: smooth energy decrease → low curvature → high score
+    #   * OOD: irregular energy changes → high curvature → low score
+    # - weight_convergence: Measures convergence pattern of weight updates
+    #   * ID: consistent direction + decreasing magnitude → high score
+    #   * OOD: inconsistent direction + stable magnitude → low score
+    # - gradient_decay: Measures gradient magnitude decay rate
+    #   * ID: fast gradient decay (rapid convergence) → high score
+    #   * OOD: slow gradient decay (flat landscape) → low score
+    # - coupling_evolution: Measures how prototype coupling pattern evolves (FULL VERSION)
+    #   * Uses SAME eigenvalue analysis as prototype_coupling, but tracks trajectory
+    #   * Computes coupling metric at each unlearning step
+    #   * ID: stable coupling (low variance, consistent metric) → high score
+    #   * OOD: unstable coupling (high variance, erratic metric) → low score
+    #   * Guaranteed to be better than static prototype_coupling!
+    # - trajectory_combo: Weighted combination of all trajectory signals
+    trajectory_config:
+      enabled: false  # Enable trajectory-based analysis (requires num_steps > 1)
+      weights:
+        energy: 1.0      # Energy curvature weight
+        weight: 1.0      # Weight convergence weight
+        gradient: 1.0    # Gradient decay weight
+        coupling: 1.0    # Coupling evolution weight
+
+    # ==== NEW ELEGANT SCORE TYPE SETTINGS ====
+    # Cross-Prototype Gradient Coupling settings (score_type="prototype_coupling")
+    prototype_coupling_config:
+      use_all_prototypes: false     # Use all prototypes (true) or top-K only (false)
+      top_k: 5                     # If use_all_prototypes=false, use top-K predicted classes
+      eigenvalue_mode: "participation_ratio"  # Options: "participation_ratio", "spectral_entropy", "gini_coefficient", "max_mean_ratio", "magnitude_weighted_pr", "spectrum_stats", "dual_metric", "log_magnitude_pr", "ipr", "generalized_pr", "effective_rank", "quantum_purity", "principal_dominance", "direction_alignment", "concentration", "entropy"
+      gpr_q: 1  # Hyperparameter for generalized_pr mode (try 1.0, 1.5, 2.0, 2.5, 3.0)
+
+      # ==== MAGNITUDE-AWARE MODES (combines size + shape!) 🏆🏆🏆 ====
+      # Core insight: Eigenvalue MAGNITUDE (size) + DISTRIBUTION (shape) both matter!
+      # ID: small & uniform eigenvalues (stable unlearning)
+      # OOD: large & concentrated eigenvalues (unstable unlearning)
+
+      # Magnitude-Weighted PR config
+      magnitude_weighted_pr_config:
+        q: '0.1'  # Lp-norm parameter for magnitude: 1.0 (L1), 2.0 (L2), inf (max)
+        combine_mode: "add"  # "multiply", "add", "log_add"
+        # - multiply: magnitude × PR (amplifies difference) [BEST]
+        # - add: magnitude + PR (more stable)
+        # - log_add: log(magnitude) + PR (balanced)
+
+      # Spectrum Statistics config (most comprehensive)
+      spectrum_stats_config:
+        weights:
+          total_energy: 1.0     # Σλᵢ (overall coupling strength)
+          max_eigenvalue: 0.5   # max(λᵢ) (dominant mode)
+          gini: 0.3             # Gradient inequality
+          variance: 0.2         # Eigenvalue spread
+
+      # Dual Metric config (simple two-component)
+      dual_metric_config:
+        alpha: 0.7  # Weight for magnitude score
+        beta: 0.3   # Weight for shape score (negative PR)
+
+      # ==== PHYSICS-BASED MODES (most theoretically grounded!) ====
+      # Core idea: Measure eigenvalue distribution properties using physics principles
+
+      # - ipr: Inverse Participation Ratio tr(C²)/(tr(C))² [Anderson localization]
+      #   * ID: LOW IPR (delocalized) → HIGH score (negated)
+      #   * OOD: HIGH IPR (localized) → LOW score (negated)
+      #   * Range: [1/K, 1], Physics: Anderson localization theory
+
+      # - generalized_pr: q-parameterized PR = (Σλᵢ^q)^(1/(1-q)) [Renyi entropy] [BEST 🏆🏆🏆]
+      #   * ID: LOW PR_q → HIGH score (negated)
+      #   * OOD: HIGH PR_q → LOW score (negated)
+      #   * q<2: sensitive to small eigenvalues, q>2: sensitive to large eigenvalues
+      #   * Special cases: q=1 → exp(entropy), q=2 → standard PR
+      #   * Physics: Renyi entropy, Multifractal analysis
+      #   * TUNABLE via gpr_q hyperparameter!
+
+      # - effective_rank: exp(Shannon entropy) = exp(-Σpᵢ·log(pᵢ))
+      #   * ID: HIGH ER (uniform eigenvalues) → HIGH score
+      #   * OOD: LOW ER (concentrated eigenvalues) → LOW score
+      #   * Range: [1, K], Physics: Information theory + Statistical mechanics
+
+      # - quantum_purity: tr(ρ²) = Σpᵢ² [Quantum mechanics]
+      #   * ID: LOW purity (maximally mixed) → HIGH score (negated)
+      #   * OOD: HIGH purity (pure state) → LOW score (negated)
+      #   * Range: [1/K, 1], Physics: Quantum density matrix theory
+
+      # ==== NEW GRADIENT INEQUALITY MODES (most elegant!) ====
+      # Core idea: ID samples have UNEQUAL gradients (dominant prototype), OOD samples have EQUAL gradients
+
+      # - gini_coefficient: Economic inequality measure Σᵢ Σⱼ |gᵢ-gⱼ| / (2K²·mean(g)) [MOST ELEGANT 🏆]
+      #   * ID: HIGH Gini (gradient inequality, dominant prototype) → HIGH score
+      #   * OOD: LOW Gini (gradient equality, all similar) → LOW score
+      #   * Theory: Decades of economic validation, range [0,1], 0=equality, 1=inequality
+
+      # - principal_dominance: Largest eigenvalue ratio λ₁/Σλᵢ (PCA explained variance)
+      #   * ID: LOW dominance (eigenvalues spread uniformly) → HIGH score (negated)
+      #   * OOD: HIGH dominance (largest eigenvalue dominant) → LOW score (negated)
+      #   * Theory: Direct connection to PCA, efficient (reuses eigenvalues)
+
+      # - max_mean_ratio: Simple ratio max(||Δgᵢ||) / mean(||Δgᵢ||)
+      #   * ID: HIGH ratio (one prototype much larger) → HIGH score
+      #   * OOD: LOW ratio (all prototypes similar) → LOW score
+      #   * Theory: Most intuitive, computationally efficient O(K)
+
+      # ==== ORIGINAL COUPLING MATRIX MODES ====
+      # - participation_ratio: PR = (tr(C))^2 / tr(C^2) - Effective # of participating prototypes
+      #   * ID: LOW PR (strongly coupled to specific prototype) → HIGH score (negated)
+      #   * OOD: HIGH PR (weakly coupled to many) → LOW score (negated)
+
+      # - direction_alignment: Average cosine similarity between gradient directions [EXPERIMENTAL]
+      #   * ID: HIGH alignment (coherent changes) → HIGH score
+      #   * OOD: LOW alignment (incoherent changes) → LOW score
+
+      # - spectral_entropy: Shannon entropy of eigenvalue distribution
+      #   * ID: LOW entropy (largest eigenvalue dominant) → HIGH score (negated)
+      #   * OOD: HIGH entropy (eigenvalues uniform) → LOW score (negated)
+
+      # ==== LEGACY MODES (gradient norms only) ====
+      # - concentration: Variance of gradient norms (negated)
+      # - entropy: Shannon entropy of gradient norm distribution
+
+    # Sample-Prototype Gradient Alignment settings (score_type="gradient_alignment")
+    gradient_alignment_config:
+      normalize_grads: true        # L2-normalize gradients before computing cosine similarity
+      use_absolute: false          # Use |cosine| instead of cosine (ignore direction, only magnitude)
+
   APS_mode: false  # Hyperparameter search enabled
   postprocessor_sweep:
     # Optimized hyperparameter search for Phase 1-3
@@ -248,7 +388,7 @@ postprocessor:
     l2_penalty: [0.0]  # 1 value (try 0.1 if needed)
 
     # Score types (TEST THESE!)
-    score_type: ["delta_energy", "feature_aware", "feature_fc_alignment"]  # 3 values
+    score_type: ["delta_energy", "feature_aware", "feature_fc_alignment", "prototype_coupling", "gradient_alignment", "confidence_entropy_combo", "energy_curvature", "weight_convergence", "gradient_decay", "trajectory_combo"]  # 10 values
 
     # Feature-aware hyperparameter search
     feature_aware_config:
