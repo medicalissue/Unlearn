@@ -171,6 +171,78 @@ class UnlearnPostprocessor(BasePostprocessor):
             raise ValueError("Cannot find FC layer")
         return fc.weight.data.clone(), fc.bias.data.clone()
 
+    def _compute_fisher_energy(self, feature, fc_weight, fc_bias, target):
+        """Compute Fisher-weighted unlearning energy: S(x) = g(x)^T F^{-1} g(x).
+
+        Args:
+            feature: Sample feature [feature_dim]
+            fc_weight: FC layer weight [num_classes, feature_dim]
+            fc_bias: FC layer bias [num_classes] or None
+            target: Pseudo-label target [num_classes]
+
+        Returns:
+            energy: Fisher-weighted energy (scalar)
+        """
+        # Compute gradient g(x) = ∇_θ ℓ(x; θ)
+        if fc_bias is not None:
+            def loss_fn(params):
+                W_inner, b_inner = params
+                out = F.linear(feature, W_inner, b_inner)
+                log_probs = F.log_softmax(out, dim=-1)
+                hard = target.argmax(dim=-1, keepdim=True)
+                loss = -torch.gather(log_probs, -1, hard).squeeze(-1)
+                return loss
+
+            grads = grad(loss_fn)((fc_weight, fc_bias))
+            grad_W, grad_b = grads[0], grads[1]
+
+            # Flatten gradients into vector g(x)
+            g_x = torch.cat([grad_W.flatten(), grad_b.flatten()])  # [D]
+
+            # Get Fisher matrix
+            if self.fisher_mode == "global":
+                fisher_W = self.fisher_W_tensor
+                fisher_b = self.fisher_b_tensor
+            else:  # classwise
+                # Select Fisher based on predicted class (vmap-safe)
+                logits = F.linear(feature, fc_weight, fc_bias)
+                pred_class_idx = logits.argmax(dim=-1)
+                one_hot_pred = F.one_hot(pred_class_idx, num_classes=self.num_classes).float()
+                fisher_W = torch.sum(one_hot_pred.view(-1, 1, 1) * self.fisher_W_tensor, dim=0)
+                fisher_b = torch.sum(one_hot_pred * self.fisher_b_tensor, dim=0)
+
+            # Flatten Fisher into vector F
+            F_vec = torch.cat([fisher_W.flatten(), fisher_b.flatten()])  # [D]
+
+        else:
+            def loss_fn(W_inner):
+                out = F.linear(feature, W_inner)
+                log_probs = F.log_softmax(out, dim=-1)
+                hard = target.argmax(dim=-1, keepdim=True)
+                loss = -torch.gather(log_probs, -1, hard).squeeze(-1)
+                return loss
+
+            grad_W = grad(loss_fn)(fc_weight)
+            g_x = grad_W.flatten()  # [D]
+
+            # Get Fisher matrix
+            if self.fisher_mode == "global":
+                fisher_W = self.fisher_W_tensor
+            else:  # classwise
+                logits = F.linear(feature, fc_weight)
+                pred_class_idx = logits.argmax(dim=-1)
+                one_hot_pred = F.one_hot(pred_class_idx, num_classes=self.num_classes).float()
+                fisher_W = torch.sum(one_hot_pred.view(-1, 1, 1) * self.fisher_W_tensor, dim=0)
+
+            F_vec = fisher_W.flatten()  # [D]
+
+        # Compute S(x) = g(x)^T F^{-1} g(x)
+        # Use element-wise division as approximation: g^T F^{-1} g ≈ sum(g^2 / F)
+        # This avoids expensive matrix inversion and is equivalent when F is diagonal
+        energy = torch.sum((g_x ** 2) / (F_vec + 1e-8))
+
+        return energy
+
     def _compute_energy_at_step(self, W_base, b_base, W_current, b_current,
                                 prototype_tensor, logits_orig, device):
         """Compute log(trace(C)) energy at current unlearning step.
@@ -370,7 +442,7 @@ class UnlearnPostprocessor(BasePostprocessor):
             trace_C2 = torch.trace(torch.matmul(coupling_matrix, coupling_matrix))
             pr = (trace_C ** 2) / (trace_C2 + 1e-10)
             # Return negated score (lower PR = ID → higher score)
-            score = -pr
+            score = pr
 
         return score
 
@@ -488,6 +560,13 @@ class UnlearnPostprocessor(BasePostprocessor):
             # ID samples: high growth rate → high score
             # OOD samples: low growth rate → low score
             score = -growth_rate
+        elif self.score_type == "fisher_energy":
+            # Compute Fisher-weighted unlearning energy: S(x) = g(x)^T F^{-1} g(x)
+            # ID samples: low Fisher energy (gradient aligns with ID distribution)
+            # OOD samples: high Fisher energy (gradient doesn't align with ID)
+            fisher_energy = self._compute_fisher_energy(feature, W_base, b_base, target)
+            # Return negated energy so higher score = more OOD
+            score = -fisher_energy
         else:
             # Default: use energy change
             if b is not None:

@@ -6,7 +6,7 @@ postprocessor:
     num_steps: 100
     temp: 1.0
 
-    score_type: "energy_growth_rate"  # "prototype_coupling" or "energy_growth_rate"
+    score_type: "fisher_energy"  # "prototype_coupling", "energy_growth_rate", or "fisher_energy"
 
     prototype_coupling_config:
       use_all_prototypes: true
