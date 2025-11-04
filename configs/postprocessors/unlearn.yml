@@ -1,16 +1,17 @@
 postprocessor:
   name: unlearn
   postprocessor_args:
-    unlearn_mode: "ascent"
-    eta: 1e-2
-    num_steps: 110
+    unlearn_mode: "fisher"  # "ascent" or "fisher"
+    eta: 1000
+    num_steps: 100
     temp: 1.0
 
-    score_type: "prototype_coupling"
+    score_type: "energy_growth_rate"  # "prototype_coupling" or "energy_growth_rate"
 
     prototype_coupling_config:
       use_all_prototypes: true
-      top_k: 10
-      eigenvalue_mode: "log_trace"  # "participation_ratio" or "log_trace"
+      top_k: 1
+      eigenvalue_mode: "participation_ratio"  # "participation_ratio", "log_trace", or "log_trace_normalized"
       prototype_aggregation: "mean"  # "mean" or "median"
+      fisher_mode: "global"  # "global" or "classwise" (for fisher unlearn_mode)
       max_samples_per_class: full  # null/"full" for all samples, or integer N for max N samples per class
