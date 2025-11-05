@@ -28,6 +28,8 @@ class FInDPostprocessor(BasePostprocessor):
         # Adaptive Fisher Power hyperparameters
         self.use_adaptive_power = bool(self.args.get("use_adaptive_power", False))
         self.adaptive_alpha = float(self.args.get("adaptive_alpha", 1.0))
+        self.adaptive_mode = str(self.args.get("adaptive_mode", "increase"))  # "increase", "decrease", "mixed"
+        self.adaptive_entropy_threshold = float(self.args.get("adaptive_entropy_threshold", 0.7))  # For mixed mode
 
         # Tail Fisher Energy hyperparameters
         self.use_tail_fisher = bool(self.args.get("use_tail_fisher", False))
@@ -332,8 +334,48 @@ class FInDPostprocessor(BasePostprocessor):
             # Compute entropy: H(x) = -sum(p * log(p))
             entropy = -(probs * torch.log(probs + 1e-10)).sum(dim=-1)  # [batch]
             max_entropy = torch.log(torch.tensor(self.num_classes, dtype=torch.float32))
-            # Adaptive power: p*(x) = p_base * (1 + alpha * H(x) / log(C))
-            fisher_power_adaptive = self.fisher_power * (1.0 + self.adaptive_alpha * entropy / max_entropy)  # [batch]
+            entropy_norm = entropy / max_entropy  # Normalized entropy [0, 1]
+
+            if self.adaptive_mode == "increase":
+                # Far-OOD favored: High entropy → High p
+                # p*(x) = p_base * (1 + alpha * H_norm)
+                fisher_power_adaptive = self.fisher_power * (1.0 + self.adaptive_alpha * entropy_norm)
+
+            elif self.adaptive_mode == "decrease":
+                # Near-OOD favored: High entropy → Low p
+                # p*(x) = p_base * (1 - alpha * H_norm)
+                # Clamp to ensure p > 0
+                fisher_power_adaptive = self.fisher_power * torch.clamp(1.0 - self.adaptive_alpha * entropy_norm, min=0.1)
+
+            elif self.adaptive_mode == "mixed":
+                # Hybrid: Low entropy → base p, Medium entropy → decrease, High entropy → increase
+                # Split at threshold
+                threshold = self.adaptive_entropy_threshold
+
+                # For H < threshold: gradually decrease (near-OOD behavior)
+                # For H >= threshold: increase again (far-OOD behavior)
+                low_mask = entropy_norm < threshold
+                high_mask = ~low_mask
+
+                fisher_power_adaptive = torch.zeros_like(entropy_norm)
+
+                # Low/medium entropy: decrease from base
+                if low_mask.any():
+                    fisher_power_adaptive[low_mask] = self.fisher_power * (
+                        1.0 - self.adaptive_alpha * entropy_norm[low_mask] / threshold
+                    )
+
+                # High entropy: increase from minimum
+                if high_mask.any():
+                    min_power = self.fisher_power * (1.0 - self.adaptive_alpha)
+                    excess_entropy = (entropy_norm[high_mask] - threshold) / (1.0 - threshold)
+                    fisher_power_adaptive[high_mask] = min_power + self.adaptive_alpha * self.fisher_power * excess_entropy
+
+                # Clamp to reasonable range
+                fisher_power_adaptive = torch.clamp(fisher_power_adaptive, min=0.1 * self.fisher_power, max=5.0 * self.fisher_power)
+
+            else:
+                raise ValueError(f"Unknown adaptive_mode: {self.adaptive_mode}. Must be 'increase', 'decrease', or 'mixed'")
         else:
             # Use fixed fisher power for all samples
             fisher_power_adaptive = torch.full((len(features),), self.fisher_power, device=g_batch.device)  # [batch]
