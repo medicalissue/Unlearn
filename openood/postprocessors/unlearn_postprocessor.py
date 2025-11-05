@@ -25,6 +25,9 @@ class UnlearnPostprocessor(BasePostprocessor):
         # Fisher Energy hyperparameters
         self.fisher_power = float(self.args.get("fisher_power", 1.0))
 
+        # APS hyperparameter search space
+        self.args_dict = self.config.postprocessor.postprocessor_sweep
+
         # Will be set in setup()
         self.fisher_W_tensor = None  # Fisher matrix for weights (global)
         self.fisher_b_tensor = None  # Fisher matrix for bias (global)
@@ -299,3 +302,19 @@ class UnlearnPostprocessor(BasePostprocessor):
         conf = -log_energy.cpu()
 
         return pred, conf
+
+    def set_hyperparam(self, hyperparam: list):
+        """Set hyperparameters for APS mode.
+
+        Args:
+            hyperparam: List containing [fisher_power]
+        """
+        self.fisher_power = hyperparam[0]
+
+    def get_hyperparam(self):
+        """Get current hyperparameters for APS mode.
+
+        Returns:
+            List containing [fisher_power]
+        """
+        return [self.fisher_power]
