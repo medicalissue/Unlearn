@@ -25,12 +25,21 @@ class FInDPostprocessor(BasePostprocessor):
         # Fisher Energy hyperparameters
         self.fisher_power = float(self.args.get("fisher_power", 1.0))
 
+        # Adaptive Fisher Power hyperparameters
+        self.use_adaptive_power = bool(self.args.get("use_adaptive_power", False))
+        self.adaptive_alpha = float(self.args.get("adaptive_alpha", 1.0))
+
+        # Tail Fisher Energy hyperparameters
+        self.use_tail_fisher = bool(self.args.get("use_tail_fisher", False))
+        self.tail_quantile = float(self.args.get("tail_quantile", 0.2))
+
         # APS hyperparameter search space
         self.args_dict = self.config.postprocessor.postprocessor_sweep
 
         # Will be set in setup()
         self.fisher_W_tensor = None  # Fisher matrix for weights (global)
         self.fisher_b_tensor = None  # Fisher matrix for bias (global)
+        self.tail_indices = None  # Indices of low-Fisher coordinates (for tail mode)
         self.model_arch = None  # Model architecture name (set in setup)
 
     def _get_fisher_cache_path(self):
@@ -88,6 +97,7 @@ class FInDPostprocessor(BasePostprocessor):
 
             self.fisher_W_tensor = cache['fisher_W'].cuda()
             self.fisher_b_tensor = cache['fisher_b'].cuda() if cache['fisher_b'] is not None else None
+            self.tail_indices = cache.get('tail_indices', None)  # Load tail_indices if available
 
             print(f"✓ Loaded Fisher matrix from cache: {cache_path}")
             print(f"  Dataset: {cache.get('dataset_name')}, Model: {cache.get('model_arch')}")
@@ -102,6 +112,7 @@ class FInDPostprocessor(BasePostprocessor):
             cache = {
                 'fisher_W': self.fisher_W_tensor.cpu(),
                 'fisher_b': self.fisher_b_tensor.cpu() if self.fisher_b_tensor is not None else None,
+                'tail_indices': self.tail_indices,  # Save tail_indices if computed
                 'num_classes': self.num_classes,
                 'dataset_name': self.config.dataset.name,
                 'model_arch': self.model_arch,
@@ -141,6 +152,33 @@ class FInDPostprocessor(BasePostprocessor):
             return linear_layers[-1]
 
         raise ValueError("Cannot find FC layer in the network")
+
+    def _compute_tail_indices(self):
+        """Compute indices of low-Fisher coordinates (tail mode).
+
+        Selects coordinates with Fisher values in the bottom k-quantile.
+        """
+        # Flatten Fisher matrix
+        if self.fisher_b_tensor is not None:
+            F_vec = torch.cat([
+                self.fisher_W_tensor.flatten(),
+                self.fisher_b_tensor.flatten()
+            ])
+        else:
+            F_vec = self.fisher_W_tensor.flatten()
+
+        # Compute quantile threshold
+        k = self.tail_quantile
+        threshold = torch.quantile(F_vec, k)
+
+        # Select indices where F_i <= threshold
+        tail_mask = F_vec <= threshold
+        self.tail_indices = torch.where(tail_mask)[0]
+
+        total_dim = len(F_vec)
+        tail_dim = len(self.tail_indices)
+        print(f"✓ Tail Fisher mode: Selected {tail_dim}/{total_dim} coordinates ({tail_dim/total_dim*100:.1f}%)")
+        print(f"  Quantile threshold: {k*100:.1f}% → Fisher <= {threshold:.2e}")
 
     def setup(self, net: nn.Module, id_loader_dict, ood_loader_dict):
         """Compute or load Fisher Information Matrix from ID training data."""
@@ -226,6 +264,10 @@ class FInDPostprocessor(BasePostprocessor):
 
         print(f"Fisher Information Matrix computed")
 
+        # Compute tail indices if tail Fisher mode is enabled
+        if self.use_tail_fisher:
+            self._compute_tail_indices()
+
         # Save to cache
         self._save_fisher_matrix(cache_path)
 
@@ -285,13 +327,30 @@ class FInDPostprocessor(BasePostprocessor):
             g_batch = grad_W_batch.reshape(len(features), -1)  # [batch, num_classes * feature_dim]
             F_vec = self.fisher_W_tensor.flatten()  # [num_classes * feature_dim]
 
+        # Adaptive Fisher Power: adjust power based on prediction entropy
+        if self.use_adaptive_power:
+            # Compute entropy: H(x) = -sum(p * log(p))
+            entropy = -(probs * torch.log(probs + 1e-10)).sum(dim=-1)  # [batch]
+            max_entropy = torch.log(torch.tensor(self.num_classes, dtype=torch.float32))
+            # Adaptive power: p*(x) = p_base * (1 + alpha * H(x) / log(C))
+            fisher_power_adaptive = self.fisher_power * (1.0 + self.adaptive_alpha * entropy / max_entropy)  # [batch]
+        else:
+            # Use fixed fisher power for all samples
+            fisher_power_adaptive = torch.full((len(features),), self.fisher_power, device=g_batch.device)  # [batch]
+
+        # Tail Fisher Energy: select low-Fisher coordinates
+        if self.use_tail_fisher and self.tail_indices is not None:
+            # Use only tail coordinates
+            g_batch = g_batch[:, self.tail_indices]  # [batch, tail_dim]
+            F_vec = F_vec[self.tail_indices]  # [tail_dim]
+
         # Compute Fisher Energy: S(x) = sum(g^2 / F^p) for each sample
         # Log-space: log(g^2 / F^p) = 2*log|g| - p*log(F)
         eps_g = 1e-10
         eps_f = 1e-8
         log_g_squared = 2.0 * torch.log(torch.abs(g_batch) + eps_g)  # [batch, dim]
-        log_F_powered = self.fisher_power * torch.log(F_vec + eps_f)  # [dim]
-        log_terms = log_g_squared - log_F_powered.unsqueeze(0)  # [batch, dim]
+        log_F_powered = fisher_power_adaptive.unsqueeze(1) * torch.log(F_vec + eps_f).unsqueeze(0)  # [batch, dim]
+        log_terms = log_g_squared - log_F_powered  # [batch, dim]
 
         # LogSumExp for each sample
         max_log = torch.max(log_terms, dim=1, keepdim=True)[0]  # [batch, 1]

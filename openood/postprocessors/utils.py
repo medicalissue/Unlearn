@@ -90,7 +90,7 @@ def get_postprocessor(config: Config):
         'gen': GENPostprocessor,
         'relation': RelationPostprocessor,
         't2fnorm': T2FNormPostprocessor,
-        'unlearn': UnlearnPostprocessor,
+        'find': FInDPostprocessor,
     }
 
     return postprocessors[config.postprocessor.name](config)
