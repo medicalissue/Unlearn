@@ -28,12 +28,6 @@ class FInDPostprocessor(BasePostprocessor):
         # Adaptive Fisher Power hyperparameters
         self.use_adaptive_power = bool(self.args.get("use_adaptive_power", False))
         self.adaptive_alpha = float(self.args.get("adaptive_alpha", 1.0))
-        self.adaptive_mode = str(self.args.get("adaptive_mode", "increase"))  # "increase", "decrease", "mixed"
-        self.adaptive_entropy_threshold = float(self.args.get("adaptive_entropy_threshold", 0.7))  # For mixed mode
-
-        # Tail Fisher Energy hyperparameters
-        self.use_tail_fisher = bool(self.args.get("use_tail_fisher", False))
-        self.tail_quantile = float(self.args.get("tail_quantile", 0.2))
 
         # APS hyperparameter search space
         self.args_dict = self.config.postprocessor.postprocessor_sweep
@@ -41,7 +35,6 @@ class FInDPostprocessor(BasePostprocessor):
         # Will be set in setup()
         self.fisher_W_tensor = None  # Fisher matrix for weights (global)
         self.fisher_b_tensor = None  # Fisher matrix for bias (global)
-        self.tail_indices = None  # Indices of low-Fisher coordinates (for tail mode)
         self.model_arch = None  # Model architecture name (set in setup)
 
     def _get_fisher_cache_path(self):
@@ -99,7 +92,6 @@ class FInDPostprocessor(BasePostprocessor):
 
             self.fisher_W_tensor = cache['fisher_W'].cuda()
             self.fisher_b_tensor = cache['fisher_b'].cuda() if cache['fisher_b'] is not None else None
-            self.tail_indices = cache.get('tail_indices', None)  # Load tail_indices if available
 
             print(f"✓ Loaded Fisher matrix from cache: {cache_path}")
             print(f"  Dataset: {cache.get('dataset_name')}, Model: {cache.get('model_arch')}")
@@ -114,7 +106,6 @@ class FInDPostprocessor(BasePostprocessor):
             cache = {
                 'fisher_W': self.fisher_W_tensor.cpu(),
                 'fisher_b': self.fisher_b_tensor.cpu() if self.fisher_b_tensor is not None else None,
-                'tail_indices': self.tail_indices,  # Save tail_indices if computed
                 'num_classes': self.num_classes,
                 'dataset_name': self.config.dataset.name,
                 'model_arch': self.model_arch,
@@ -154,33 +145,6 @@ class FInDPostprocessor(BasePostprocessor):
             return linear_layers[-1]
 
         raise ValueError("Cannot find FC layer in the network")
-
-    def _compute_tail_indices(self):
-        """Compute indices of low-Fisher coordinates (tail mode).
-
-        Selects coordinates with Fisher values in the bottom k-quantile.
-        """
-        # Flatten Fisher matrix
-        if self.fisher_b_tensor is not None:
-            F_vec = torch.cat([
-                self.fisher_W_tensor.flatten(),
-                self.fisher_b_tensor.flatten()
-            ])
-        else:
-            F_vec = self.fisher_W_tensor.flatten()
-
-        # Compute quantile threshold
-        k = self.tail_quantile
-        threshold = torch.quantile(F_vec, k)
-
-        # Select indices where F_i <= threshold
-        tail_mask = F_vec <= threshold
-        self.tail_indices = torch.where(tail_mask)[0]
-
-        total_dim = len(F_vec)
-        tail_dim = len(self.tail_indices)
-        print(f"✓ Tail Fisher mode: Selected {tail_dim}/{total_dim} coordinates ({tail_dim/total_dim*100:.1f}%)")
-        print(f"  Quantile threshold: {k*100:.1f}% → Fisher <= {threshold:.2e}")
 
     def setup(self, net: nn.Module, id_loader_dict, ood_loader_dict):
         """Compute or load Fisher Information Matrix from ID training data."""
@@ -266,10 +230,6 @@ class FInDPostprocessor(BasePostprocessor):
 
         print(f"Fisher Information Matrix computed")
 
-        # Compute tail indices if tail Fisher mode is enabled
-        if self.use_tail_fisher:
-            self._compute_tail_indices()
-
         # Save to cache
         self._save_fisher_matrix(cache_path)
 
@@ -336,55 +296,12 @@ class FInDPostprocessor(BasePostprocessor):
             max_entropy = torch.log(torch.tensor(self.num_classes, dtype=torch.float32))
             entropy_norm = entropy / max_entropy  # Normalized entropy [0, 1]
 
-            if self.adaptive_mode == "increase":
-                # Far-OOD favored: High entropy → High p
-                # p*(x) = p_base * (1 + alpha * H_norm)
-                fisher_power_adaptive = self.fisher_power * (1.0 + self.adaptive_alpha * entropy_norm)
-
-            elif self.adaptive_mode == "decrease":
-                # Near-OOD favored: High entropy → Low p
-                # p*(x) = p_base * (1 - alpha * H_norm)
-                # Clamp to ensure p > 0
-                fisher_power_adaptive = self.fisher_power * torch.clamp(1.0 - self.adaptive_alpha * entropy_norm, min=0.1)
-
-            elif self.adaptive_mode == "mixed":
-                # Hybrid: Low entropy → base p, Medium entropy → decrease, High entropy → increase
-                # Split at threshold
-                threshold = self.adaptive_entropy_threshold
-
-                # For H < threshold: gradually decrease (near-OOD behavior)
-                # For H >= threshold: increase again (far-OOD behavior)
-                low_mask = entropy_norm < threshold
-                high_mask = ~low_mask
-
-                fisher_power_adaptive = torch.zeros_like(entropy_norm)
-
-                # Low/medium entropy: decrease from base
-                if low_mask.any():
-                    fisher_power_adaptive[low_mask] = self.fisher_power * (
-                        1.0 - self.adaptive_alpha * entropy_norm[low_mask] / threshold
-                    )
-
-                # High entropy: increase from minimum
-                if high_mask.any():
-                    min_power = self.fisher_power * (1.0 - self.adaptive_alpha)
-                    excess_entropy = (entropy_norm[high_mask] - threshold) / (1.0 - threshold)
-                    fisher_power_adaptive[high_mask] = min_power + self.adaptive_alpha * self.fisher_power * excess_entropy
-
-                # Clamp to reasonable range
-                fisher_power_adaptive = torch.clamp(fisher_power_adaptive, min=0.1 * self.fisher_power, max=5.0 * self.fisher_power)
-
-            else:
-                raise ValueError(f"Unknown adaptive_mode: {self.adaptive_mode}. Must be 'increase', 'decrease', or 'mixed'")
+            # Adaptive power: p*(x) = p_base * (1 + α*H)
+            # High entropy → High power (favors far-OOD detection)
+            fisher_power_adaptive = self.fisher_power * (1.0 + self.adaptive_alpha * entropy_norm)
         else:
             # Use fixed fisher power for all samples
             fisher_power_adaptive = torch.full((len(features),), self.fisher_power, device=g_batch.device)  # [batch]
-
-        # Tail Fisher Energy: select low-Fisher coordinates
-        if self.use_tail_fisher and self.tail_indices is not None:
-            # Use only tail coordinates
-            g_batch = g_batch[:, self.tail_indices]  # [batch, tail_dim]
-            F_vec = F_vec[self.tail_indices]  # [tail_dim]
 
         # Compute Fisher Energy: S(x) = sum(g^2 / F^p) for each sample
         # Log-space: log(g^2 / F^p) = 2*log|g| - p*log(F)
