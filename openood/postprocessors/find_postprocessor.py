@@ -326,14 +326,19 @@ class FInDPostprocessor(BasePostprocessor):
         """Set hyperparameters for APS mode.
 
         Args:
-            hyperparam: List containing [fisher_power]
+            hyperparam: List containing [fisher_power] or [fisher_power, adaptive_alpha]
         """
         self.fisher_power = hyperparam[0]
+        if len(hyperparam) > 1:
+            self.adaptive_alpha = hyperparam[1]
 
     def get_hyperparam(self):
         """Get current hyperparameters for APS mode.
 
         Returns:
-            List containing [fisher_power]
+            List containing [fisher_power] or [fisher_power, adaptive_alpha] if adaptive mode enabled
         """
-        return [self.fisher_power]
+        if self.use_adaptive_power:
+            return [self.fisher_power, self.adaptive_alpha]
+        else:
+            return [self.fisher_power]
