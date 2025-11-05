@@ -43,7 +43,7 @@ from .vim_postprocessor import VIMPostprocessor
 from .rts_postprocessor import RTSPostprocessor
 from .gen_postprocessor import GENPostprocessor
 from .relation_postprocessor import RelationPostprocessor
-from .unlearn_postprocessor import UnlearnPostprocessor
+from .find_postprocessor import FInDPostprocessor
 
 def get_postprocessor(config: Config):
     postprocessors = {

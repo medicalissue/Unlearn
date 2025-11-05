@@ -8,7 +8,7 @@ from .base_postprocessor import BasePostprocessor
 from .info import num_classes_dict
 
 
-class UnlearnPostprocessor(BasePostprocessor):
+class FInDPostprocessor(BasePostprocessor):
     """Fisher Energy-based OOD detection using test-time gradients.
 
     Computes S(x) = g^T F^{-p} g where:
@@ -228,6 +228,7 @@ class UnlearnPostprocessor(BasePostprocessor):
 
         # Save to cache
         self._save_fisher_matrix(cache_path)
+
 
     @torch.no_grad()
     def postprocess(self, net: nn.Module, data: Any):
