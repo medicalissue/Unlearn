@@ -1,0 +1,5125 @@
+[33mcommit 8449487b087d9e5fbe4aec15483781728e780f32[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m
+Author: medicalissue <medicalissue@cau.ac.kr>
+Date:   Wed Nov 5 23:56:09 2025 +0900
+
+    hmm
+
+[33mcommit 8fd8170cfe88e48eb82c27591c8aa06e0b5a0cbd[m[33m ([m[1;31morigin/main[m[33m)[m
+Author: medicalissue <medicalissue@cau.ac.kr>
+Date:   Wed Nov 5 20:45:12 2025 +0900
+
+    fix hyperparam
+
+[33mcommit ff9c835dc0bb057ababf87a6fd9f4f7f934c8ee6[m
+Author: medicalissue <medicalissue@cau.ac.kr>
+Date:   Wed Nov 5 20:37:25 2025 +0900
+
+    AdaP
+
+[33mcommit f8c285b391b9af46a442db68d63c4e2394c31388[m
+Author: medicalissue <medicalissue@cau.ac.kr>
+Date:   Wed Nov 5 19:24:03 2025 +0900
+
+    mixed
+
+[33mcommit 27617263f9edb4a2766ed782a4013e9d8530fe5c[m
+Author: medicalissue <medicalissue@cau.ac.kr>
+Date:   Wed Nov 5 19:14:24 2025 +0900
+
+    adap
+
+[33mcommit 8d97dee1650fa96988a004e82705db7f5408ab5f[m
+Author: medicalissue <medicalissue@cau.ac.kr>
+Date:   Wed Nov 5 18:43:25 2025 +0900
+
+    to find
+
+[33mcommit 742803a46d89825e15b720384d6d62c935ed7880[m
+Author: medicalissue <medicalissue@cau.ac.kr>
+Date:   Wed Nov 5 09:06:04 2025 +0900
+
+    aps
+
+[33mcommit 373348c3b5b2dc42f8d471d37e0e7dcb4295b47d[m
+Author: medicalissue <medicalissue@cau.ac.kr>
+Date:   Wed Nov 5 08:54:33 2025 +0900
+
+    bbln
+
+[33mcommit 3ec37d601e8708683af6db01a2f2e62f8e4711b9[m
+Author: medicalissue <medicalissue@cau.ac.kr>
+Date:   Wed Nov 5 08:02:12 2025 +0900
+
+    baseline
+
+[33mcommit 07879630b1119b5811b79041a43ece66d9e7ab90[m
+Author: medicalissue <medicalissue@cau.ac.kr>
+Date:   Wed Nov 5 06:17:02 2025 +0900
+
+    ㄱㄱ
+
+[33mcommit 2bbd1587c8fed5f43ea52036a3cf39d9876ab4f3[m
+Author: medicalissue <medicalissue@cau.ac.kr>
+Date:   Wed Nov 5 06:11:53 2025 +0900
+
+    add log trick
+
+[33mcommit 00e3a078d3e2260204f2104a1e707798a6f7d8cf[m
+Author: medicalissue <medicalissue@cau.ac.kr>
+Date:   Wed Nov 5 05:57:04 2025 +0900
+
+    sv
+
+[33mcommit 5583ab4dcff8a2c19736b358e4b8fb7b124f8c89[m
+Author: medicalissue <medicalissue@cau.ac.kr>
+Date:   Wed Nov 5 05:32:22 2025 +0900
+
+    save
+
+[33mcommit e12c85ddf6420920600151f50d524651d6faca32[m
+Author: medicalissue <medicalissue@cau.ac.kr>
+Date:   Wed Nov 5 03:31:00 2025 +0900
+
+    aps
+
+[33mcommit 859c2da9ba19328895a9be122a6db8287133c60d[m
+Author: medicalissue <medicalissue@cau.ac.kr>
+Date:   Wed Nov 5 02:07:09 2025 +0900
+
+    savesavesave
+
+[33mcommit 323390884e662d182efc7143d554fb7f0899f551[m
+Author: medicalissue <medicalissue@cau.ac.kr>
+Date:   Wed Nov 5 01:41:37 2025 +0900
+
+    add fisher
+
+[33mcommit 56a96b08cf7699f1d5faf1867f104d46b2e89ea2[m
+Author: medicalissue <medicalissue@cau.ac.kr>
+Date:   Wed Nov 5 00:42:45 2025 +0900
+
+    add log trace
+
+[33mcommit c4037ae7d61e58c5e4b715e313a536344b907fa3[m
+Author: medicalissue <medicalissue@cau.ac.kr>
+Date:   Tue Nov 4 21:44:04 2025 +0900
+
+    save
+
+[33mcommit 69171d2a7009f1a6801950e3c1c8444b538f1db8[m
+Author: medicalissue <medicalissue@cau.ac.kr>
+Date:   Tue Nov 4 18:26:07 2025 +0900
+
+    data
+
+[33mcommit ba51e50d4d4353e3b7b4dabca171ac1f836e5097[m
+Author: medicalissue <medicalissue@cau.ac.kr>
+Date:   Tue Nov 4 17:48:55 2025 +0900
+
+    save
+
+[33mcommit 13edfeeb22a7f0a30044d85385e8c4d567159a21[m
+Author: medicalissue <medicalissue@cau.ac.kr>
+Date:   Tue Nov 4 16:32:03 2025 +0900
+
+    compress
+
+[33mcommit b9f70de85fddd2b7c6ce18ce1a1a04733999fb3c[m
+Author: medicalissue <medicalissue@cau.ac.kr>
+Date:   Tue Nov 4 16:21:37 2025 +0900
+
+    정리
+
+[33mcommit c0658480d855e752a0d88d7bf2d74b6f507a2a42[m
+Author: medicalissue <medicalissue@cau.ac.kr>
+Date:   Tue Nov 4 15:45:29 2025 +0900
+
+    save~
+
+[33mcommit d9a891f4ae6cf8711d18e1e75cd9927bf87b8474[m
+Author: medicalissue <medicalissue@cau.ac.kr>
+Date:   Sun Nov 2 18:37:16 2025 +0900
+
+    안전제일스
+
+[33mcommit ee61bbce8995ce556b3c6830e2522eff1379d2b6[m
+Author: medicalissue <medicalissue@cau.ac.kr>
+Date:   Sun Nov 2 17:32:31 2025 +0900
+
+    save~
+
+[33mcommit a28a6fdfcd57c4d2edfe31aa943a207d5af348ad[m
+Author: medicalissue <medicalissue@cau.ac.kr>
+Date:   Sun Nov 2 13:36:15 2025 +0900
+
+    ㄴㅁㅍㄷ
+
+[33mcommit fd5032fe00bdc79081fb64b8c602ec63041143bb[m
+Author: medicalissue <medicalissue@cau.ac.kr>
+Date:   Sun Nov 2 12:35:03 2025 +0900
+
+    prototype
+
+[33mcommit fda3e67bf6fd8967ee0bab5c56987aa6afff3bba[m
+Author: medicalissue <medicalissue@cau.ac.kr>
+Date:   Fri Oct 31 19:15:05 2025 +0900
+
+    unlearn
+
+[33mcommit a485cbb49d692b5f88e38b5ae2b68331f277b9ea[m
+Merge: 2b32e52 3e35f74
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Sat Aug 9 23:49:26 2025 -0700
+
+    Merge pull request #294 from zjysteven/main
+    
+    Change default value of `att` to False in get_default_preprocessor
+
+[33mcommit 3e35f74ef31a4b014e8e4b142b1563ef4b9e3a22[m
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Sat Aug 9 23:47:22 2025 -0700
+
+    Change default value of `att` to False in get_default_preprocessor
+
+[33mcommit 2b32e52065b97c333e22a4608b7002cd2998b9d1[m
+Merge: 24fbf90 e4bf8a7
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon May 19 15:47:27 2025 +0800
+
+    Merge pull request #275 from adverML/pr_adversarial_examples
+    
+    add adversarial attacks which create datasets
+
+[33mcommit e4bf8a7af0d165344307b93480bc5075a6204119[m
+Author: Peter Lorenz <jS5t3r@users.noreply.github.com>
+Date:   Tue Mar 25 13:43:53 2025 +0000
+
+    add pre-commit-config.yaml
+
+[33mcommit 24fbf90f74ede00ea2a3f2f3c85e3b3800ac3e30[m
+Merge: 1c55274 b7daeaa
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 17 23:03:18 2025 -0700
+
+    Merge pull request #287 from litianliu/nci
+    
+    Fix typo in README.md
+
+[33mcommit b7daeaa2eabf1ebfe5f82ab9ba6adc5423726e9f[m
+Author: litianliu <52182327+litianliu@users.noreply.github.com>
+Date:   Mon Mar 17 23:00:10 2025 -0700
+
+    Fix typo in README.md
+
+[33mcommit 1c55274583840cd7de8aa3a687deb1e79fe1a187[m
+Merge: 7c89dc9 11f3d19
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Mar 18 12:03:48 2025 +0800
+
+    Merge pull request #284 from sudarshanregmi/iodin
+    
+    Add i-ODIN
+
+[33mcommit 11f3d192a7d11ee4193157eb9ae01c0bcb0ab9aa[m
+Merge: 74c579b 7c89dc9
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Mar 18 12:03:16 2025 +0800
+
+    Merge branch 'main' into iodin
+
+[33mcommit 7c89dc90e6400521408ebb617b085b269bb6325e[m
+Merge: 13d8964 644968b
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Mar 18 12:01:03 2025 +0800
+
+    Merge pull request #258 from jonatan-hanssen/absolute-path-fix
+    
+    Fix erroneous relative path
+
+[33mcommit 13d8964be1bf7723645454e802cb2e0edc121318[m
+Merge: d92238f 5557826
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Mar 18 11:59:30 2025 +0800
+
+    Merge pull request #286 from litianliu/nci
+    
+    Add OOD detector NCI
+
+[33mcommit 5557826c33d63f0fd8715cfd3eb7eab5a176dc49[m
+Author: Litian <litianl@mit.edu>
+Date:   Mon Mar 17 06:41:11 2025 +0000
+
+    add method nci
+
+[33mcommit 2e4dd15e8965546711c38ec1fdf38d239ad10db3[m
+Author: Litian <litianl@mit.edu>
+Date:   Sun Mar 16 22:49:46 2025 +0000
+
+    add nci in README
+
+[33mcommit 74c579b5f2d74f4a882c6a04fe9ba8fccbd2b7f7[m
+Author: Sudarshan Regmi <sudarshanregmi9@gmail.com>
+Date:   Mon Mar 17 04:09:51 2025 +0545
+
+    Add i-ODIN
+
+[33mcommit d92238fe0b67a8f0f10465270b44c1e94040a546[m
+Merge: 48c203c 19c1422
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Sun Mar 16 11:20:49 2025 -0700
+
+    Merge pull request #279 from sudarshanregmi/adascale
+    
+    Add AdaSCALE-A and AdaSCALE-L
+
+[33mcommit 48c203cbfd0ff06be4b17e709921acd247692971[m
+Merge: ea99c14 8de7152
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Sun Mar 16 11:20:37 2025 -0700
+
+    Merge pull request #277 from sudarshanregmi/ascood
+    
+    Add ASCOOD
+
+[33mcommit 8de7152d8b271bf87ca1ba2f5dd257878c3d5ebc[m
+Author: Sudarshan Regmi <sudarshanregmi9@gmail.com>
+Date:   Tue Mar 11 20:34:23 2025 +0545
+
+    Add ASCOOD
+
+[33mcommit 19c1422c59798a3117209a34e5aaa5adeb930c28[m
+Author: Sudarshan Regmi <sudarshanregmi9@gmail.com>
+Date:   Tue Mar 11 17:34:42 2025 +0545
+
+    Add AdaSCALE-A and AdaSCALE-L
+
+[33mcommit a8b4fc71e1b0b737f25a6d6fa7d0f4da2603ffaa[m
+Author: Peter Lorenz <peter.lorenz@ntu.edu.sg>
+Date:   Wed Feb 12 16:46:05 2025 +0800
+
+    add adversarial attacks
+
+[33mcommit ea99c1443799bc12191d83fc21e0f87f97661623[m
+Merge: be315e6 f0b10f3
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Mon Dec 16 15:14:02 2024 -0800
+
+    Merge pull request #267 from zjysteven/main
+    
+    Update README.md
+
+[33mcommit f0b10f3db5e57f27060c2118b8873227ea4b856c[m
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Mon Dec 16 15:13:30 2024 -0800
+
+    Update README.md
+
+[33mcommit be315e6e37e48bf0451576c0c43dcda06dcd8d08[m
+Merge: 3d7c483 4730249
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Wed Sep 25 15:22:50 2024 -0400
+
+    Merge pull request #260 from zjysteven/main
+    
+    Update README.md
+
+[33mcommit 473024920c25d3f2933b483fd9533842459a08e0[m
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Wed Sep 25 15:21:43 2024 -0400
+
+    Update README.md
+
+[33mcommit 644968b461842ab6636d681a6f3d276787f4ba7d[m
+Author: Jonatan Hanssen <jonatan.hanssen@outlook.com>
+Date:   Mon Sep 9 11:27:07 2024 +0200
+
+    Fix erroneous relative path
+    
+    Signed-off-by: Jonatan Hanssen <jonatan.hanssen@outlook.com>
+
+[33mcommit 3d7c483d88f15b514ea051799dde4a0cdce30d9c[m
+Merge: f1c579b e08eaa2
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Sat Aug 17 15:49:36 2024 -0400
+
+    Merge pull request #256 from zjysteven/main
+    
+    Adding UPD and new survey
+
+[33mcommit e08eaa2f2caa8f69d772c26c39754a5cb7c2c2fb[m
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Sat Aug 17 15:49:06 2024 -0400
+
+    Adding UPD and new survey
+
+[33mcommit f1c579be15a0e4b40121989b31ae7518dc810f5e[m
+Merge: 1d0abe1 add25b1
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Fri Aug 9 16:20:11 2024 -0400
+
+    Merge pull request #255 from zjysteven/main
+    
+    update setup.py so that libmr w/o cache install can work
+
+[33mcommit add25b1fb3dbff2480039c90fdab3a123251da52[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Fri Aug 9 16:17:04 2024 -0400
+
+    update setup.py so that libmr w/o cache install can work
+
+[33mcommit 1d0abe1d9061da57c4c3d2b93b92dda696848c15[m
+Merge: dc292c8 2a9d492
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Tue Jul 30 17:06:22 2024 -0400
+
+    Merge pull request #253 from Jingkang50/imagenet-es
+    
+    ImageNet-ES integration
+
+[33mcommit 2a9d492558c05590ec8f5225b2ee181058be8a08[m
+Merge: d3eba87 275260a
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Tue Jul 30 17:04:35 2024 -0400
+
+    Merge pull request #252 from zjysteven/imagenet-es
+    
+    update the link to the new benchmark_imglist.zip
+
+[33mcommit 275260a4767387c9e125fd0fbefa675c6c3a267e[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Tue Jul 30 16:52:37 2024 -0400
+
+    update the link to the new benchmark_imglist.zip
+
+[33mcommit d3eba876c17c132c8570f7892079eab13a6b82f2[m
+Merge: dc292c8 2187de5
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Tue Jul 30 16:28:32 2024 -0400
+
+    Merge pull request #250 from Edw2n/imagenet-es-integration
+    
+    ImageNet-ES integration
+
+[33mcommit 2187de5f12ba099fa23184eb761deec5805fcf4f[m
+Author: Edw2n <esbaek@hcil.snu.ac.kr>
+Date:   Fri Jul 26 17:29:53 2024 +0900
+
+    ImageNet-ES integration as csid for ImageNet 1k
+
+[33mcommit 66a007c70578e5aa13e89b9b270ca76dc0037ee9[m
+Author: Edw2n <esbaek@hcil.snu.ac.kr>
+Date:   Fri Jul 26 17:28:51 2024 +0900
+
+    Add an imglist of ImageNet-ES(testset)
+
+[33mcommit dc292c81717d117ff0f6dae89ed0451be6e2c85c[m
+Merge: e91ea0a 4f5400f
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Sun Jul 14 17:56:21 2024 -0400
+
+    Merge pull request #248 from zjysteven/main
+    
+    Minor update of issue template
+
+[33mcommit 4f5400f0da0738c61ef0483425fff3c62abd77b0[m
+Merge: b16360a e91ea0a
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Sun Jul 14 17:55:52 2024 -0400
+
+    Merge branch 'Jingkang50:main' into main
+
+[33mcommit b16360a69cf9544857a9277b731a2f12e4a287fd[m
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Sun Jul 14 17:55:28 2024 -0400
+
+    Update issue templates
+
+[33mcommit e91ea0a0417e06d7a54a4a13b0a087586167b7dd[m
+Merge: 34eb2db 4527d5d
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Sun Jul 14 14:00:18 2024 -0400
+
+    Merge pull request #246 from zjysteven/main
+    
+    Minor updates
+
+[33mcommit 4527d5d6470051b0d9f33eadb82764bb20479b4c[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sun Jul 14 13:56:50 2024 -0400
+
+    runs pre-commit to correct some format
+
+[33mcommit d39f3f2d7a3846f1c8458823e57a599773f00f47[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sun Jul 14 13:50:05 2024 -0400
+
+    update readme (# methods and references)
+
+[33mcommit 34eb2dbc32f59e51b289a7b2f8f3dfdcd1e02165[m
+Merge: d60a9e1 406dba0
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Sun Jul 14 13:42:10 2024 -0400
+
+    Merge pull request #244 from litianliu/fdbd
+    
+    Add OOD detector fdbd
+
+[33mcommit 406dba021bfc620f04cd0e8ea413cc2df2d60d9e[m
+Author: litianliu <52182327+litianliu@users.noreply.github.com>
+Date:   Sun Jul 14 10:40:39 2024 -0700
+
+    Add fDBD as a supported method in README
+
+[33mcommit d60a9e1c8aa1dd843cfea197cb5b7e06fb0d206a[m
+Merge: ac5cf1a cc80a0c
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Sun Jul 14 23:29:08 2024 +0800
+
+    Merge pull request #245 from zjysteven/main
+    
+    Adding more instructions about leaderboard contribution
+
+[33mcommit cc80a0cf35a3335871d378882ad3f9e119ba5e6a[m
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Sun Jul 14 10:58:31 2024 -0400
+
+    Update README.md to add more instructions on contributing
+
+[33mcommit c0a754e9dbcd55ec0ef7fae2e0ca1cb498e6902e[m
+Merge: 261e1e6 ac5cf1a
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Sun Jul 14 10:51:07 2024 -0400
+
+    Merge branch 'Jingkang50:main' into main
+
+[33mcommit 261e1e657d52276431bc44982a7d4301c65a6aac[m
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Sun Jul 14 10:50:15 2024 -0400
+
+    Update issue templates
+
+[33mcommit 8274e23a098dbef985bb5eba401e0ee8bafd635e[m
+Author: Litian Liu <litianl@mit.edu>
+Date:   Sun Jul 14 03:42:47 2024 +0000
+
+    Add postprocessor fdbd
+
+[33mcommit ac5cf1aa51c30a6e89db10c30f4fc2ef94f97f5d[m
+Merge: ec95f3c b540d39
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Thu Jun 13 18:46:12 2024 -0400
+
+    Merge pull request #242 from sudarshanregmi/reweightood
+    
+    Add ReweightOOD and minor update to README
+
+[33mcommit b540d3937a17100c35aa8d060fb6b61b52fde74f[m
+Author: Sudarshan Regmi <sudarshanregmi9@gmail.com>
+Date:   Mon Jun 10 14:46:08 2024 +0545
+
+    add ReweightOOD and minor update to README
+
+[33mcommit ec95f3cd605da422f6712186789f1e80d438200a[m
+Merge: e608120 31668d8
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Thu Jun 6 15:06:58 2024 -0400
+
+    Merge pull request #239 from sudarshanregmi/t2fnorm
+    
+    Refactor T2FNorm
+
+[33mcommit 31668d80ad35c99f55d2735ab5042a1f290542ff[m
+Author: Sudarshan Regmi <sudarshanregmi9@gmail.com>
+Date:   Wed Jun 5 22:33:40 2024 +0545
+
+    Refactor T2FNorm
+
+[33mcommit e6081206e93a9bd908b676bb4dfc229c7149bad9[m
+Merge: 183f86e 9a9902f
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Sun Jun 2 20:42:51 2024 -0400
+
+    Merge pull request #238 from jeff024/palm
+    
+    minor update to README
+
+[33mcommit 9a9902f5ee40d9370c4a63d81b21bda06f86055e[m
+Author: jeff_dg02 <lhd32262175@gmail.com>
+Date:   Mon Jun 3 10:35:30 2024 +1000
+
+    minor update to README
+
+[33mcommit 183f86e2f5756429d643a0c65f43060d7ecea2be[m
+Merge: 18c6f51 b6ee781
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Fri May 31 21:17:46 2024 -0400
+
+    Merge pull request #236 from jeff024/palm
+    
+    Enquiry to add a new method PALM
+
+[33mcommit b6ee78161f3ccb94753486c3014487a5d1983f7a[m
+Author: jeff_dg02 <lhd32262175@gmail.com>
+Date:   Sat Jun 1 10:32:19 2024 +1000
+
+    add a new method PALM
+
+[33mcommit 18c6f5174a2f518e2a8e819ffb1cd1914bcf12e0[m
+Merge: 2010c77 5ddf27f
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Tue Feb 6 17:18:21 2024 -0500
+
+    Merge pull request #225 from kai422/main
+    
+    correct ish_reshaper
+
+[33mcommit 5ddf27f211cc0ab14b65513e9cf5793f520a9646[m
+Author: kai422 <kai.xu.422@gmail.com>
+Date:   Tue Feb 6 20:27:32 2024 +0800
+
+    correct ish_reshaper
+
+[33mcommit 2010c778c5d3aede85815c7fc8ef6fc209072a6a[m
+Merge: e6a1b19 aa57526
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Sun Feb 4 20:55:25 2024 -0500
+
+    Merge pull request #223 from zjysteven/main
+    
+    Add SyncBN and DDP sampler's set_epoch
+
+[33mcommit aa575264a58892ffe9f006d13582cec61c995e93[m
+Merge: 847b189 e6a1b19
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sun Feb 4 20:53:37 2024 -0500
+
+    Merge branch 'main' of github.com:zjysteven/OpenOOD into main
+
+[33mcommit 847b189b3532fc23d3092eec378f588add809f97[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sun Feb 4 14:31:09 2024 -0500
+
+    add set_epoch for ddp sampler and sync_bn
+
+[33mcommit e6a1b1954cd048e4246b696a0c32db983c70b1c7[m
+Merge: 0b56017 7c25736
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Thu Jan 25 11:59:48 2024 -0500
+
+    Merge pull request #220 from kai422/main
+    
+    Add Scale and ISH (ICLR'24 https://openreview.net/forum?id=RDSTjtnqCg)
+
+[33mcommit 7c2573632ea4c2b3ba5b5d4a41e80c452432c3b6[m
+Author: Kai <kai.xu.422@gmail.com>
+Date:   Fri Jan 26 00:49:14 2024 +0800
+
+    add pretrained model link
+
+[33mcommit 8197898ac6cce3ab2177009a5ad86ddcb5219f92[m
+Author: Kai <kai.xu.422@gmail.com>
+Date:   Fri Jan 26 00:45:08 2024 +0800
+
+    Upload ISH training method (ICLR2024) https://openreview.net/forum?id=RDSTjtnqCg
+
+[33mcommit abb6b91da31dfc841dfc2719362c4e0674105411[m
+Author: Kai <kai.xu.422@gmail.com>
+Date:   Thu Jan 25 16:40:29 2024 +0800
+
+    update readme for scale and ish
+
+[33mcommit 0b56017ff0b020d4dc9effb68ea73bf4f9736449[m
+Merge: 041166f ea0370c
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Tue Jan 23 13:52:37 2024 -0500
+
+    Merge pull request #221 from zjysteven/main
+    
+    remove legacy environment.yml to avoid confusion
+
+[33mcommit ea0370cd56d47f6a2f7e28fad26a1bacdfa20af0[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Tue Jan 23 13:52:06 2024 -0500
+
+    remove legacy environment.yml to avoid confusion
+
+[33mcommit 0975fc23cd677ef0added19cc3db08877f1f7cde[m
+Author: Kai <kai.xu.422@gmail.com>
+Date:   Tue Jan 23 11:12:19 2024 +0800
+
+    Upload ScalePostprocessors (ICLR2024) https://openreview.net/forum?id=RDSTjtnqCg
+
+[33mcommit 041166f6e7c15c7bbf88ffab4053a0b21e4b35ef[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Jan 2 16:18:27 2024 +0800
+
+    Update README.md
+
+[33mcommit c0f233baf81f7e93adcce66d08470e4b0ceb2f48[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Jan 2 16:17:55 2024 +0800
+
+    Update README.md
+
+[33mcommit b608342fedb44e4d4fd4977bb0aa7a5712486006[m
+Merge: 2ef7f0a ad96dd7
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Tue Dec 26 12:07:55 2023 -0500
+
+    Merge pull request #218 from PyJulie/patch-1
+    
+    Update react_postprocessor.py; further fixes #216
+
+[33mcommit ad96dd70a3d9f07519b254178f0807282e20a509[m
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Tue Dec 26 12:06:05 2023 -0500
+
+    Update react_postprocessor.py
+
+[33mcommit 37ac1d9a98df75c38f388b13b0aac1a20ec6827a[m
+Author: Brook Ju <julie334600@gmail.com>
+Date:   Tue Dec 26 16:51:12 2023 +0000
+
+    Update react_postprocessor.py
+    
+    It may not perfect solution but no bugs and I got some expected results.
+
+[33mcommit 2ef7f0a192bc18ad54423a53a8c345b90cc4e88b[m
+Merge: 63e0c79 fc31f69
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Tue Dec 26 11:35:22 2023 -0500
+
+    Merge pull request #217 from zjysteven/main
+    
+    fix #216 react misses hyperparam
+
+[33mcommit fc31f69a5c51cdce3e64bb3c98e6c949ad4c64c1[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Tue Dec 26 11:34:29 2023 -0500
+
+    fix #216 react misses hyperparam
+
+[33mcommit 63e0c7990221fe4c1141b77df3f20d207af8580b[m
+Merge: cb404a8 ae16752
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Tue Dec 26 10:01:46 2023 -0500
+
+    Merge pull request #215 from PyJulie/patch-1
+    
+    Update rmds.yml
+
+[33mcommit ae1675241e5ddcaaea1b3df23a46f84bf0d63b63[m
+Author: Brook Ju <julie334600@gmail.com>
+Date:   Tue Dec 26 14:58:27 2023 +0000
+
+    Update rmds.yml
+    
+    this should be the correct name for successful running,
+
+[33mcommit cb404a8e589b2225a427214d50f26d14fafb8787[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Dec 26 00:52:32 2023 +0800
+
+    Update README.md
+
+[33mcommit d17e61c67057759988029fd37255c5a4982147c0[m
+Merge: 9a9ed09 4a72488
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Mon Dec 18 13:08:36 2023 -0500
+
+    Merge pull request #212 from zjysteven/main
+    
+    fix #211
+
+[33mcommit 4a72488222f76b27938fbbee8faff060d53a573e[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Dec 18 13:07:33 2023 -0500
+
+    fix #211
+
+[33mcommit 9a9ed09e28f1f0b359b5199d8290dad5eb44eb33[m
+Merge: a44d7eb 7d7d456
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Fri Dec 15 19:31:01 2023 -0600
+
+    Merge pull request #210 from zjysteven/main
+    
+    Update README
+
+[33mcommit 7d7d4560122c4ed27ba48e02922ae782173dbcf7[m
+Merge: b2f3a58 a44d7eb
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Fri Dec 15 19:22:43 2023 -0600
+
+    Merge branch 'Jingkang50:main' into main
+
+[33mcommit b2f3a5891e234e635040f9de9207fc085e5af449[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Fri Dec 15 20:21:40 2023 -0500
+
+    update readme
+
+[33mcommit a44d7eb96e165759d664c77e6a0cfd0704eb8286[m
+Merge: 0d870f5 2c14579
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Sat Nov 25 14:18:03 2023 -0500
+
+    Merge pull request #208 from zjysteven/main
+    
+    fix typo
+
+[33mcommit 2c1457981f8d9189f532a8440db3e432af6eccc8[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sat Nov 25 14:17:21 2023 -0500
+
+    fix typo
+
+[33mcommit 0d870f5ef6aedc79662b6f1ea40bca127eeabe72[m
+Merge: 555d879 a899c1a
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Sat Nov 25 14:09:45 2023 -0500
+
+    Merge pull request #207 from Janghyun1230/relation
+    
+    Add Relation Graph
+
+[33mcommit a899c1a140a1f2d38e859e3e88a2936fde962dcd[m
+Author: Janghyun1230 <kimjanghyun1230@gmail.com>
+Date:   Fri Nov 24 18:01:33 2023 +0900
+
+    relation:readme
+
+[33mcommit 8bca836657872354ce56bef9f910a7de1721376d[m
+Author: Janghyun1230 <kimjanghyun1230@gmail.com>
+Date:   Fri Nov 24 17:57:16 2023 +0900
+
+    relation_graph
+
+[33mcommit 555d879be07d977f6ccf091b559afd64b37fc6f2[m
+Merge: 8c895d4 d043b89
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Fri Oct 27 23:35:35 2023 -0400
+
+    Merge pull request #194 from zjysteven/main
+    
+    Update README
+
+[33mcommit d043b89cd951a098d1d189fcb3805df5e3779ae4[m
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Fri Oct 27 23:34:37 2023 -0400
+
+    Update README.md
+
+[33mcommit 71ac19ee89820500809664244bd43c29afe1d428[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Thu Oct 19 17:17:26 2023 -0400
+
+    add a few missing links of papers
+
+[33mcommit 8c895d48a4c4c8a73c78844bbe902b4513ceeb68[m
+Merge: 989c41d 7e2f7d5
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Thu Oct 19 16:56:51 2023 -0400
+
+    Merge pull request #193 from jungyg/nnguide
+    
+    Add ICCV'23 NNguide
+
+[33mcommit 7e2f7d507e2f3a681f9f415003c430116db4bae5[m
+Author: Jaewoo <julypraise@gmail.com>
+Date:   Thu Oct 19 11:24:15 2023 +0900
+
+    nnguide postprocessor minor revision & added nnguide to README.md
+
+[33mcommit 8d6a399268b37d064b75f3d1b9292c66888c2d91[m
+Author: Jaewoo <julypraise@gmail.com>
+Date:   Thu Oct 19 11:23:05 2023 +0900
+
+    regnet architecture minor revision
+
+[33mcommit d0145be6bb97fa7746f52bdd6e33c792b5c7b895[m
+Author: Jaewoo <julypraise@gmail.com>
+Date:   Wed Sep 27 15:14:50 2023 +0900
+
+    minor revision of  nnguide implementation
+
+[33mcommit 4175a910cf9a8461d0359e16cad10f06516bbe08[m
+Author: Jaewoo <julypraise@gmail.com>
+Date:   Wed Sep 27 14:51:10 2023 +0900
+
+    add nnguide implementation
+
+[33mcommit 989c41dd3e3ebe85e6f5a5702acb6ce555715735[m
+Merge: 6711a72 0b7a81f
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Mon Sep 25 10:07:15 2023 -0400
+
+    Merge pull request #189 from zjysteven/main
+    
+    Fix #188
+
+[33mcommit 0b7a81f34c349339c030f7d0c28c4f86ac8ebd77[m
+Merge: 6e0ade7 6711a72
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Mon Sep 25 10:06:13 2023 -0400
+
+    Merge branch 'Jingkang50:main' into main
+
+[33mcommit 6e0ade72ea2d959e0e5c4e5b5c9ef0cba60d4ab2[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Sep 25 10:03:51 2023 -0400
+
+    fix modulenotfound when clip is not installed
+
+[33mcommit 6711a7234204cf4714fee666a5ab97983a284a76[m
+Merge: e1b01af b465406
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Mon Sep 25 00:12:10 2023 -0400
+
+    Merge pull request #187 from zjysteven/main
+    
+    enable eval of foundation models; update readme
+
+[33mcommit b4654067f8b313cc04123ee4d4c57f6feeaca0e6[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Sep 25 00:10:24 2023 -0400
+
+    enable eval of foundation models; update readme
+
+[33mcommit e1b01af0cb4fe293df12fabd05840e130d96c30b[m
+Merge: eb6a03b 857f764
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Sun Sep 10 11:11:13 2023 -0400
+
+    Merge pull request #184 from liujunzhuo/fix
+    
+    Fix KeyError in reading configs
+
+[33mcommit 857f76489e1bd16ec3317efd0e47886e59827221[m
+Author: ljz <ljz2017912@163.com>
+Date:   Sun Sep 10 10:19:34 2023 +0800
+
+    Fix KeyError
+
+[33mcommit eb6a03bc62cde52bc615d8f062482eb7fd56f75e[m
+Merge: e351d8f a78efcb
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Sun Aug 27 10:33:26 2023 -0700
+
+    Merge pull request #178 from bpanthi977/t2fnorm
+    
+    Add T2FNorm
+
+[33mcommit a78efcb50bbe67cdbd62d1a3d21ca79c7a2af602[m
+Author: Bibek Panthi <bpanthi977@gmail.com>
+Date:   Sun Aug 27 21:33:50 2023 +0545
+
+    Add method to README; use hasattr check
+
+[33mcommit 30e8f5907a163919c81a378573a89e88794a1f1a[m
+Author: Bibek Panthi <bpanthi977@gmail.com>
+Date:   Sun Jul 30 21:17:23 2023 +0545
+
+    T2FNorm: https://arxiv.org/abs/2305.17797
+
+[33mcommit e351d8f34e562a6f818296c340c3ca5332813043[m
+Merge: 70f5d44 3aa00a5
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Sun Aug 13 20:43:42 2023 -0700
+
+    Merge pull request #174 from zjysteven/main
+    
+    Update readme
+
+[33mcommit 3aa00a5859e2bc4e91dc18b0604413ebce75d22f[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sun Aug 13 23:34:33 2023 -0400
+
+    fix ood eval (ood as pos) and update readme
+
+[33mcommit 873e8c291b6d983a5dfb7e9e824128000caa51a5[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Thu Aug 10 15:33:22 2023 -0400
+
+    fix ood eval (ood as pos)
+
+[33mcommit 6a13c2343d59088bed0e9c1f48ff28f2d0d13674[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Thu Aug 10 13:44:53 2023 -0400
+
+    remove v1.0 setup and add gen in readme
+
+[33mcommit 70f5d449315c7009ed43f9e5ffb011b993500580[m
+Merge: 4720467 d6e7bcc
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Thu Aug 10 10:33:37 2023 -0700
+
+    Merge pull request #171 from coding-famer/add-gen
+    
+    Add [GEN](https://openaccess.thecvf.com/content/CVPR2023/papers/Liu_GEN_Pushing_the_Limits_of_Softmax-Based_Out-of-Distribution_Detection_CVPR_2023_paper.pdf) from CVPR'23
+
+[33mcommit d6e7bccbc3d766cb73d516e53ff88d29a0c138df[m
+Author: coding-famer <chenhegu0109@gmail.com>
+Date:   Mon Aug 7 13:50:03 2023 +0000
+
+    add gen
+
+[33mcommit 4720467f383e8f9a0c3a50fef2bfc4aa46a3f19c[m
+Merge: 8d44375 125ff84
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Wed Jul 12 20:49:54 2023 -0700
+
+    Merge pull request #168 from anish-lakkapragada/patch-1
+    
+    Correct cifar100 and imagenet200 training scripts
+
+[33mcommit 125ff846c90d0747f58fdc8539703c25b35194b7[m
+Author: Anish <68448458+anish-lakkapragada@users.noreply.github.com>
+Date:   Wed Jul 12 15:45:45 2023 -0700
+
+    Update and rename train_cifar100.sh to train_imagenet200.sh
+
+[33mcommit 542cd89d95c5e529d7545522471316d00ce199f6[m
+Author: Anish <68448458+anish-lakkapragada@users.noreply.github.com>
+Date:   Wed Jul 12 15:45:24 2023 -0700
+
+    Update train_cifar100.sh
+
+[33mcommit f9f31e30df0e2c4131b28434b81205178c1430a2[m
+Author: Anish <68448458+anish-lakkapragada@users.noreply.github.com>
+Date:   Wed Jul 12 15:45:12 2023 -0700
+
+    Update train_cifar100.sh
+
+[33mcommit d2227ab372befc823c40fb61a03baf4817b07d42[m
+Author: Anish <68448458+anish-lakkapragada@users.noreply.github.com>
+Date:   Wed Jul 12 14:39:38 2023 -0700
+
+    Update train_cifar100.sh
+
+[33mcommit 8d44375e4c695d03d2b97850b754f24fd4bda447[m[33m ([m[1;33mtag: v1.5[m[33m)[m
+Merge: 5155ea6 fb76ad5
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Mon Jun 26 20:05:31 2023 -0700
+
+    Merge pull request #165 from zjysteven/main
+    
+    Minor fix
+
+[33mcommit fb76ad5bed65cfa3b7b8d348d6423acbbee6a0e8[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Jun 26 23:02:00 2023 -0400
+
+    make cider_preprocessor more concise
+
+[33mcommit 3d6a3609545bc83c30207224a2e350f35cc0e8a7[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Jun 26 23:01:38 2023 -0400
+
+    update instructions for contrib. to leaderboard
+
+[33mcommit 5155ea67e104aae605a8d80eda426715676fcd73[m
+Merge: d83313b cbb4b37
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Fri Jun 16 23:44:44 2023 -0700
+
+    Merge pull request #162 from zjysteven/main
+    
+    Minor updates to readme
+
+[33mcommit cbb4b3719dc1463e0f7ef653a505b1caadef74d2[m
+Merge: 65f464d d83313b
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Fri Jun 16 23:43:34 2023 -0700
+
+    Merge branch 'Jingkang50:main' into main
+
+[33mcommit 65f464d58cfb66f7893b3f5dac98af35dadffdb7[m
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Fri Jun 16 23:43:20 2023 -0700
+
+    Update README.md
+
+[33mcommit d83313b9dea1505bf7b1ca104487f2ada02fc6a5[m
+Merge: f8870d7 3f7f63a
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Fri Jun 16 23:05:03 2023 -0700
+
+    Merge pull request #161 from zjysteven/main
+    
+    Final major pull request for v1.5 release
+
+[33mcommit 3f7f63a6ab4249e89b12f1ef26fae0af7ba5d9f5[m
+Merge: 23721f2 f8870d7
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Fri Jun 16 22:59:38 2023 -0700
+
+    Merge branch 'Jingkang50:main' into main
+
+[33mcommit 23721f20c673c7d8a1c110544a6d3206dea1569d[m
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Fri Jun 16 22:58:53 2023 -0700
+
+    update readme.md
+
+[33mcommit 8c196440c139ce532105cf98c15847786105894a[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sat Jun 17 01:50:19 2023 -0400
+
+    update readme for v1.5 release
+
+[33mcommit 6914b75a5cf8207e018730cdc30e628f44782634[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sat Jun 17 00:24:34 2023 -0400
+
+    update download script
+
+[33mcommit b1f9c19573c6b59c4738f0b7368173bea336a017[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Fri Jun 16 23:50:55 2023 -0400
+
+    fix typo in dataset.py
+
+[33mcommit fd879e7eeb21e79858039c406d603e617a9b0545[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Fri Jun 16 23:03:54 2023 -0400
+
+    update benchmark_imglist and remove tutorial ipynb
+
+[33mcommit 1e359189a87742317b80859074801be2d8f118c6[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Fri Jun 16 22:29:38 2023 -0400
+
+    update benchmark_imglist download link
+
+[33mcommit 5faf42ca2a7492327499909eeea43388ad0e118a[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Fri Jun 16 21:43:10 2023 -0400
+
+    fix typo in evaluator.py
+
+[33mcommit faee80d25e504203be7de702fa739c86fd16ce73[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Fri Jun 16 21:29:22 2023 -0400
+
+    enable using evaluator without configs/
+
+[33mcommit ce414d351034019eb6fdb5d4bf65254769120c7e[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Fri Jun 16 00:50:40 2023 -0400
+
+    update benchmark config and download links in dataset.py
+
+[33mcommit 80e5a699b6b5829bffa6fc14fb355d684ad20865[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Fri Jun 16 00:42:51 2023 -0400
+
+    add more comments to eval_ood(_imagenet).py
+
+[33mcommit 6051c0fc9152795a215466ab8e94aef957027b05[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Thu Jun 15 22:47:03 2023 -0400
+
+    update benchmarks setup in .yml configs
+
+[33mcommit a8053f2d85e97f0198373115087c48e424e699ea[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Thu Jun 15 22:46:26 2023 -0400
+
+    minor fix to gradnorm and evaluator
+
+[33mcommit adbddf9a621fa01e364fa8abbe3e83c2c800a898[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Thu Jun 15 22:44:52 2023 -0400
+
+    update or add missing scripts
+
+[33mcommit 0ad2b93d577092615dae92f6ac05b857797f818e[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sun May 21 23:35:24 2023 -0400
+
+    put ash/react wrapper inside the evaluator
+
+[33mcommit f8870d72e3d0abb0c93c123fed7a2d2800f54c2a[m
+Merge: 69cd8ca 6404cc8
+Author: Jingyang Zhang <jingyang.zhang@duke.edu>
+Date:   Wed May 10 14:20:39 2023 -0400
+
+    Merge pull request #158 from zjysteven/main
+    
+    Remaining commits for OpenOOD v1.5
+
+[33mcommit 6404cc82e4be70d35f8b0b712263156e6c618df1[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Thu May 4 15:06:23 2023 -0400
+
+    minor fix to save directory
+
+[33mcommit afb1bf23bcd14c86b2b935d0351a13ca7937a79f[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Thu May 4 14:45:41 2023 -0400
+
+    add example_imagenet_eval.ipynb
+
+[33mcommit 6b964e734b5c52b7e999f3e13144fff0cf68bcd1[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Wed May 3 23:43:43 2023 -0400
+
+    further updates for v1.5 release
+
+[33mcommit a204d6e667e8a68cf67605acbdc7b057d18dce30[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Wed May 3 20:17:08 2023 -0400
+
+    remove mmcv for now?
+
+[33mcommit df13f7063761e252835af4422e5bf52a05c1f9ab[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Wed May 3 20:08:34 2023 -0400
+
+    initial commit of setup.py
+
+[33mcommit c1e7f4c8a75014edd399681aa024df50f4af3c09[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Wed May 3 19:41:49 2023 -0400
+
+    update datasets and imglist download links
+
+[33mcommit 035ced2f97b316d3680cb4f3d8e2d3b16da73bfd[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Tue May 2 21:39:42 2023 -0400
+
+    fix vim postprocessor for APS
+
+[33mcommit b057ac4f730275ec63aaf827753ecb73d167ae16[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Tue May 2 19:51:19 2023 -0400
+
+    update training methods' scripts
+
+[33mcommit d99d185fb8033cc0e74f5ebb5c65ec98ef98d3f4[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Tue May 2 17:30:47 2023 -0400
+
+    update oe-based methods' scripts
+
+[33mcommit e3930567654650558c6643f552d516fa993303c3[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Tue May 2 16:55:43 2023 -0400
+
+    update data aug methods' scripts
+
+[33mcommit ebb4b237a19302ceac8cb50deb62691830011f80[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Tue May 2 15:31:06 2023 -0400
+
+    enable APS for vim
+
+[33mcommit ee5e00cb655cc7f4fe50509f1159dfd125915eaf[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Tue May 2 15:26:52 2023 -0400
+
+    update post-hoc methods' scripts
+
+[33mcommit 1a78748f6d9a3e853b83d165d47268f444d0bc76[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sun Apr 30 17:16:07 2023 -0400
+
+    add docstring for the new evaluator
+
+[33mcommit 403f70f74aa235470bb72172a9ada056967cc407[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sun Apr 30 16:50:17 2023 -0400
+
+    ensure that old and new evaluators are consistent
+
+[33mcommit c196c29be5709f640cde099e883f2ecbf5dfcbd8[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sun Apr 30 16:42:40 2023 -0400
+
+    set default num_workers to 8 instead of 0
+
+[33mcommit 7e8e44903b64469f3b4017ad849aa9fa541cf464[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sun Apr 30 15:01:09 2023 -0400
+
+    add the option to disable jsd for augmix
+
+[33mcommit 1a75e5ce100b68dc3f640cfaa04b887eb47c20eb[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sat Apr 29 19:24:47 2023 -0400
+
+    minor fix to test_opengan.yml
+
+[33mcommit 56a48715bdd813aecb6832129fcd4c8530e37038[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sat Apr 29 16:09:25 2023 -0400
+
+    fix pipelines for consistency with get_trainer
+
+[33mcommit 77fa1d8ac0f57a8c7e138b87673322deb13a9148[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sat Apr 29 14:50:41 2023 -0400
+
+    add npos eval; change tqdm desc for clarity
+
+[33mcommit 7c4ef8ad7782fe2ef96cc76b5675c501631c1c30[m
+Merge: 8ec7df7 63d12e0
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Thu Apr 27 22:18:22 2023 -0400
+
+    Merge branch 'main' of github.com:zjysteven/OpenOOD into main
+
+[33mcommit 8ec7df7ab0635246c671f21f291d7a88634ee569[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Thu Apr 27 22:17:10 2023 -0400
+
+    initial commit of npos; capitalize CIDER name
+
+[33mcommit 46f112e08090e4a710661b166d082fad0a81d846[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Thu Apr 27 20:51:55 2023 -0400
+
+    add utility for cider eval
+
+[33mcommit 63d12e0841fb930c698d14d9a15eb3c6dffa8a64[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Wed Apr 26 21:59:42 2023 -0400
+
+    minor fix to cider_trainer
+
+[33mcommit 9362f2e1c15c827c47e925bb951ed8e22a1f44d3[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Wed Apr 26 20:48:49 2023 -0400
+
+    minor fix to cider
+
+[33mcommit 9b6c8f8507c6eebbc8a1c493ee9b1c94acf4404a[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Wed Apr 26 17:58:43 2023 -0400
+
+    initial commit of cider training
+
+[33mcommit f28c027c043bd245c93765a87b3a0cd35f5b8961[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Wed Apr 26 14:52:09 2023 -0400
+
+    remove backbone's fc from udg_net for ddp training
+
+[33mcommit ede76c62b620446132584f2f503b7041fb3882d9[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Wed Apr 26 13:36:52 2023 -0400
+
+    add mos fsood config on imagenet
+
+[33mcommit 4abcc2c07f5f270d3f980d6eb977af09e1e3842e[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Apr 24 16:23:36 2023 -0400
+
+    several fixes to get fsood eval working
+
+[33mcommit 5bc35560bdaaa1661a6cbd7b1d585041d54c24bd[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Apr 24 13:50:57 2023 -0400
+
+    update several nets to remove backbone's fc
+
+[33mcommit d680d8d69baf388e7dc53aeb01794c152a2781d8[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Fri Apr 21 18:02:07 2023 -0400
+
+    add she postprocessor
+
+[33mcommit 5a05b71541926064a7b3666ded5fbbddfed8ce12[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Thu Apr 20 11:58:28 2023 -0400
+
+    add mos config for imagenet 1k
+
+[33mcommit cee253917cd376fdebead8fa46e3f2bd87ff5a61[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sun Apr 16 20:19:01 2023 -0400
+
+    add oe config for imagenet200
+
+[33mcommit a0aa85c056f9e5011ea18576e891a779c32dce2e[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sun Apr 16 19:03:02 2023 -0400
+
+    get csi to work with ddp
+
+[33mcommit ab4cfb04181149852ca17de4fc4d4df8aea4153f[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sun Apr 16 11:48:29 2023 -0400
+
+    add seeding to train_augmix.yml
+
+[33mcommit ea4835ef09544dc532e26bd372678bb825f18f2b[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Fri Apr 14 19:15:21 2023 -0400
+
+    add augmix training
+
+[33mcommit 653ae973e152288b61053855ad2c6cb7f825b365[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Thu Apr 13 20:10:12 2023 -0400
+
+    get godin to work with ddp
+
+[33mcommit ab5e2dda32d8145a7a15dc1e06d4ea8ff73d4ab2[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Thu Apr 13 17:10:57 2023 -0400
+
+    get network loading to work with ddp
+
+[33mcommit 1d90eadaaa9bd06fda972d92cd192e2d3637302c[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Thu Apr 13 15:53:37 2023 -0400
+
+    get imagenet200 fsood eval working
+
+[33mcommit 0f850aa0df31ece424b8007ab580dbe9e7ad8047[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Thu Apr 13 13:06:20 2023 -0400
+
+    fix that some methods can't work with ddp training
+
+[33mcommit 670176d92fe820a8a39a646c24bdb2af20096ecd[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Wed Apr 12 20:04:06 2023 -0400
+
+    disable tqdm when not main progress in evaluators
+
+[33mcommit 9e66542533a5e63ee2bc696e371fff3d92975961[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Wed Apr 12 20:02:52 2023 -0400
+
+    remove mmcv import to suppress warnings
+
+[33mcommit 1d8a6c9af15e1cc62a482211ace0eedd3b7aa374[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Wed Apr 12 14:15:39 2023 -0400
+
+    rm redundant rot_trainer.py add inet200 mos config
+
+[33mcommit 1374babaef30330c3a0fd34b5dc8a3a7dacbd63c[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Wed Apr 12 14:13:54 2023 -0400
+
+    disable tqdm  when not main process for trainers
+
+[33mcommit 0b882e880d8c4189f0aa9558fac4c56323748bea[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Tue Apr 11 10:47:06 2023 -0400
+
+    get evaluator to work with imagenet200
+
+[33mcommit 9b83211ce1ec3c868e844debe4df88c76e9507f6[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Tue Apr 11 10:46:19 2023 -0400
+
+    Use tvs impl for resnet18_224x224 w/o dropout
+
+[33mcommit da6540b38ac53ab1f31416242c12c272857b9270[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Apr 10 20:28:22 2023 -0400
+
+    strip "module" when saving state dict
+
+[33mcommit 3de61c4ea68da2084a74883fce68e39c3493815c[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Apr 10 19:42:25 2023 -0400
+
+    add imagenet200 stats for preprocessors
+
+[33mcommit 9e6e9a267f07707d23f0690029fc051313afc3bb[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Apr 10 11:04:43 2023 -0400
+
+    initial commit of imagenet200 dataset config
+
+[33mcommit 14c777df4b889f54bc9f0d14ad35d454cc4a9f35[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Apr 10 11:04:26 2023 -0400
+
+    add seeding to test_arpl
+
+[33mcommit 6bdd84b740b5066fb0da5c5f23a8ad523222eb8b[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Fri Apr 7 16:46:41 2023 -0400
+
+    update configs for arpl and (mix)oe
+
+[33mcommit 0f8d5dc9a829f14a667e5698b68a3c8cf6cbff09[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Fri Apr 7 16:43:07 2023 -0400
+
+    update preprocessing for aircraft
+
+[33mcommit 4bdf76c244b605745882b54e767fadbe0550a013[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Fri Apr 7 14:59:12 2023 -0400
+
+    fix mos evaluation
+
+[33mcommit 1f4da9265013b76c48d5f56cf7774e4f874711ea[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Thu Apr 6 22:15:18 2023 -0400
+
+    fix mos configs and improve its efficiency
+
+[33mcommit fac05881723e463dc37c43ba32c635f2080d2a68[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Thu Apr 6 16:10:51 2023 -0400
+
+    rename fgvc_aircraft just for simplicity
+
+[33mcommit f18b0a905381bc75b5ac83591d7a6920d6ab318d[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Thu Apr 6 16:08:12 2023 -0400
+
+    modify default oe batch size to fit in gpu
+
+[33mcommit 9fabcf0996c79bc9de13824ac6dfc7f8ed4face5[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Thu Apr 6 15:42:34 2023 -0400
+
+    initial commit of fgvc_aircraft data configs
+
+[33mcommit 55bd05422b4630082e3c9e9a6fb78047dd9549cf[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Thu Apr 6 14:52:35 2023 -0400
+
+    modify default batch size of imagenet.yml
+
+[33mcommit 4aba136535f6bf229f73952cd1e33fd00b41ab41[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Thu Apr 6 13:36:59 2023 -0400
+
+    update large scale data train preprocessor
+
+[33mcommit 540aa5b0882e8727d9a96a1bbd6ff424a548f234[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Wed Apr 5 17:59:12 2023 -0400
+
+    update imagenet data configs to align with changes
+
+[33mcommit b49fdcb23e38d29b438faa7a836ef689a70da2c1[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Wed Apr 5 17:39:50 2023 -0400
+
+    add imagenet standard aug for large scale data
+
+[33mcommit 9d6e4af9be0a837b609700eefba3ba8fa983b76c[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Tue Apr 4 15:54:07 2023 -0400
+
+    add _ to imagenetv2 just for consistency
+
+[33mcommit 391124dd07893a404e08b6a641817c8a21348416[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Tue Apr 4 14:42:05 2023 -0400
+
+    get imagenet fsood eval working; improve usability
+
+[33mcommit b22c30314ef7abf0f1d381935067114d5e796dbc[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Apr 3 13:38:12 2023 -0400
+
+    fix (r)mds_postprocessor "Too many files opened"
+
+[33mcommit 01114042c9c63e36eb76a4339c82b43e0d9b6085[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Apr 3 13:37:34 2023 -0400
+
+    fix vit get_fc
+
+[33mcommit c0a3c40a16dd6252a9ce2efa4dea2493559d3639[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sun Apr 2 22:59:46 2023 -0400
+
+    fix ash_net forward for vits
+
+[33mcommit cbc82b9ee1735d50c1124802f906e7624e6ab24d[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sun Apr 2 22:38:09 2023 -0400
+
+    further fix to get react and ash working on vits
+
+[33mcommit 58d01a785421a3eb66c0caea40fe5049fa6ebc18[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sun Apr 2 22:19:24 2023 -0400
+
+    make knn work with vits
+
+[33mcommit 321517419272c2c91f4996586e8a40e887acd5dd[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sun Apr 2 22:12:21 2023 -0400
+
+    enable knn hparam search
+
+[33mcommit 6d5197f731a23a03ac32d92f40d25daab8a1d7c7[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sun Apr 2 22:04:32 2023 -0400
+
+    make dice work with vits and disable hparam search
+
+[33mcommit d6c0259a2005305f1a96b1069f464ec8bffd370a[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sun Apr 2 21:49:19 2023 -0400
+
+    remove redundant code
+
+[33mcommit c9a8c48592dcb42cf5e54bf027b56fb9b1122de4[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sun Apr 2 21:18:23 2023 -0400
+
+    make ash compatible with transformers
+
+[33mcommit 7c4b70dd3035b9dc6ded7b4d415362674297b3e8[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sun Apr 2 21:17:08 2023 -0400
+
+    remove redundant variables
+
+[33mcommit f70af36676e2cb6ed17b2291d2caa35a6c118a48[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sun Apr 2 21:16:43 2023 -0400
+
+    fix react hparam search; make it work with vits
+
+[33mcommit b8ab72472ef684795fd122e378f0d717fbf2e4dd[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sun Apr 2 20:23:24 2023 -0400
+
+    add swin_t and vit_b_16 network for imagenet
+
+[33mcommit e7a568ba148595c599f656f9bd38cb53b11ae292[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sun Apr 2 16:48:53 2023 -0400
+
+    enable caching from evaluator for efficiency
+
+[33mcommit 4db618d98068189bd50947fdebdddd119964ac37[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sun Apr 2 15:11:51 2023 -0400
+
+    remove redunt rot_postprocessor.py
+
+[33mcommit 4006247c8f108b5b7192f690955f12f357c4a1cc[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sun Apr 2 15:10:56 2023 -0400
+
+    add setup_flag to postprocessors for reuse
+
+[33mcommit 6bedd7a2476122d66a0a13a12738173c7b86a95a[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sun Apr 2 14:32:21 2023 -0400
+
+    add mixoe trainer
+
+[33mcommit d45ebdc0e9e857fb1f46f7645226f2a6e9a70a48[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sun Apr 2 14:31:33 2023 -0400
+
+    add seeding for test_ood.yml
+
+[33mcommit 5a1a362bbeb9dbbe2de85a128b32a6fe0c49e7b3[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sat Apr 1 21:54:59 2023 -0400
+
+    fix mcd training (loss and forward pass)
+
+[33mcommit 31e44ea6eea32255d744e0e3a6cd11ed9ac265a6[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sat Apr 1 17:49:01 2023 -0400
+
+    rename rel_mds to rmds
+
+[33mcommit 68157ab03350c7a017f1c60badb3a5a07ee6023a[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sat Apr 1 13:39:41 2023 -0400
+
+    add _ensemble flag in mds_ensemble yml
+
+[33mcommit 6574216ace5f056dddf0bf421bbf26b84eec16c8[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sat Apr 1 13:38:56 2023 -0400
+
+    add mds and rel_mds
+
+[33mcommit 25f7fcdfba2614708edcfe63a1a632f53c19211c[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Sat Apr 1 12:11:44 2023 -0400
+
+    rename mds_postprocessor with _ensemble tag
+
+[33mcommit 28a73432c5a81599f026074778b924d1aa0fb370[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Fri Mar 31 15:33:47 2023 -0400
+
+    point oe data to tin597 and change oe batch size
+
+[33mcommit da5fe466aabcfa2c93edc5bd0ec14c36185b07c4[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Fri Mar 31 13:48:08 2023 -0400
+
+    modify default test_opengan.yml
+
+[33mcommit 0d6f370893d35f4815177b27a9ff2520ee736277[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Thu Mar 30 17:27:45 2023 -0400
+
+    add validation for opengan
+
+[33mcommit 8613efa84a89202fa67ea29b52a7df211466a0f4[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Thu Mar 30 16:47:34 2023 -0400
+
+    corresponding changes of ood splits in configs
+
+[33mcommit c87aaa7d9c9805a3b8e849046c418c3fbb1a0a0d[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Thu Mar 30 11:24:52 2023 -0400
+
+    rename cifar100_extra dataset for simplicity
+
+[33mcommit be179fbb5431d7263c72fb028c612f453a100745[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Wed Mar 29 14:13:14 2023 -0400
+
+    split tin samples to create cifar val ood samples
+
+[33mcommit 8b8343b7f3fc3bad1cead48e265ee6973232cd7e[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Tue Mar 28 14:55:50 2023 -0400
+
+    disable knn APS_mode for now
+
+[33mcommit 69cd8cafde42c9ea1bcad792916d0a24609d9c9b[m
+Merge: e680bb4 07890f6
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Mar 28 09:17:37 2023 +0800
+
+    Merge pull request #146 from MouxiaoHuang/rts-branch
+    
+    Add uncertainty-based method RTS.
+
+[33mcommit 07890f6f5dc64189e5b80fae439c1fcd9297c3de[m
+Merge: 843fa20 e680bb4
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Mar 28 09:16:16 2023 +0800
+
+    Merge branch 'main' into rts-branch
+
+[33mcommit e680bb4a1f6c1c97c66d8045bf1e9e0d7bce557f[m
+Merge: e145721 caba052
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Mar 28 09:14:28 2023 +0800
+
+    Merge pull request #150 from zjysteven/main
+    
+    all changes for v1.5 from Jingyang
+
+[33mcommit caba05210fe93d16abe85de2d6983a19ecf3bb70[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:32:50 2023 -0400
+
+    add intermediate_forward to RN50 for ash
+
+[33mcommit 979c96446499f7b951347655cd74acada0bbe994[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:32:47 2023 -0400
+
+    add tin to cifar100 nearood
+
+[33mcommit b29248a7a645f8b7a1b7f5b32bdd2a22b66d60d6[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:32:46 2023 -0400
+
+    use more robust kl div; fix corner cases for klm
+
+[33mcommit fb7d84887ebb9c083aebd36f61009f5d32558ca8[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:32:45 2023 -0400
+
+    remove unnecessary args for klm
+
+[33mcommit 1beee5fc3c6253bd4f920d73c2add30cab22355b[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:32:44 2023 -0400
+
+    add missing arguments for mos
+
+[33mcommit 820141a8158c50c3acfa6ddf13124f2230a3806a[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:32:43 2023 -0400
+
+    add csi preprocessor (no augmentation)
+
+[33mcommit 20c3121c705aa1db989acf46af80adf762f68f2f[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:32:40 2023 -0400
+
+    simpler version comparing
+
+[33mcommit bc44ec7e8ad86c8b6137195821892f4578ff6a24[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:32:36 2023 -0400
+
+    multiple updates to let imagenet evaluation work
+
+[33mcommit 528bebc558fee214b4201d7e9c1a9e4afc53930f[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:32:35 2023 -0400
+
+    add progress bar for postprocessor inference
+
+[33mcommit 493b1635dc9f36d055c0b5a6c3b1ce38fa21bb2d[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:32:34 2023 -0400
+
+    add ash code
+
+[33mcommit 19da02716427c57d3fc06f1f46626149a0f2005c[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:32:33 2023 -0400
+
+    fix typo
+
+[33mcommit 8dee426b9ca2e83bc902078e5655cb1cd93c40bb[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:32:32 2023 -0400
+
+    initial commit of rankfeat postprocessor
+
+[33mcommit e2ca01473d044c764a374bc3429231e72244ec1f[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:32:31 2023 -0400
+
+    minor changes to logitnorm train config
+
+[33mcommit c5eba9a1b95745ff138b8fe633ac5be0691b0f06[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:32:30 2023 -0400
+
+    get vos working
+
+[33mcommit 196df515155aa1fa44212cf0f066fc2e5d8f06bf[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:32:29 2023 -0400
+
+    add mark argument for confbranch for consistency
+
+[33mcommit 02f4b610809758e3fe67dd5118749cf0f0c5e28a[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:32:28 2023 -0400
+
+    add sio code
+
+[33mcommit b61c7f124b24b3e19775760a0f78e541f0f3d788[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:32:27 2023 -0400
+
+    change default num_workers to 8
+
+[33mcommit 8f3bedb061b16cc58c5dea92b7c64e0e7d9b0707[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:24:31 2023 -0400
+
+    initial commit of regmixup
+
+[33mcommit 91a80c71e872b403a2763aace1f036679c19b55e[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:24:29 2023 -0400
+
+    several modifications to get RotPred working
+
+[33mcommit 64556556d2811c31d3637e9e5160459f482e500b[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:24:28 2023 -0400
+
+    rename rotpred trainer file
+
+[33mcommit 615b89080937600eedbacc5bf3266111a2131a81[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:24:26 2023 -0400
+
+    add default value for GodinNet for easy evaluation
+
+[33mcommit 350b1d95ed8533af0b3dcacbf45ae73bb14ff6ad[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:24:25 2023 -0400
+
+    change conf_branch's scheduler for consistency
+
+[33mcommit 5a02a9ccc0105fc75657717f454ca5222764c678[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:24:23 2023 -0400
+
+    add seeding for train_conf_branch.yml
+
+[33mcommit eb3a540d67a6fcd90e843e5ae360d5b3e7790afb[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:21:17 2023 -0400
+
+    fix the accuracy bug in evaluator
+
+[33mcommit 19b4056491c7569769886a594bcf98177e4f43b4[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:21:16 2023 -0400
+
+    fix bugs in preprocessor utils
+
+[33mcommit 286866aabf9d94299c4024f3317ea1adea90bf5c[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:21:15 2023 -0400
+
+    fix pixmix bugs and enable changing IMAGE_SIZE
+
+[33mcommit 93accd9f2bcf3a201a78e2c0f2091090d5f2562c[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:21:13 2023 -0400
+
+    simplify temp_scaling and reduce cuda memory
+
+[33mcommit cad5c6b3bb0c32feb6507a813992b1bfc4c89699[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:21:12 2023 -0400
+
+    rename rot with rotpred
+
+[33mcommit ff2aee67622b0db3978d63ac1e9623e20f6b4546[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:21:10 2023 -0400
+
+    add seed to baseline training yml
+
+[33mcommit 3f7122f1ce46335d343929e5dea88a146159dd07[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:21:06 2023 -0400
+
+    put tin back into cifar10 near ood
+
+[33mcommit f980b2eb8ba78967f510bda4ffc5ed974d6291c7[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:21:05 2023 -0400
+
+    fix typo
+
+[33mcommit bf6b150c09c054847207fa4c3b0c626e13455eb1[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:13:58 2023 -0400
+
+    add separate randaug and cutout preproc.
+
+[33mcommit a91f5538d716b795cb2af5fa18a1ed0b7fb5b5bc[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:13:57 2023 -0400
+
+    minor change to gradnorm for better efficiency
+
+[33mcommit 36bd3792ce7529ea9673b6cc402623a2babf8ea6[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:13:56 2023 -0400
+
+    change naming for consistency
+
+[33mcommit dccb5895e4387d59da4598ed97d9ce3605fd9832[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:13:55 2023 -0400
+
+    improve readability and efficiency
+
+[33mcommit 63fb6c229727b002bb3f8c9d1e9973ddacdaec0b[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:06:48 2023 -0400
+
+    fix openmax and improve efficiency
+
+[33mcommit b1144f7cc0b4d992f92238e6bee5ed0e20005dc1[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:06:20 2023 -0400
+
+    fix KLM bugs
+
+[33mcommit 635ec98fb222d6afde4a5adb53fdbe9ebae6d1ef[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:05:55 2023 -0400
+
+    fix g-odin postprocessor
+
+[33mcommit 868afb481e4a36e14370d5e0f003b95012f1ebe1[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:05:21 2023 -0400
+
+    minor modification to the evaluator
+
+[33mcommit 3ca3a5228013e3c2c55437890992d108810046eb[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:04:21 2023 -0400
+
+    initial commit of RotPred
+
+[33mcommit 1bab1ab10c4ceb27fabeb2d0461160ca90ef572d[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 18:03:51 2023 -0400
+
+    fix oe training
+
+[33mcommit 490a0f00aa83fb5250bc235e8ccb13b4a92e9ae4[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 17:59:40 2023 -0400
+
+    fix ODIN input std bug
+
+[33mcommit b728e9096e38e3cf49b92aaa5eb71aaad8506d68[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 17:53:46 2023 -0400
+
+    fix typo for randaugment
+
+[33mcommit 985a7c02f6a2f696c815a76c68006a40c0fa38bd[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 17:53:23 2023 -0400
+
+    update gitignore
+
+[33mcommit 70b46b1f7a84ac381bd23f7a4f35ee0c510a4fb8[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 17:52:57 2023 -0400
+
+    enable varying random seed in train_(oe_)pipeline
+
+[33mcommit 4ebe0f30e3baebb37c097bd3ee83fd02b0ad0b56[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 17:52:31 2023 -0400
+
+    add randaugment support
+
+[33mcommit 20228d09e732af471d93241cf7a59fa51077d73f[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 17:51:48 2023 -0400
+
+    add cifar100 and inet data specs for eval api
+
+[33mcommit 99927d9c33362428c91af49e585ff72ff6b62b20[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 17:50:21 2023 -0400
+
+    remove unused ood_nc from openmax
+
+[33mcommit 14ce7fb55b106b7a3b8e919ce8046ab08090105d[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 17:49:50 2023 -0400
+
+    fix wrong dataloader for klm and vim
+
+[33mcommit 3c60df36148a9fd1558c9ddb55950116026e0d8b[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 17:48:47 2023 -0400
+
+    remove redundant setup of gradnorm
+
+[33mcommit 84301d47c22e72828fe46f3e888d6d9c2647c438[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 17:48:20 2023 -0400
+
+    fix hard-coded batch size in gram
+
+[33mcommit 64d39902220d65c99cf79885104d81eb9e09247a[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 17:47:42 2023 -0400
+
+    add evaluation_api code
+
+[33mcommit fd8630e26fd72ad3b9676d29703426cf30455d62[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 17:47:16 2023 -0400
+
+    remove isort from pre-commit
+
+[33mcommit 37787e9f972828318cd69289f288fc4ba230adc8[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 17:46:23 2023 -0400
+
+    add missing APS_mode argument
+
+[33mcommit 02a38c66c8fb9397c0e8e4e174b3838287fb5796[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 17:45:13 2023 -0400
+
+    update gitignore
+
+[33mcommit 5bc82b1058a294c03b4aaf818259644342c4c5e3[m
+Author: Jingyang <jingyang.zhang@duke.edu>
+Date:   Mon Mar 27 17:44:13 2023 -0400
+
+    fix flake8 broken link
+
+[33mcommit 843fa20b409c7ccd904280f187c8013965c3ae40[m
+Author: Mouxiao Huang <neohuang469@gmail.com>
+Date:   Thu Feb 23 13:45:48 2023 +0800
+
+    Add RTS to README
+
+[33mcommit 1b19ea33fd99b615abdb60235ce28a9dc48ccfa4[m
+Author: Mouxiao Huang <neohuang469@gmail.com>
+Date:   Thu Feb 23 12:31:00 2023 +0800
+
+    modify output of rts
+
+[33mcommit 7d27bb60c9026a11219cb00a594569bb9828f3c2[m
+Author: Mouxiao Huang <neohuang469@gmail.com>
+Date:   Mon Feb 20 10:52:06 2023 +0800
+
+    Add RTS that can detect OOD data via uncertainty estimation: https://arxiv.org/abs/2212.01015
+
+[33mcommit 06b33355980a1b189d25af3683bdb9eab516275c[m
+Author: Mouxiao Huang <neohuang469@gmail.com>
+Date:   Mon Feb 20 10:43:47 2023 +0800
+
+    Add RTS that can detect OOD data via uncertainty estimation: https://arxiv.org/abs/2212.01015
+
+[33mcommit e145721a809b03d86161f87820c327d8f0867329[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Sun Feb 12 12:59:02 2023 +0800
+
+    Update README.md
+
+[33mcommit a2538f05cbc06479367ce72b0be403794fca8fb9[m
+Merge: e640ffe 95b9461
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Sun Feb 12 12:48:43 2023 +0800
+
+    Merge pull request #141 from romain-xu-darme/fix_osr_config
+    
+    Fix path to dataset files in OSR configurations.
+
+[33mcommit 95b94610863b32045f7db634045b74d5ee4083cd[m
+Author: Romain Xu-Darme <romain.xu@univ-grenoble-alpes.fr>
+Date:   Mon Jan 30 16:55:47 2023 +0100
+
+    Fix path to dataset files in OSR configurations.
+
+[33mcommit e640ffe2f17aaaad0fc1f937736122d8d5c5cd7b[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Fri Jan 27 23:17:06 2023 +0800
+
+    Update cifar100_fsood.yml
+
+[33mcommit 361228209ee884ec8c23d3f482ba0358af07ba53[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Fri Jan 27 23:16:50 2023 +0800
+
+    Update cifar100_ood.yml
+
+[33mcommit 402b3aa725f5c52a2b3df8146d4af32ed0703ee6[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Jan 18 14:24:58 2023 +0800
+
+    Update README.md
+
+[33mcommit 539cf436757b1778ae7baf285b859ba6ca771ed2[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Fri Oct 14 15:17:04 2022 +0800
+
+    Update README.md
+
+[33mcommit 14a1acffc899fddf974eb8cd6fa622d800ceb9e0[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Fri Oct 14 13:47:06 2022 +0800
+
+    Update README.md
+
+[33mcommit c542dead01c981d32c924b5759a8cca12b18812f[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Fri Oct 14 13:45:54 2022 +0800
+
+    Update environment.yml
+
+[33mcommit 1396d19cfb6562d68a3ca619e6ddf1d20c845e85[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Fri Oct 14 13:44:22 2022 +0800
+
+    Update README.md
+
+[33mcommit 74dd3d4b258a306465c682da6cccba01c607da83[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Oct 13 10:53:55 2022 +0800
+
+    Update README.md
+
+[33mcommit 98602ab767089bc60db3968a86628b97f6d3116b[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Sat Oct 1 00:44:26 2022 +0800
+
+    Update README.md
+
+[33mcommit 0e99b9d6b84b8a0b69374a6e00dfeeb0d9fdc269[m
+Merge: 72ce322 75609f0
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Sun Sep 25 00:06:50 2022 +0800
+
+    Merge pull request #122 from Jingkang50/v0.5
+    
+    Upgrade for easy usage
+
+[33mcommit 75609f033dbdc396906a6ad1c2ebf208cb2e4a90[m
+Merge: 8aa7814 245f854
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Sep 12 15:53:52 2022 +0800
+
+    Merge branch 'v0.5' of https://github.com/Jingkang50/OpenOOD into v0.5
+
+[33mcommit 8aa7814d27ec89958985ca3fe02288903698c52e[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Sep 12 15:15:24 2022 +0800
+
+    0912
+
+[33mcommit 245f854f0c75ce7626f8a85de4be7337c73f366a[m
+Merge: 63c7c1f b1b1cc5
+Author: Pengyun Wang <91826032+Prophet-C@users.noreply.github.com>
+Date:   Mon Aug 29 21:40:38 2022 +0800
+
+    Merge pull request #119 from Prophet-C/v0.5
+    
+    V0.5
+
+[33mcommit b1b1cc5507a3b98c0d8d7a4afe4ddbf89d88055d[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Mon Aug 29 21:39:36 2022 +0800
+
+    misc
+
+[33mcommit 298fe0399b8b0846862a8982fb3379e9603f2bc1[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Mon Aug 29 21:29:30 2022 +0800
+
+    fix test ood pipeline
+
+[33mcommit ed616bc790251e2e4f36fdcd182ed192b5f626b1[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Mon Aug 29 21:27:31 2022 +0800
+
+    delete wrong file
+
+[33mcommit 63c7c1fa7dd272eba56cf52ae20b889395df7a32[m
+Merge: e697837 3b1d4fb
+Author: Pengyun Wang <91826032+Prophet-C@users.noreply.github.com>
+Date:   Mon Aug 29 13:05:03 2022 +0800
+
+    Merge pull request #118 from JediWarriorZou/v0.5
+    
+    V0.5
+
+[33mcommit 3b1d4fb449b2395260eeb4ba31fa9dd0147e7ca0[m
+Author: DEJIAN ZOU <91411201+JediWarriorZou@users.noreply.github.com>
+Date:   Mon Aug 29 13:00:52 2022 +0800
+
+    Update rd4ad_net.yml
+    
+    None to none
+
+[33mcommit 9030793fbcfb41c1877c334d8a4f2505744fd657[m
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Mon Aug 29 12:55:00 2022 +0800
+
+    rd4ad repair
+
+[33mcommit e697837c3e6e9d5842366cbc594d1d5dc6b1f235[m
+Merge: 55e0f96 f715bd9
+Author: Pengyun Wang <91826032+Prophet-C@users.noreply.github.com>
+Date:   Sun Aug 28 10:34:57 2022 +0800
+
+    Merge pull request #116 from Prophet-C/v0.5
+    
+    V0.5
+
+[33mcommit f715bd97365719e58cd6c3e5e9eae8eb082bb7bf[m
+Merge: 727b0b6 b7debe1
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Sun Aug 28 10:30:22 2022 +0800
+
+    Merge branch 'v0.5' of github.com:Prophet-C/OpenOOD_local into v0.5
+
+[33mcommit b7debe196e9bd17d16564fc5d54e74e74bac7f24[m
+Merge: 9138e49 55e0f96
+Author: Pengyun Wang <91826032+Prophet-C@users.noreply.github.com>
+Date:   Sun Aug 28 10:29:35 2022 +0800
+
+    Merge branch 'Jingkang50:v0.5' into v0.5
+
+[33mcommit 727b0b6afe96e4f113dec0b302bead87afb9f8fe[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Sun Aug 28 10:29:07 2022 +0800
+
+    add rd4ad
+
+[33mcommit 9138e491901c1dce8813b9fbcaff85739c71d937[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Fri Aug 19 20:54:46 2022 +0800
+
+    temp save
+
+[33mcommit 55e0f967fa9bbfeb496a5b194c3deeee1343f4a4[m
+Merge: 75f4a52 72ce322
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Aug 8 17:19:01 2022 +0800
+
+    merge from main
+
+[33mcommit 75f4a5271d85dc9c418d5d53bd68609c190d4549[m
+Merge: 5da1ed8 5be26e4
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Aug 8 15:58:43 2022 +0800
+
+    clean v0.5
+
+[33mcommit 72ce322bcc6eb905419e0c80d0bea1852543d813[m
+Merge: 2a89bba 305e6e3
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Aug 4 22:17:57 2022 +0800
+
+    Merge pull request #112 from iCGY96/patch-1
+    
+    fix openmax
+
+[33mcommit 2a89bbad38c8d845e928dee4e3bf71c7ae3ed923[m
+Merge: c460a75 c85f05d
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Aug 4 22:17:09 2022 +0800
+
+    Merge pull request #113 from hongxin001/main
+    
+    Add LogitNorm in README
+
+[33mcommit c85f05d8945901fc338f08aa212b8969861ac230[m
+Author: Hongxin Wei <owenwei@ntu.edu.sg>
+Date:   Wed Jul 6 19:13:12 2022 +0800
+
+    Update README.md
+
+[33mcommit 72bb41d268ef268260178807256bffd795f16746[m
+Author: Hongxin Wei <owenwei@ntu.edu.sg>
+Date:   Wed Jul 6 19:10:46 2022 +0800
+
+    Update README.md
+
+[33mcommit bd8e9c8f8c3c7e14ec7be771101fc4544b363488[m
+Author: Hongxin Wei <owenwei@ntu.edu.sg>
+Date:   Wed Jul 6 18:56:08 2022 +0800
+
+    Update README.md
+
+[33mcommit 305e6e3d82f007f88171e63c10a551242133f39c[m
+Author: Guangyao Chen <gy.chen@foxmail.com>
+Date:   Wed Jul 6 18:24:35 2022 +0800
+
+    fix openmax
+
+[33mcommit 5be26e4cb123e2fad75929d5ba316542fc30f589[m
+Merge: 6117854 c5c0ce3
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Jul 6 11:16:41 2022 +0800
+
+    Merge pull request #111 from Prophet-C/v0.5
+    
+    V0.5 qol updates
+
+[33mcommit c5c0ce375a08248aaa1c789ecaafe7065faf4440[m
+Merge: 06f81d2 6117854
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Wed Jul 6 00:04:31 2022 +0800
+
+    Merge branch 'v0.5' of github.com:Prophet-C/OpenOOD_local into v0.5
+
+[33mcommit 06f81d2b04fd6e9ff6ab797c369f5a7be5b04e85[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Wed Jul 6 00:04:06 2022 +0800
+
+    add download script, some changes to write_metric fucntion
+
+[33mcommit 5da1ed8b56e4d70ede5a0f780c02fccb7c866c15[m
+Merge: 6117854 c460a75
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Jul 5 11:40:31 2022 +0800
+
+    Merge branch 'main' of https://github.com/Jingkang50/OpenOOD into v0.5
+
+[33mcommit 6117854c7f0fa20119a3965f239071a793ba211a[m
+Merge: f7c9d88 55a3186
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Jul 5 11:17:47 2022 +0800
+
+    Merge pull request #110 from JediWarriorZou/v0.5
+    
+    Amend APS
+
+[33mcommit 55a31867a662875c3c22d0ce823ba7add1f373ac[m
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Mon Jul 4 22:36:37 2022 +0800
+
+    Amend APS
+
+[33mcommit f7c9d88a7fb3dab7f016f6ad8d1fe1c60cea7f3f[m
+Merge: b9847e2 53cf432
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Jul 4 11:51:13 2022 +0800
+
+    Merge pull request #108 from JediWarriorZou/v0.5
+    
+    V0.5
+
+[33mcommit 53cf43234f8b626bf1fb1f5655e0b9bd2254766e[m
+Merge: 6c59df4 b9847e2
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Sun Jul 3 01:22:22 2022 +0800
+
+    Merge branch 'v0.5' into v0.5
+
+[33mcommit b9847e2472dab3be086957a6733d6b2f5f9a8cdc[m
+Merge: 6aa5935 b3ec42d
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Sun Jul 3 01:19:49 2022 +0800
+
+    Merge pull request #109 from Prophet-C/v0.5
+    
+    V0.5
+
+[33mcommit b3ec42d07d1b1db702c050a70b0675bc438ac633[m
+Merge: 8b6c255 6aa5935
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Sat Jul 2 21:25:13 2022 +0800
+
+    Merge branch 'v0.5' of github.com:Prophet-C/OpenOOD_local into v0.5
+
+[33mcommit 8b6c255e51495ced394eedb4a788d56863f0e2bb[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Sat Jul 2 21:24:59 2022 +0800
+
+    update logger pass mechanism
+
+[33mcommit 6c59df458fd2f76c40ba19d52e28f01066ff1a02[m
+Merge: 10476f3 6aa5935
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Sat Jul 2 21:21:12 2022 +0800
+
+    APS
+
+[33mcommit fcf42156f38f2ec91c4f752b5fb6205036d2676b[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Sat Jul 2 20:59:49 2022 +0800
+
+    add function to generate result chart in sweep, change some configs
+
+[33mcommit c460a75a262c36dcf55eab5aa3899e42e79b7a5b[m
+Merge: 1442a25 3f33ca7
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Sat Jul 2 20:57:42 2022 +0800
+
+    Merge pull request #107 from hongxin001/main
+    
+    Add LogitNorm
+
+[33mcommit 3f33ca74732365ac74e2496855463f2ff4646e04[m
+Author: Hongxin Wei <owenwei@ntu.edu.sg>
+Date:   Thu Jun 30 22:08:50 2022 +0800
+
+    add logitnorm
+
+[33mcommit 664df39bb58b041fca7de7e635590c2c539ef79d[m
+Author: Hongxin Wei <owenwei@ntu.edu.sg>
+Date:   Thu Jun 30 22:07:08 2022 +0800
+
+    add logitnorm
+
+[33mcommit 10476f3a461c4b0e3ceb6fbf6959f99417d4e49f[m
+Merge: 0e34cea a7a279a
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Thu Jun 30 20:44:38 2022 +0800
+
+    validate all
+
+[33mcommit 6aa5935b2d71098bf172e87d198f3b2167d669cd[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Jun 30 15:50:40 2022 +0800
+
+    add auto param search
+
+[33mcommit b6f1452598e6e8dcf4c665cb187b079de7adda4f[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Jun 30 15:18:39 2022 +0800
+
+    add fsood
+
+[33mcommit 68caceffa37b4cbf4b22bb4caeb145a9877a419a[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Jun 30 11:42:55 2022 +0800
+
+    fix tin20
+
+[33mcommit 0e34ceac5204a806c631fd32fa68de76f2cd8c8b[m
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Wed Jun 29 16:54:05 2022 +0800
+
+    osr
+
+[33mcommit a7a279a1f9e84ad395690b64e096f5ddb62f3dc4[m
+Merge: 6936532 c309cd7
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Jun 29 16:41:08 2022 +0800
+
+    Merge pull request #105 from Prophet-C/v0.5
+    
+    V0.5
+
+[33mcommit c309cd7e3521d0dccdae82968371b71b385fdeff[m
+Merge: 53d7f90 6936532
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Jun 29 16:40:56 2022 +0800
+
+    Merge branch 'v0.5' into v0.5
+
+[33mcommit 69365327782cfc125ca971866fff535b65f3014f[m
+Merge: 282e67e f2d5697
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Jun 29 16:40:15 2022 +0800
+
+    Merge pull request #104 from JediWarriorZou/v0.5
+    
+    osr config
+
+[33mcommit 282e67edc7de57c9f4d64ab20dc374617a9f1e03[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Jun 29 16:38:33 2022 +0800
+
+    modify config
+
+[33mcommit 53d7f909993de03f123a6bd0aeda664747760092[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Wed Jun 29 16:35:56 2022 +0800
+
+    update config
+
+[33mcommit f2d5697fbb7d9aa71ce0fce9463484783df226d7[m
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Wed Jun 29 15:54:31 2022 +0800
+
+    osr config
+
+[33mcommit 69cedecf308b21268e718c13d357b33e10227d75[m
+Author: Pengyun Wang <91826032+Prophet-C@users.noreply.github.com>
+Date:   Tue Jun 28 21:45:55 2022 +0800
+
+    Update README.md
+
+[33mcommit b4d1986a7c9ba6e7a60bcdcef7271a7d72ce1c48[m
+Author: Pengyun Wang <91826032+Prophet-C@users.noreply.github.com>
+Date:   Tue Jun 28 21:43:20 2022 +0800
+
+    Update README.md
+
+[33mcommit 6ce77ebdd88d247393f18918e47220526d9f4a35[m
+Merge: 4647791 1442a25
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Jun 28 15:22:48 2022 +0800
+
+    Merge branch 'main' of https://github.com/Jingkang50/OpenOOD into v0.5
+
+[33mcommit 46477911436f998356079969d6d2ae1d65674bca[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Jun 28 15:20:18 2022 +0800
+
+    add sweep
+
+[33mcommit 577e462d921373570036ed8d533fdd6e2d443a4e[m
+Author: Hongxin Wei <owenwei@ntu.edu.sg>
+Date:   Fri Jun 24 16:18:38 2022 +0800
+
+    add logitnorm
+
+[33mcommit c7aade3ccbdaa2203fdff9fa7450553296c5d07e[m
+Author: Hongxin Wei <owenwei@ntu.edu.sg>
+Date:   Fri Jun 24 16:06:52 2022 +0800
+
+    add logitnorm
+
+[33mcommit 77c1c5fcb1be11366d1bbf136339f8b2a89ebbd7[m
+Author: Hongxin Wei <owenwei@ntu.edu.sg>
+Date:   Fri Jun 24 16:05:17 2022 +0800
+
+    add logitnorm
+
+[33mcommit 1442a2553c0ff2b2283ce2b151bc268f17e4b16e[m
+Merge: 14abb34 e1b403d
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Jun 14 20:39:44 2022 +0800
+
+    Merge pull request #102 from Jingkang50/v0.5
+    
+    V0.5
+
+[33mcommit e1b403d798b4f627937bc424435cebd72e17b6fc[m
+Merge: 173ba49 14abb34
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Jun 14 20:38:07 2022 +0800
+
+    merge main
+
+[33mcommit 14abb3435ed9209a0694b592efd5ed3c0877c680[m
+Merge: 0bf1fe2 51dfb17
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Jun 14 20:20:22 2022 +0800
+
+    Merge pull request #85 from sunyiyou/main
+    
+    Add method of KNN, DICE and add the energy score of ReACT
+
+[33mcommit 173ba4933d84000c868087b50f1e85d5b030c989[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Jun 14 20:19:43 2022 +0800
+
+    update readme
+
+[33mcommit 2d0bd1ddbcac7d4592314542a41e0b9d15c828e9[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Jun 14 20:17:08 2022 +0800
+
+    update readme
+
+[33mcommit cb8411fc0128e2ac0a3889d63c6166c4aa9ac725[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Jun 14 20:06:31 2022 +0800
+
+    update readme
+
+[33mcommit cbc0164206859cf912ddf2e7ccbf52e04d330aff[m
+Merge: 212a489 9012fe5
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Jun 13 16:09:47 2022 +0800
+
+    Merge branch 'v0.5' of https://github.com/Jingkang50/OpenOOD into v0.5
+
+[33mcommit 212a4893a9f1b90fc94e77d55915bd2477b5a8bf[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Jun 13 16:09:19 2022 +0800
+
+    final push
+
+[33mcommit 9012fe5bda3010ea35de81b7e977d2cd82090889[m
+Merge: c2f0b6a 1c9f96b
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Sun Jun 12 23:34:47 2022 +0800
+
+    Merge pull request #101 from Jingkang50/dev_DejianZou
+    
+    Dev dejian zou 2022/6/12
+
+[33mcommit 1c9f96bb605d5aca30c3ff629f15341d10ddbd46[m
+Merge: 2ae53bd c2f0b6a
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Sun Jun 12 16:54:54 2022 +0800
+
+    amend script
+
+[33mcommit 2ae53bda9d799020607a1607f13007b1b7b8807c[m
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Sun Jun 12 16:42:33 2022 +0800
+
+    dejianzou 2022/6/12
+
+[33mcommit c2f0b6a2ce241f57a86e298332d960d85cf1f4cf[m
+Merge: 82090c0 2c2345b
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Sun Jun 12 16:35:55 2022 +0800
+
+    Merge pull request #100 from Jingkang50/dev_PengyunWang
+    
+    Dev pengyun wang
+
+[33mcommit 2c2345b74a27e1bc0cbffa7772da1ffec2452642[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Sun Jun 12 16:34:11 2022 +0800
+
+    add scripts for mnist ood and osr experiments
+
+[33mcommit 63a7f087e70e596aa9d3bda8b2b8bfc856d0f65e[m
+Merge: e65eaa1 0b2ca4a
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Thu Jun 9 16:44:54 2022 +0800
+
+    Merge branch 'v0.5' of github.com:Jingkang50/OpenOOD into dev_PengyunWang
+
+[33mcommit 82090c0ac53948e6007edf10bc8658c945b8779e[m
+Merge: 0b2ca4a bb2d3fb
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Jun 9 16:44:34 2022 +0800
+
+    Merge pull request #99 from Jingkang50/dev_DejianZou
+    
+    Dev dejian zou
+
+[33mcommit 0b2ca4a0a3284095b0961c3a306d6b67bcaa0b00[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Jun 9 16:43:56 2022 +0800
+
+    add config file
+
+[33mcommit f53302ab192efc96bb63ebc34750e1d6ac26386a[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Jun 9 16:43:02 2022 +0800
+
+    add config file
+
+[33mcommit 2dee057f304fab387dabb47981f24ea15ef1ee09[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Jun 9 16:39:57 2022 +0800
+
+    add config file
+
+[33mcommit e65eaa16d3eb5f4edd5a44d3a18029c200777fa3[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Thu Jun 9 16:36:04 2022 +0800
+
+    add scripts, change lenet struct
+
+[33mcommit bb2d3fb3923f9fa33a91bad799ca3789e32bee0e[m
+Merge: 0f6eee9 2d0ce81
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Thu Jun 9 15:03:26 2022 +0800
+
+    finish cifar100
+
+[33mcommit 900a0a56f6cb2d11dbc6e15f22e2e89ff02d6ab0[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Jun 9 14:38:34 2022 +0800
+
+    add osr sweep
+
+[33mcommit 0f6eee9730f2736e837a97edd68b43956583b3c3[m
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Thu Jun 9 14:20:02 2022 +0800
+
+    finish cifar100 experiment
+
+[33mcommit 2d0ce81f1fee8a74203e53ec87b85d57b0c34ffe[m
+Merge: 6e6dd94 7385b96
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Jun 9 01:53:48 2022 +0800
+
+    Merge pull request #98 from Jingkang50/dev_PengyunWang
+    
+    Dev pengyun wang
+
+[33mcommit 7385b96627c3d63e2a6af6fff662a8e2d6dc4f10[m
+Merge: 15cd716 d104999
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Thu Jun 9 01:50:46 2022 +0800
+
+    Merge branch 'v0.5' of github.com:Jingkang50/OpenOOD into dev_PengyunWang
+
+[33mcommit 6e6dd9408e2f7ff1466b4fb2d6c104408f71c323[m
+Merge: d104999 06004c4
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Jun 9 01:47:46 2022 +0800
+
+    Merge pull request #96 from Jingkang50/dev_DejianZou
+    
+    Update train_cifar100.sh
+
+[33mcommit 06004c4d9d01c4820fff257a93dc25acca56af39[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Jun 9 01:47:21 2022 +0800
+
+    Update train_cifar100.sh
+
+[33mcommit b6173d4155d1016bc8e1fbdc118e855b4f324e7f[m
+Merge: 833497a d104999
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Jun 9 01:46:51 2022 +0800
+
+    Merge branch 'v0.5' into dev_DejianZou
+
+[33mcommit 15cd716454d73c7b1b23e954638e98eea3ada5de[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Thu Jun 9 01:46:11 2022 +0800
+
+    mnist exps, add new scripts, modify some old scripts, some tweaks for methods
+
+[33mcommit d104999f3686eaf0cfe253532f8a549efe6dc1bd[m
+Merge: 7d3298c f8f66dc
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Jun 9 01:46:11 2022 +0800
+
+    Merge pull request #97 from Jingkang50/dev_KunyuanDing
+    
+    optimize mos
+
+[33mcommit 7d3298c4ffb86adc6bb6450bd4ff747e02774008[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Jun 9 00:49:54 2022 +0800
+
+    add imagenet scripts
+
+[33mcommit f8f66dc949d40bc774387d9b265ca57a5adcc107[m
+Author: Kunyuan Ding <90272244+OmegaDING@users.noreply.github.com>
+Date:   Wed Jun 8 23:34:02 2022 +0800
+
+    Update train_mos_cifar100.sh
+
+[33mcommit f3db06b48574c133178cbcb2c9172e4fe886a225[m
+Author: OmegaDING <dingkunyuan1@foxmail.com>
+Date:   Wed Jun 8 23:26:32 2022 +0800
+
+    optimize mos
+
+[33mcommit 833497a483f4ed9d76068e517425d90d1bf09bff[m
+Author: DEJIAN ZOU <91411201+JediWarriorZou@users.noreply.github.com>
+Date:   Wed Jun 8 22:15:05 2022 +0800
+
+    Update train_cifar100.sh
+
+[33mcommit 1ad502863b69bc09dcd06735ff26ac3d892f8cd5[m
+Author: OmegaDING <dingkunyuan1@foxmail.com>
+Date:   Wed Jun 8 22:08:27 2022 +0800
+
+    optim mos
+
+[33mcommit 9829ae380b09ee2aa85f1f27debc246f5dfaf32d[m
+Merge: 12e5865 d0700d6
+Author: OmegaDING <dingkunyuan1@foxmail.com>
+Date:   Wed Jun 8 21:57:52 2022 +0800
+
+    optimize mos
+
+[33mcommit 12e58652d597c99d781e4131fc4b82d773259b75[m
+Author: OmegaDING <dingkunyuan1@foxmail.com>
+Date:   Wed Jun 8 21:51:23 2022 +0800
+
+    optimize mos config
+
+[33mcommit d0700d605d56a91faf741abcf624962d8cb3dbd6[m
+Merge: cca9559 e629b93
+Author: DEJIAN ZOU <91411201+JediWarriorZou@users.noreply.github.com>
+Date:   Wed Jun 8 21:23:13 2022 +0800
+
+    Merge pull request #95 from Jingkang50/dev_DejianZou
+    
+    Amend config of cifar100
+
+[33mcommit e629b938ef3a43099ed978817b554292a7651dac[m
+Merge: 2acfdfc 208855a
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Wed Jun 8 21:16:08 2022 +0800
+
+    cifar 100 config
+
+[33mcommit f919b9d231c8efd357d2b253e3f15bca47ce5a8c[m
+Author: OmegaDING <dingkunyuan1@foxmail.com>
+Date:   Wed Jun 8 19:55:30 2022 +0800
+
+    optimize mos auto cal group_config
+
+[33mcommit cca9559b098668c885ead452d69fe1f8ee53d10b[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Jun 8 15:10:29 2022 +0800
+
+    add mcd test
+
+[33mcommit 383945a65605e51b34d5234487ecaedcd4ec6ae0[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Jun 8 14:20:35 2022 +0800
+
+    add mcd and udg
+
+[33mcommit df52301b6ad86044cbed350b986fe742f41deb45[m
+Merge: bdc71d7 208855a
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Jun 8 11:02:26 2022 +0800
+
+    merge v0.5
+
+[33mcommit bdc71d7dc3d20b0c6c8d5a3ef5d8830baa157e13[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Jun 8 11:00:19 2022 +0800
+
+    add mcd
+
+[33mcommit 2acfdfc9203496977d5ec34ecec2a40ca39dc457[m
+Merge: 8db9efb 4f8a80c
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Wed Jun 8 08:18:13 2022 +0800
+
+    cifar 100
+
+[33mcommit 208855a9fdd996d9a9fbcd6c9c8644d8b513b45e[m
+Merge: 4edfcf8 5d5559e
+Author: Pengyun Wang <91826032+Prophet-C@users.noreply.github.com>
+Date:   Wed Jun 8 00:22:21 2022 +0800
+
+    Merge pull request #94 from Jingkang50/dev_PengyunWang
+    
+    verify imagenet config and script, some minor tweaks
+
+[33mcommit 5d5559ec11dc1b8fcaf0c0cf471ca221a1cf8f88[m
+Merge: 72f18df 4edfcf8
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Wed Jun 8 00:16:10 2022 +0800
+
+    Merge branch 'v0.5' of github.com:Jingkang50/OpenOOD into dev_PengyunWang
+
+[33mcommit 72f18df3bae1c9709baa581f9de2261efdfcb786[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Wed Jun 8 00:13:42 2022 +0800
+
+    verify imagenet config and script, some minor tweaks
+
+[33mcommit 4edfcf8a4207517c1080bf27d4e6abc268f248db[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Jun 7 14:10:32 2022 +0800
+
+    update readme
+
+[33mcommit 7db0e6e9040e41fa4cae61d0900066140dece414[m
+Merge: 710d8f4 f92cd88
+Author: Pengyun Wang <91826032+Prophet-C@users.noreply.github.com>
+Date:   Tue Jun 7 00:22:20 2022 +0800
+
+    Merge pull request #93 from Jingkang50/dev_KunyuanDing
+    
+    optimize mos and patchcore
+
+[33mcommit 710d8f447105a5d7f3ad671d58dac53f13adb4e4[m
+Merge: b50be9d 0d3b20b
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Jun 6 22:17:26 2022 +0800
+
+    Merge pull request #92 from Jingkang50/dev_PengyunWang
+
+[33mcommit f92cd88ea48a8ecee8dc98ff43e3356c1ee195a7[m
+Author: OmegaDING <dingkunyuan1@foxmail.com>
+Date:   Mon Jun 6 20:32:47 2022 +0800
+
+    fix mos on cifar
+
+[33mcommit e4aeea1ed99cf0c403a682cb7afbd13bc98eda1b[m
+Merge: 748d73f b50be9d
+Author: OmegaDING <dingkunyuan1@foxmail.com>
+Date:   Mon Jun 6 20:24:31 2022 +0800
+
+    fix mos on cifar
+
+[33mcommit 748d73f381f0fef60f9bd823ce5f5b5eb5debd37[m
+Author: OmegaDING <dingkunyuan1@foxmail.com>
+Date:   Mon Jun 6 19:58:15 2022 +0800
+
+    fix bugs when mos runs on cifar
+
+[33mcommit c52555abbfb1326dbc000b7f7bbc68bc8fe514bb[m
+Author: OmegaDING <dingkunyuan1@foxmail.com>
+Date:   Mon Jun 6 19:41:37 2022 +0800
+
+    fix mos
+
+[33mcommit 0d3b20bc9cbafef8f6f6f62d88980fe019ea6adb[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Mon Jun 6 18:04:49 2022 +0800
+
+    manual merge PR#85 into v0.5
+
+[33mcommit b50be9d1a68e84354a6561c3e65a25b70de43310[m
+Merge: 6457cb4 1901c35
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Jun 6 17:49:51 2022 +0800
+
+    Merge branch 'v0.5' of https://github.com/Jingkang50/OpenOOD into v0.5
+
+[33mcommit 6457cb4d05b80b603563c5a4c78c7f764f6fc27c[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Jun 6 17:49:42 2022 +0800
+
+    update readme
+
+[33mcommit 1901c3537dd1778e0666648240da5d54f46b18df[m
+Merge: 517e844 72483dc
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Jun 6 17:41:54 2022 +0800
+
+    Merge pull request #91 from Jingkang50/dev_PengyunWang
+    
+    Uncertainty code review after overhaul
+
+[33mcommit 72483dc69a8cc91ac3b73fc1943ddaa4d14a7c00[m
+Merge: d426989 517e844
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Mon Jun 6 17:39:41 2022 +0800
+
+    Merge branch 'v0.5' of github.com:Jingkang50/OpenOOD into dev_PengyunWang
+
+[33mcommit d426989d82ce247d83f354eaaa10de3a66e03d37[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Mon Jun 6 17:37:48 2022 +0800
+
+    uncertainty code review after overhaul
+
+[33mcommit 517e8442cd40984d0126e8425c6ac5424cc46f9d[m
+Merge: 0eb892c 4f8a80c
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Jun 6 16:49:44 2022 +0800
+
+    merge v0.5
+
+[33mcommit 0eb892c80c145bde9d5986591962f1447d5e8512[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Jun 6 16:46:36 2022 +0800
+
+    add easy dev
+
+[33mcommit 8db9efb76aa836d7c93fa0668c7300e684097061[m
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Mon Jun 6 09:44:28 2022 +0800
+
+    amend vos
+
+[33mcommit 4f8a80c7d4a0b39019a57c2c9f83d87044c3c188[m
+Merge: 8bfd227 25eb498
+Author: Pengyun Wang <91826032+Prophet-C@users.noreply.github.com>
+Date:   Sun Jun 5 23:41:59 2022 +0800
+
+    Merge pull request #89 from Jingkang50/dev_PengyunWang
+    
+    osr code review after overhaul, fix conf_branch_net
+
+[33mcommit 25eb498c59b49be535129bf95ceec8e784ba0ce2[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Sun Jun 5 23:40:45 2022 +0800
+
+    osr code review after overhaul, fix conf_branch_net
+
+[33mcommit 8bfd227fa8fbfab4829864636977a82e52ddbb7d[m
+Merge: c58d837 53bc57f
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Sun Jun 5 19:11:42 2022 +0800
+
+    Merge pull request #88 from Jingkang50/dev_PengyunWang
+    
+    Dev pengyun wang
+
+[33mcommit c58d83718b64a3746e002e0b1c7f02b46a41c986[m
+Merge: 4bf36b9 9d0baea
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Sun Jun 5 19:11:22 2022 +0800
+
+    Merge pull request #87 from Jingkang50/dev_LiBo
+    
+    add ece_evaluator
+
+[33mcommit 53bc57f520f28ae3ec7d089b5cee608cfdbfb409[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Sun Jun 5 18:55:37 2022 +0800
+
+    fix vos and some order issue
+
+[33mcommit 0a6eacf12a2662c5f02c84101e90cd7ffadd96c6[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Sun Jun 5 17:30:44 2022 +0800
+
+    add vos review
+
+[33mcommit c2f31b0c6950a0f0f9170d08b48c0d99a18bde84[m
+Merge: a0a5383 4bf36b9
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Sun Jun 5 17:23:01 2022 +0800
+
+    Merge branch 'v0.5' of github.com:Jingkang50/OpenOOD into dev_PengyunWang
+
+[33mcommit a0a5383df271f39b8c043a79e30d7ffe1457e7f5[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Sun Jun 5 17:22:39 2022 +0800
+
+    ad methods review_v1 after overhaul
+
+[33mcommit 9d0baeaf7c2931abe871946f7edf40b174465d46[m
+Author: Bo Li <drluodian@gmail.com>
+Date:   Sun Jun 5 09:58:33 2022 +0800
+
+    1. add ece_evaluator.py
+    2. amend issues in environment.yml
+
+[33mcommit 51dfb174551ed7e180129b06e6a5c5311b2e315f[m
+Author: Yiyou Sun <sunyiyou@cs.wisc.edu>
+Date:   Sat Jun 4 12:08:35 2022 -0500
+
+    push comment back
+
+[33mcommit face0bb7f29da8c183ea331378dbacc57657dcc1[m
+Author: Yiyou Sun <sunyiyou@cs.wisc.edu>
+Date:   Sat Jun 4 12:04:19 2022 -0500
+
+    update react knn dice
+
+[33mcommit 4bf36b99c2bff3786d64e152c53f7dfa352fd440[m
+Merge: ae2b72b e51ae75
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Sat Jun 4 21:50:16 2022 +0800
+
+    Merge pull request #84 from Jingkang50/dev_DejianZou
+    
+    Dev dejian zou
+
+[33mcommit e51ae75714752ab8dc9c26698e134362ceedae4b[m
+Merge: 2dac93f ae2b72b
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Sat Jun 4 21:46:36 2022 +0800
+
+    amend vos
+
+[33mcommit ae2b72b2a93eb19874a53d9409190b7c6fdcf0ab[m
+Merge: b10328d 9b5a04e
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Sat Jun 4 21:36:32 2022 +0800
+
+    Merge pull request #83 from Jingkang50/dev_PengyunWang
+    
+    Dev pengyun wang
+
+[33mcommit 9b5a04ebf063528c0f5b6e0584759c7eda948a3c[m
+Merge: e725aa6 b10328d
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Sat Jun 4 20:54:19 2022 +0800
+
+    Merge branch 'v0.5' of github.com:Jingkang50/OpenOOD into dev_PengyunWang
+
+[33mcommit e725aa6e781845461db9c06fad37727d6b4dad78[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Sat Jun 4 20:53:04 2022 +0800
+
+    ood methods code review
+
+[33mcommit 62e228e2575cdd2b32d77919d9e3a17ce8a374f3[m
+Author: Bo Li <drluodian@gmail.com>
+Date:   Sat Jun 4 19:00:20 2022 +0800
+
+    fix setup issue
+
+[33mcommit 2dac93f24638dfab017c8009a9f56595043d0989[m
+Merge: 610e342 b10328d
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Sat Jun 4 18:35:01 2022 +0800
+
+    amend vos
+
+[33mcommit 610e34259ca6c7f35cd8c5600a5f8328c4a62c81[m
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Sat Jun 4 15:38:10 2022 +0800
+
+    reconstruction
+
+[33mcommit 986dd847d0fa1ac7268db7903cd7b58c9d27935d[m
+Merge: fcf69eb b10328d
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Fri Jun 3 14:39:31 2022 +0800
+
+    Merge branch 'v0.5' of https://github.com/Jingkang50/OpenOOD into v0.5
+
+[33mcommit fcf69eba0569d59afc6396857da17e8d9f08cd42[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Fri Jun 3 14:39:25 2022 +0800
+
+    merge v0.5
+
+[33mcommit b10328d9b1b77158137ad9ad8581efe0c4d94ae9[m
+Merge: 3939c0a 8d2f351
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Fri Jun 3 14:34:53 2022 +0800
+
+    Merge pull request #82 from Jingkang50/dev_PengyunWang
+    
+    Dev pengyun wang
+
+[33mcommit 8d2f35150103765d9ea80a9710dfbeea1c7a8115[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Fri Jun 3 10:58:24 2022 +0800
+
+    ad methods code review, stand by for testing
+
+[33mcommit 924feea82e4169dc70745d75c1e1bb38332f4a30[m
+Merge: 4fa6dd2 3939c0a
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Thu Jun 2 22:30:44 2022 +0800
+
+    merge with latest v0.5
+
+[33mcommit 4fa6dd253fc295e67239b5a7625709396c015b63[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Thu Jun 2 22:09:57 2022 +0800
+
+    anomaly detection code review
+
+[33mcommit 3939c0a983f1c89cc8b173b027d648bea35b0634[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Jun 2 20:30:38 2022 +0800
+
+    fix train
+
+[33mcommit aa08687e560711a387e2407b25bde40e7f80a7db[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Jun 2 14:51:31 2022 +0800
+
+    restructure
+
+[33mcommit a1498c576cf25d50e61afff689f076b0cedad534[m
+Merge: c1ac5ca 1d0b87a
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Jun 1 20:41:14 2022 +0800
+
+    Merge branch 'v0.5' of https://github.com/Jingkang50/OpenOOD into v0.5
+
+[33mcommit c1ac5ca7a6922bc5e5c431165581b6b53daf62b6[m
+Merge: b2634ac 0bf1fe2
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Jun 1 20:41:03 2022 +0800
+
+    Merge branch 'main' of https://github.com/Jingkang50/OpenOOD into v0.5
+
+[33mcommit 1d0b87a9f9c4ec2656d1cff881681515d7a35923[m
+Merge: fa1d657 e36461d
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Jun 1 20:37:57 2022 +0800
+
+    Merge pull request #81 from Jingkang50/dev_DejianZou
+    
+    Amend Confidence Branch
+
+[33mcommit e36461d65f67ec21a765b1ded16613787ebf2680[m
+Merge: 1bb51ea fa1d657
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Wed Jun 1 20:21:05 2022 +0800
+
+    conf mnist
+
+[33mcommit b2634acb49756b8a18660d01c0a415e290d01a84[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue May 31 01:38:59 2022 +0800
+
+    update easy dev
+
+[33mcommit 1bb51ea1823e6731f5f38ce46d508588814042bb[m
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Sun May 29 10:56:12 2022 +0800
+
+    cifar10 res
+
+[33mcommit fa1d657fb50367b1fa72fe47ec001ae463011be9[m
+Merge: a7cd2e0 4b42f36
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Sat May 28 20:38:13 2022 +0800
+
+    Merge pull request #79 from Jingkang50/dev_KunyuanDing
+    
+    OpenMax bug fixed
+
+[33mcommit a7cd2e0394a252bead4c40d19a6b67f7954c9dc8[m
+Merge: 56b6692 e380849
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Sat May 28 20:37:16 2022 +0800
+
+    Merge pull request #78 from LilyDaytoy/v0.5
+    
+    add get_fc, fix bug for kl_matching and mls
+
+[33mcommit 4b42f36ce155635b27efa9321733bcd132e3e8e6[m
+Author: KunyuanDing <dingkunyuan1@foxmail.com>
+Date:   Sat May 28 19:50:07 2022 +0800
+
+    fix and add openmax eval
+
+[33mcommit 488a35c00ba95ee551d8550282d022813f854434[m
+Author: KunyuanDing <dingkunyuan1@foxmail.com>
+Date:   Sat May 28 19:43:52 2022 +0800
+
+    fix and add openmax eval
+
+[33mcommit e3808497068261987ec576fba741bda66f6a0f1c[m
+Author: Lily Peng <c200218@e.ntu.edu.sg>
+Date:   Thu May 26 14:37:01 2022 +0800
+
+    fix bug for running cifar10 on kl_matching, fic bug for get_fc
+
+[33mcommit 83cf210b56bf1aef7ba36c04cd461a32c9f0787e[m
+Author: Lily Peng <c200218@e.ntu.edu.sg>
+Date:   Thu May 26 14:23:04 2022 +0800
+
+    fix kl_matching
+
+[33mcommit 091f61700592f7689f79d884baed0ce187459c79[m
+Author: Lily Peng <c200218@e.ntu.edu.sg>
+Date:   Thu May 26 13:56:09 2022 +0800
+
+    add secondary forward for lenet and change kl_matching
+
+[33mcommit 5f80d8862233f8f0d1e5fcb80a3f4359c5eb5bef[m
+Merge: 0bb0a6e 56b6692
+Author: Peng Wenxuan <70517391+LilyDaytoy@users.noreply.github.com>
+Date:   Thu May 26 13:00:52 2022 +0800
+
+    Merge branch 'Jingkang50:v0.5' into v0.5
+
+[33mcommit 833457fe2e6608982636cb39b6d6fb3cd0751cbd[m
+Author: KunyuanDing <dingkunyuan1@foxmail.com>
+Date:   Wed May 25 18:47:47 2022 +0800
+
+    fix openmax bug optimize conf and vos
+
+[33mcommit 7f2a906c014b1cf53658b4ddeb51fc1a16f091bf[m
+Author: KunyuanDing <dingkunyuan1@foxmail.com>
+Date:   Wed May 25 18:47:26 2022 +0800
+
+    fix openmax bug optimize conf and vos
+
+[33mcommit 0bb0a6efa211ada34ecd01e20c653da7f0f8150d[m
+Author: Lily Peng <c200218@e.ntu.edu.sg>
+Date:   Sat May 21 18:08:26 2022 +0800
+
+    change mls postprocessor
+
+[33mcommit fda8ff8b08b09b4ec10a993530650167aea4e619[m
+Author: Lily Peng <c200218@e.ntu.edu.sg>
+Date:   Sat May 21 17:39:16 2022 +0800
+
+    fix tuple.cpu() bug
+
+[33mcommit b082c6224f264d1f6cd94a047f60251742ed0616[m
+Author: Lily Peng <c200218@e.ntu.edu.sg>
+Date:   Sat May 21 17:04:43 2022 +0800
+
+    add fc for some nets
+
+[33mcommit 598b10888732249eb7f7258e80de3a47cef7aa34[m
+Author: KunyuanDing <dingkunyuan1@foxmail.com>
+Date:   Fri May 20 19:25:38 2022 +0800
+
+    test1
+
+[33mcommit 0bf1fe2f73914d538ab4e7ffcdaf512f79179a1d[m
+Merge: fd7dd58 56b6692
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Fri May 20 14:29:06 2022 +0800
+
+    Merge pull request #75 from Jingkang50/v0.5
+    
+    V0.5: supporting dist training and 32 ood methods
+
+[33mcommit 56b669222470322e8fcfa450b8335703110c8214[m
+Merge: 1066693 bce655a
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Fri May 20 14:23:50 2022 +0800
+
+    Merge branch 'v0.5' of https://github.com/Jingkang50/OpenOOD into v0.5
+
+[33mcommit 10666930b105da6aa6ceb4754b47e656d7db6fc8[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Fri May 20 14:23:38 2022 +0800
+
+    update readme
+
+[33mcommit bce655abb5990ae4995a517b3bee773ffc5a7fda[m
+Merge: 008cf1d 4e27825
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Fri May 20 11:18:51 2022 +0800
+
+    Merge pull request #74 from LilyDaytoy/v0.5
+    
+    fix parameter passing error
+
+[33mcommit 4e27825d72c1141abb7331d1286a77e810228288[m
+Author: Lily Peng <c200218@e.ntu.edu.sg>
+Date:   Thu May 19 17:02:18 2022 +0800
+
+    fix bug and unify params passing order
+
+[33mcommit b9efca1019febab7698d69a6d84991fe8577745d[m
+Merge: a3a0f4e 008cf1d
+Author: Lily Peng <c200218@e.ntu.edu.sg>
+Date:   Thu May 19 16:46:06 2022 +0800
+
+    Merge remote-tracking branch 'refs/remotes/origin/v0.5' into v0.5
+
+[33mcommit a3a0f4ee76402c197048a4e52114529322910c38[m
+Author: Lily Peng <c200218@e.ntu.edu.sg>
+Date:   Thu May 19 16:45:52 2022 +0800
+
+    fix parameter order error
+
+[33mcommit 008cf1dbc0f952077aa205a11eb5905e07351b8e[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu May 19 01:39:23 2022 +0800
+
+    update readme
+
+[33mcommit 2b231ec683d1206dffbcf9aec3fde867f9d4187b[m
+Merge: 22e82d9 bc91800
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed May 18 20:10:48 2022 +0800
+
+    Merge pull request #73 from Jingkang50/dev_KunyuanDing
+    
+    Add MOS method by Kunyuan
+
+[33mcommit bc918003fa90463711b83788ecda41b42e328a52[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed May 18 20:08:27 2022 +0800
+
+    Update train_opengan.yml
+
+[33mcommit 84798a0f6365038d7846862d8d68b179b4c4e7fd[m
+Author: KunyuanDing <dingkunyuan1@foxmail.com>
+Date:   Wed May 18 17:59:21 2022 +0800
+
+    mos3
+
+[33mcommit c0031fec7d90d864f6753fcdb1e4da18b2f7cb4e[m
+Merge: a7cf261 22e82d9
+Author: KunyuanDing <dingkunyuan1@foxmail.com>
+Date:   Wed May 18 17:58:57 2022 +0800
+
+    mos3
+
+[33mcommit 22e82d92565bc07b9f50d19b8ba71301152bdd78[m
+Merge: c9144f3 7c11d09
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue May 17 18:29:20 2022 +0800
+
+    Merge pull request #68 from Jingkang50/dev_DejianZou
+    
+    VOS by Dejian Zou
+
+[33mcommit 7c11d094921e240af764f89c09f2efcb7c30103b[m
+Author: DEJIAN ZOU <91411201+JediWarriorZou@users.noreply.github.com>
+Date:   Tue May 17 16:34:37 2022 +0800
+
+    Update resnet18_32x32.py
+
+[33mcommit c9144f33e72676baa9eb2ed32aba5d2bb8715148[m
+Merge: 3a0fde9 a02db4f
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue May 17 14:25:28 2022 +0800
+
+    Merge pull request #70 from LilyDaytoy/v0.5
+    
+    fix name error and solve conflicts with upstream
+
+[33mcommit a02db4f6b0ee22fafcdf457541a3b827439ecb5a[m
+Author: Lily Peng <c200218@e.ntu.edu.sg>
+Date:   Tue May 17 11:45:11 2022 +0800
+
+    minor change
+
+[33mcommit 87306fff8b899e918a32440de7100efc52927295[m
+Author: Lily Peng <c200218@e.ntu.edu.sg>
+Date:   Tue May 17 11:36:47 2022 +0800
+
+    run pre-commit though all files
+
+[33mcommit 404c670695536d3cbb9c100c7c12b27d5442cf04[m
+Author: Lily Peng <c200218@e.ntu.edu.sg>
+Date:   Tue May 17 11:31:21 2022 +0800
+
+    add mc_dropout
+
+[33mcommit d3ccfb708bbc1c3457d5f1e67a381c90a8a676e1[m
+Author: DEJIAN ZOU <91411201+JediWarriorZou@users.noreply.github.com>
+Date:   Tue May 17 11:06:37 2022 +0800
+
+    Update vos_net.yml
+
+[33mcommit 7b028aab4633fa8adb1aa743641d933ef06deea7[m
+Author: DEJIAN ZOU <91411201+JediWarriorZou@users.noreply.github.com>
+Date:   Tue May 17 11:00:34 2022 +0800
+
+    Update resnet18_32x32.py
+
+[33mcommit 7578aaecc8c2259632e6c795e0b84cf5b623a7b3[m
+Author: DEJIAN ZOU <91411201+JediWarriorZou@users.noreply.github.com>
+Date:   Tue May 17 10:52:20 2022 +0800
+
+    Update conf_esti.yml
+
+[33mcommit 4fa1a4348a037c090e8c169d85cc315a473e3ef2[m
+Author: DEJIAN ZOU <91411201+JediWarriorZou@users.noreply.github.com>
+Date:   Tue May 17 10:50:50 2022 +0800
+
+    Update draem_preprocessor.py
+
+[33mcommit 48c93743ea7345d82a24e2f70c8b768478b0af3b[m
+Author: Lily Peng <c200218@e.ntu.edu.sg>
+Date:   Tue May 17 10:48:28 2022 +0800
+
+    delete unused file
+
+[33mcommit 68220ab7c0658935e951675428650fd0337ad385[m
+Merge: 8f229cc d8d8099
+Author: Lily Peng <c200218@e.ntu.edu.sg>
+Date:   Tue May 17 10:39:39 2022 +0800
+
+    fix conflicts
+
+[33mcommit d8d8099491791ddfd869fa971ab6c26da58846a7[m
+Merge: 0404077 3a0fde9
+Author: Peng Wenxuan <70517391+LilyDaytoy@users.noreply.github.com>
+Date:   Tue May 17 10:35:29 2022 +0800
+
+    Merge pull request #1 from Jingkang50/v0.5
+    
+    merge from upstream v0.5
+
+[33mcommit 3a0fde9e20b697f18693b14d32656344502328d8[m
+Merge: 4a0cf1a 0404077
+Author: Peng Wenxuan <70517391+LilyDaytoy@users.noreply.github.com>
+Date:   Tue May 17 10:35:19 2022 +0800
+
+    Merge branch 'v0.5' into v0.5
+
+[33mcommit 8f229cc0eaa600bc73983288f90e64d18f7ba491[m
+Author: Lily Peng <c200218@e.ntu.edu.sg>
+Date:   Tue May 17 10:33:02 2022 +0800
+
+    fix name error
+
+[33mcommit 64d98d37c3e686311a676438bf0e98aca2846c0d[m
+Merge: 9b8b1f4 4a0cf1a
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Tue May 17 07:40:37 2022 +0800
+
+    add vos
+
+[33mcommit 4a0cf1af9f23a3fcc3d76bc0ed8bafe3e259adc6[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue May 17 00:52:51 2022 +0800
+
+    Delete imglist_maker.py
+
+[33mcommit c1659272fb6559736bfa0866ab0908a3f1b18678[m
+Merge: b572b5f c790aa5
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue May 17 00:46:29 2022 +0800
+
+    Merge pull request #69 from Jingkang50/dev_PengyunWang
+    
+    Dev pengyun wang
+
+[33mcommit c790aa5947df6bff5c33cc7c70ec1af9e848d2e7[m
+Merge: 240f9fe b572b5f
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Tue May 17 00:09:34 2022 +0800
+
+    update to latest v0.5
+
+[33mcommit 240f9fe6128e96b460070d5abcb17c50a81569a2[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Tue May 17 00:05:09 2022 +0800
+
+    fix and tewaks for previous method, add csi method version_1, add ddt training version_0
+
+[33mcommit 9b8b1f4999de7fc636665a3a9fbf25cebb4a6ae7[m
+Merge: 759537a b572b5f
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Mon May 16 22:24:42 2022 +0800
+
+    add VOS
+
+[33mcommit a7cf261c3ac691f6418358921b5899efc1c8ad7b[m
+Merge: 95947e2 b572b5f
+Author: KunyuanDing <dingkunyuan1@foxmail.com>
+Date:   Mon May 16 20:09:28 2022 +0800
+
+    Merge branch 'v0.5' of https://github.com/Jingkang50/OpenOOD into dev_KunyuanDing
+
+[33mcommit 95947e23355a60edbf09e0fd05b3668ab2db5904[m
+Author: KunyuanDing <dingkunyuan1@foxmail.com>
+Date:   Mon May 16 20:01:43 2022 +0800
+
+    mos1
+
+[33mcommit 759537a2ced376345907e2c334efa01c26f7d370[m
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Mon May 16 19:59:02 2022 +0800
+
+    add VOS
+
+[33mcommit 04040773ed2d9b58eb34bceb0703b034a7c88296[m
+Author: Lily Peng <c200218@e.ntu.edu.sg>
+Date:   Mon May 16 19:50:29 2022 +0800
+
+    add esemble
+
+[33mcommit d0610a77caadc5cec266e6f8900c6420b3f4d34f[m
+Author: Lily Peng <c200218@e.ntu.edu.sg>
+Date:   Mon May 16 18:08:57 2022 +0800
+
+    add esenble train script
+
+[33mcommit 040eac526e157dbfdd6d7523489b57167e6664e6[m
+Author: Lily Peng <c200218@e.ntu.edu.sg>
+Date:   Mon May 16 17:54:20 2022 +0800
+
+    fix bug of temperature_scaling, add script
+
+[33mcommit b572b5ff51630b10e4043ac9813e9e3d7fe3d9ed[m
+Merge: 357d1bd b609750
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Sun May 15 22:40:30 2022 +0800
+
+    Merge pull request #66 from LilyDaytoy/v0.5
+    
+    temp scaling
+
+[33mcommit b6097501eb39e229dbb8c7257c699dc06a4bd733[m
+Author: Lily Peng <c200218@e.ntu.edu.sg>
+Date:   Sun May 15 22:33:18 2022 +0800
+
+    add data_aux_preprocessor to imgList dataset
+
+[33mcommit 1ae135e0c74e0214bd2e2419cd68bf9c6502f0f8[m
+Author: Lily Peng <c200218@e.ntu.edu.sg>
+Date:   Sun May 15 22:12:38 2022 +0800
+
+    add comment for eval()
+
+[33mcommit b2bbc58c5b433dfc701ef711bce6af9ac2199b22[m
+Author: Lily Peng <c200218@e.ntu.edu.sg>
+Date:   Sun May 15 21:42:15 2022 +0800
+
+    add temperature_scaling postprocessor
+
+[33mcommit 914373d2491159e19a97da5b50eb807f4ed0fa34[m
+Author: Lily Peng <c200218@e.ntu.edu.sg>
+Date:   Sun May 15 21:37:59 2022 +0800
+
+    modify get_ood_dataloader preprocessor
+
+[33mcommit b34c8fe39adf3004d87c9d517c8fe5de2d8211a9[m
+Merge: 314e154 357d1bd
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Sat May 14 23:57:47 2022 +0800
+
+    merge with v0.5
+
+[33mcommit 314e154f66d6c360d6f0d46531feac0916ae80a3[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Sat May 14 23:31:30 2022 +0800
+
+    commit before merge
+
+[33mcommit 357d1bdd752c499bee909083eea97aee9990c337[m
+Author: DEJIAN ZOU <91411201+JediWarriorZou@users.noreply.github.com>
+Date:   Sat May 14 19:39:06 2022 +0800
+
+    Rename conf_esti.py to conf_esti_evaluator.py
+
+[33mcommit 0bb75eb0f5dbc31f6488ecc30b717c2c77123118[m
+Merge: 1202b8c 54aec8f
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Sat May 14 11:48:56 2022 +0800
+
+    Merge pull request #65 from LilyDaytoy/v0.5
+    
+    add pixmix and modify preprocessor structure
+
+[33mcommit 54aec8fd0b30b90fcc8718f86eb9f22c425bf187[m
+Author: Lily Peng <c200218@e.ntu.edu.sg>
+Date:   Fri May 13 17:58:09 2022 +0800
+
+    change None_preprocessor to base_preprocessor and fix bug
+
+[33mcommit 49a9f13c637da86e4247eecce0575caf30dc1849[m
+Author: Lily Peng <c200218@e.ntu.edu.sg>
+Date:   Fri May 13 17:24:40 2022 +0800
+
+    add cutmix trainer
+
+[33mcommit 89685694d1377c313fb1233ad3b449410649eb48[m
+Author: Lily Peng <c200218@e.ntu.edu.sg>
+Date:   Wed May 11 22:41:18 2022 +0800
+
+    add pixmix cifar10 script
+
+[33mcommit 5ef0db9a5159b7ae02dab49f388d7575fa5cbd74[m
+Author: Lily Peng <c200218@e.ntu.edu.sg>
+Date:   Wed May 11 22:27:44 2022 +0800
+
+    fix bug
+
+[33mcommit 806a9c09bcfa6007097a1c2eb48c65b1a0925fc6[m
+Author: Lily Peng <c200218@e.ntu.edu.sg>
+Date:   Wed May 11 21:40:22 2022 +0800
+
+    fix circular import and uncommen libmr
+
+[33mcommit c036e60517c7e9409c48373f9f7d3308962aacee[m
+Author: Lily Peng <c200218@e.ntu.edu.sg>
+Date:   Wed May 11 20:06:41 2022 +0800
+
+    add pixmix and modify preprocessor structure
+
+[33mcommit 1202b8cce99cb957c47d645adf9ca02864278d56[m
+Merge: 895334a b1a432d
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Fri May 6 10:14:30 2022 +0800
+
+    Merge pull request #63 from Jingkang50/cu/vim
+    
+    Cu/vim
+
+[33mcommit b1a432db2cd194dd6b558b11dbbdc7fab96312db[m
+Author: silicon001 <curiousking@outlook.com>
+Date:   Fri May 6 09:59:26 2022 +0800
+
+    update
+
+[33mcommit 0fad39a87b33cd64845741a5144c3aab68780123[m
+Author: silicon001 <curiousking@outlook.com>
+Date:   Fri May 6 09:58:22 2022 +0800
+
+    merge
+
+[33mcommit fb1615ceb315051c763f9ed02f8e8064da29964a[m
+Author: wanghaoqi <wanghaoqi@sensetime.com>
+Date:   Fri May 6 09:36:22 2022 +0800
+
+    add repvgg, kl and maxlogit
+
+[33mcommit fa7b0f9dc54a8974b0c0e6b15a49a0729d423de1[m
+Author: silicon001 <curiousking@outlook.com>
+Date:   Thu May 5 10:13:01 2022 +0800
+
+    format
+
+[33mcommit 78edeb87baee35d9fc5dfa1e803894c92c996123[m
+Merge: 4542296 895334a
+Author: silicon001 <curiousking@outlook.com>
+Date:   Wed May 4 11:30:53 2022 +0800
+
+    Merge branch 'v0.5' into cu/vim
+
+[33mcommit 454229645f8b0ee303c1077b4fecf9e0dd420d41[m
+Author: wanghaoqi <wanghaoqi@sensetime.com>
+Date:   Wed May 4 11:25:06 2022 +0800
+
+    vim finish
+
+[33mcommit 895334a02de31bb7ea633daab274dfde4bf3b914[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue May 3 20:51:22 2022 +0800
+
+    update readme
+
+[33mcommit a95f68d91c36079eb1def8ab57641d0ba5149d61[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue May 3 19:11:11 2022 +0800
+
+    update readme
+
+[33mcommit 8658acd3ccb883dc363be6c94c3a0f5cfcf82d09[m
+Merge: ce581ce d428117
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue May 3 19:00:58 2022 +0800
+
+    Merge branch 'v0.5' of https://github.com/Jingkang50/OpenOOD into v0.5
+
+[33mcommit ce581ce416df05ce1fbf3ff9a377f3ff6db997fb[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue May 3 19:00:51 2022 +0800
+
+    update readme
+
+[33mcommit 62ef4e26db280a1df90a21aa2c82623100b1f939[m
+Author: wanghaoqi <wanghaoqi@sensetime.com>
+Date:   Tue May 3 16:40:07 2022 +0800
+
+    vit
+
+[33mcommit d428117dc4a25c72fbe0ed4e41eb5a3573011d04[m
+Merge: 67a2d59 89b60ca
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue May 3 14:08:59 2022 +0800
+
+    Merge pull request #55 from Jingkang50/dev_ZitangZhou
+    
+    Gram by ZitangZhou
+
+[33mcommit 89b60ca0159863603b2270dea21c1653c2699bca[m
+Author: dev_zitangzhou <937582111@qq.com>
+Date:   Tue May 3 11:45:25 2022 +0800
+
+    add cutpaste and gram
+
+[33mcommit 2501d7fd56d529b959a64582191b5700ac8c0ca0[m
+Author: dev_zitangzhou <937582111@qq.com>
+Date:   Tue May 3 11:15:53 2022 +0800
+
+    add cutpaste and gram
+
+[33mcommit 42e6d9716516ee59d29b7890a76eaab283db0ba9[m
+Merge: 24d2e08 67a2d59
+Author: dev_zitangzhou <937582111@qq.com>
+Date:   Tue May 3 11:12:46 2022 +0800
+
+    Merge branch 'v0.5' of github.com:Jingkang50/OpenOOD into dev_ZitangZhou
+
+[33mcommit 67a2d59dc0eef1c0d2096085e84e08604edce15a[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue May 3 10:50:09 2022 +0800
+
+    Update README.md
+
+[33mcommit 24d2e083cafabbdcf2686d332959d11dff32c7cc[m
+Merge: ccb3bf3 7c61ea4
+Author: dev_zitangzhou <937582111@qq.com>
+Date:   Tue May 3 01:19:29 2022 +0800
+
+    Merge branch 'v0.5' of github.com:Jingkang50/OpenOOD into dev_ZitangZhou
+
+[33mcommit ccb3bf353ed7e9fa2316e48a6d2257332a89bc95[m
+Merge: dc29a5e f57c1cf
+Author: dev_zitangzhou <937582111@qq.com>
+Date:   Tue May 3 01:17:25 2022 +0800
+
+    add cutpaste and gram
+
+[33mcommit 7c61ea4ba18da25be24882e77a8f438f5ee674ed[m
+Merge: d3762f2 e6e8ad3
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon May 2 17:42:43 2022 +0800
+
+    Merge branch 'v0.5' of https://github.com/Jingkang50/OpenOOD into v0.5
+
+[33mcommit d3762f2d18f4e91b29f15e830d88dd3f656a8e36[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon May 2 17:33:10 2022 +0800
+
+    update readme
+
+[33mcommit e6e8ad311f38be5a262e20bb3c9548705d477bde[m
+Merge: 2e97d39 40ed0d1
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon May 2 17:24:59 2022 +0800
+
+    Merge pull request #61 from Jingkang50/contribute
+    
+    Create CONTRIBUTING.md
+
+[33mcommit 40ed0d11849443f88708df19f51c4dd4d8846238[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon May 2 17:24:28 2022 +0800
+
+    Create CONTRIBUTING.md
+
+[33mcommit 2e97d39df5852baa03ff2f039bfca9c0abed474f[m
+Merge: ac13a14 0f16bf7
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon May 2 17:21:13 2022 +0800
+
+    Merge pull request #60 from Jingkang50/Jingkang50-patch-1
+    
+    Update issue templates
+
+[33mcommit 0f16bf7a0fd9b6514ab888cca0ecb089264511e4[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon May 2 17:20:29 2022 +0800
+
+    Update issue templates
+
+[33mcommit ac13a14cceb0c9051d2c72fd703e5a648a4d48ee[m
+Merge: 66219fe 8e314d4
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon May 2 17:19:29 2022 +0800
+
+    Merge pull request #59 from Jingkang50/add-code-of-conduct-1
+    
+    Create CODE_OF_CONDUCT.md
+
+[33mcommit 8e314d4648b2781a1159b0c2cfe97c42d8c3400c[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon May 2 17:19:10 2022 +0800
+
+    Create CODE_OF_CONDUCT.md
+
+[33mcommit 66219fe6bcf09c162eaa1ffb945227411212f9c2[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon May 2 16:39:18 2022 +0800
+
+    update readme
+
+[33mcommit e7b6c701e387af0894cddf5dd3955e14b77dc2f6[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon May 2 14:12:31 2022 +0800
+
+    update readme
+
+[33mcommit ab678d7016c9ca7d863b04e2d24f6783a94ac476[m
+Merge: 1c88e55 f57c1cf
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon May 2 14:08:50 2022 +0800
+
+    Merge branch 'v0.5' of https://github.com/Jingkang50/OpenOOD into v0.5
+
+[33mcommit 1c88e55a8e837e1eb4d66ad29b4a6852ff8998aa[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon May 2 14:03:35 2022 +0800
+
+    update readme
+
+[33mcommit dc29a5e9943250fa93772508dce72653a7ecd886[m
+Author: dev_zitangzhou <937582111@qq.com>
+Date:   Sat Apr 30 20:24:41 2022 +0800
+
+    add cutpaste and gram
+
+[33mcommit f57c1cf5586f45ac30ef9ed306a0982a3c461f73[m
+Merge: d4eed97 c049fef
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Sat Apr 30 20:13:47 2022 +0800
+
+    Merge pull request #57 from Jingkang50/dev_KunyuanDing
+    
+    OpenMax and PatchCore by Dev kunyuan ding
+
+[33mcommit c049fef417f1c40724e4a599f1b0b102fc1f43aa[m
+Author: KunyuanDing <dingkunyuan1@foxmail.com>
+Date:   Sat Apr 30 20:11:04 2022 +0800
+
+    pre-commit-3
+
+[33mcommit dcf98e3a65de4105abd31b5b0d9ed8674edf42d9[m
+Author: dev_zitangzhou <937582111@qq.com>
+Date:   Sat Apr 30 19:58:50 2022 +0800
+
+    add cutpaste and gram
+
+[33mcommit ab646654c6086f80206dc794dc729a69ebbcdd43[m
+Author: dev_zitangzhou <937582111@qq.com>
+Date:   Sat Apr 30 19:51:43 2022 +0800
+
+    add cutpaste and gram
+
+[33mcommit d4eed97a0e46eff4e73e5adb7ed437eceecb5ead[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Sat Apr 30 16:25:41 2022 +0800
+
+    update readme
+
+[33mcommit 61d67ac636d70cbd6716a085e03600d91ac1e826[m
+Author: KunyuanDing <dingkunyuan1@foxmail.com>
+Date:   Sat Apr 30 14:56:54 2022 +0800
+
+    pre-commit-2
+
+[33mcommit 96dbf098bf240780fb825b4c03e8de73ce5dd4eb[m
+Author: KunyuanDing <dingkunyuan1@foxmail.com>
+Date:   Sat Apr 30 14:51:16 2022 +0800
+
+    pre-commit-1
+
+[33mcommit 2d20f4a8dec27253861fcf51e8110aea06c5ca5b[m
+Author: KunyuanDing <dingkunyuan1@foxmail.com>
+Date:   Sat Apr 30 11:16:53 2022 +0800
+
+    pr change
+
+[33mcommit 1485342885fb287e2ae0175adb706b4529214e17[m
+Merge: bdf6cbe f2f7694
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Sat Apr 30 00:29:54 2022 +0800
+
+    Merge branch 'v0.5' of https://github.com/Jingkang50/OpenOOD into v0.5
+
+[33mcommit bdf6cbeca3c5961395233a3410695782d17f7b2e[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Sat Apr 30 00:29:39 2022 +0800
+
+    update readme
+
+[33mcommit 0b520aeb97dbc5dba4198a59475b7162b1783b79[m
+Author: KunyuanDing <dingkunyuan1@foxmail.com>
+Date:   Fri Apr 29 10:42:13 2022 +0800
+
+    pr2
+
+[33mcommit e4d3c8fe48d4a0e47a8c42af864b5bded92ff8db[m
+Merge: a1fbe53 f2f7694
+Author: KunyuanDing <dingkunyuan1@foxmail.com>
+Date:   Fri Apr 29 10:21:35 2022 +0800
+
+    Merge branch 'v0.5' of https://github.com/Jingkang50/OpenOOD into HEAD
+
+[33mcommit f2f76944ddcd9dc2d9dbfae455971cb3ff7a04dc[m
+Merge: 62e3218 2bd98f8
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Apr 28 13:52:29 2022 +0800
+
+    Merge pull request #58 from Jingkang50/cu/vim
+    
+    Finish gradNorm
+
+[33mcommit 2bd98f8c382396c3edecb9f6a3a2cc90f6a8dfa8[m
+Merge: c529f8b 62e3218
+Author: silicon001 <curiousking@outlook.com>
+Date:   Thu Apr 28 13:42:27 2022 +0800
+
+    Merge branch 'v0.5' into cu/vim
+
+[33mcommit c529f8bef554e8c9d4ec03bc491558a261c98e06[m
+Author: wanghaoqi <wanghaoqi@sensetime.com>
+Date:   Thu Apr 28 13:35:10 2022 +0800
+
+    gradnorm finish
+
+[33mcommit a1fbe5366ddbd7617a33e9e4e9dfb944061bc271[m
+Merge: 0a89459 d0a9ba6
+Author: KunyuanDing <dingkunyuan1@foxmail.com>
+Date:   Thu Apr 28 10:06:38 2022 +0800
+
+    Merge branch 'dev_KunyuanDing' into HEAD
+
+[33mcommit 62e32185d5c3f35c870a9fe4fa2641f7aa3a8a6a[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Apr 28 05:18:36 2022 +0800
+
+    fix conflict
+
+[33mcommit bbf8b3c2be7895dc092b5b1c8aaa6af909844b1a[m
+Merge: 29011d0 fd7dd58
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Apr 28 05:18:13 2022 +0800
+
+    fix conflict
+
+[33mcommit 29011d0354afa97bb80aabee5c7410f7cf6a65cf[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Apr 28 04:45:39 2022 +0800
+
+    examine previous 4 pr
+
+[33mcommit 0a89459a64b2b885e9fcb75d45296aeb17c53d02[m
+Author: KunyuanDing <dingkunyuan1@foxmail.com>
+Date:   Wed Apr 27 20:27:41 2022 +0800
+
+    4_27-20
+
+[33mcommit a05211c50c175fa78dc973e0fddc7dd8df2966b2[m
+Merge: e81a084 0bd2b97
+Author: KunyuanDing <dingkunyuan1@foxmail.com>
+Date:   Wed Apr 27 19:57:31 2022 +0800
+
+    Merge branch 'v0.5' of https://github.com/Jingkang50/OpenOOD into HEAD
+
+[33mcommit fc834545bb5bcb0c893ce6e6ac7636efabc66009[m
+Author: dev_zitangzhou <937582111@qq.com>
+Date:   Wed Apr 27 19:45:15 2022 +0800
+
+    add Gram
+
+[33mcommit e81a084cc58f1593cdf19684ca13816d28535a59[m
+Merge: b56e2c2 fd7dd58
+Author: KunyuanDing <dingkunyuan1@foxmail.com>
+Date:   Wed Apr 27 17:25:47 2022 +0800
+
+    Merge branch 'main' of https://github.com/Jingkang50/OpenOOD into HEAD
+
+[33mcommit 0bd2b977797b18f0a858c53eab438afad3ed2c0a[m
+Merge: 6d4a68d e23b10c
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Apr 27 16:35:38 2022 +0800
+
+    Merge pull request #54 from Jingkang50/cu/vim
+    
+    Cu/vim
+
+[33mcommit e23b10c0cb2933d3295e7fdca8341879afe81cc2[m
+Author: wanghaoqi <wanghaoqi@sensetime.com>
+Date:   Wed Apr 27 16:31:53 2022 +0800
+
+    resolve
+
+[33mcommit 5c61df9723c373e850b6b3a9fa2ea7849c4c1bb2[m
+Merge: 7000154 6d4a68d
+Author: silicon001 <curiousking@outlook.com>
+Date:   Wed Apr 27 16:22:56 2022 +0800
+
+    Merge branch 'v0.5' into cu/vim
+
+[33mcommit 70001546cd6cb50e803eecad198b91a8de321d4e[m
+Author: wanghaoqi <wanghaoqi@sensetime.com>
+Date:   Wed Apr 27 16:05:18 2022 +0800
+
+    new pr
+
+[33mcommit fd7dd58c4cc82c384d779c9822a25818bb51dcb2[m
+Merge: 6320e63 3ea1afd
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Apr 27 15:51:39 2022 +0800
+
+    Merge pull request #53 from Jingkang50/revert-52-cu/vim
+    
+    Revert "Cu/vim"
+
+[33mcommit 3ea1afd461bc0a676592efe3965af545d53b76a2[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Apr 27 15:50:31 2022 +0800
+
+    Revert "Cu/vim"
+
+[33mcommit 6320e63d400ad949eff96018a9195a91dca1fb19[m
+Merge: aea7e8d c83b818
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Apr 27 15:49:00 2022 +0800
+
+    Merge pull request #52 from Jingkang50/cu/vim
+    
+    GradNorm and VIM
+
+[33mcommit b56e2c22fb5f8152529af08966dedb00bf4f145b[m
+Author: KunyuanDing <dingkunyuan1@foxmail.com>
+Date:   Wed Apr 27 15:39:08 2022 +0800
+
+    4_27
+
+[33mcommit c83b8186dc2a3ad4c16ea4021139363c9e620933[m
+Author: wanghaoqi <wanghaoqi@sensetime.com>
+Date:   Wed Apr 27 15:27:59 2022 +0800
+
+    change image size
+
+[33mcommit 96f77faf417e0333d7d8b49a6a9bf83d04b94c72[m
+Author: wanghaoqi <wanghaoqi@sensetime.com>
+Date:   Wed Apr 27 15:20:35 2022 +0800
+
+    add gradnorm
+
+[33mcommit b4191bf3ef00bf0d7d5791958c776f79f25de66d[m
+Author: wanghaoqi <wanghaoqi@sensetime.com>
+Date:   Wed Apr 27 15:16:34 2022 +0800
+
+    name changed
+
+[33mcommit 87f404aac51f33fb2ef2eea0e2d7c1b0eef4162d[m
+Author: wanghaoqi <wanghaoqi@sensetime.com>
+Date:   Wed Apr 27 14:39:38 2022 +0800
+
+    vim finish
+
+[33mcommit 6d4a68d44c5691e740d5cbebf425ebc134c09b2f[m
+Merge: 68edb70 5c62f94
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Apr 27 00:04:30 2022 +0800
+
+    Merge pull request #50 from Jingkang50/dev_DejianZou
+    
+    Confidence Estimation by Dejian Zou
+
+[33mcommit 5c62f94a511a17caa314b5f92a27197b281958c4[m
+Merge: ffd1c4c 68edb70
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Tue Apr 26 22:12:21 2022 +0800
+
+    add confidence estimation
+
+[33mcommit ffd1c4c22c8f127c1e113b8fc519715561f0f1e6[m
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Tue Apr 26 21:41:06 2022 +0800
+
+    add conf_esti
+
+[33mcommit 405cb2d5a46d4676ec7da48164be1a673ede562b[m
+Author: wanghaoqi <wanghaoqi@sensetime.com>
+Date:   Tue Apr 26 15:43:00 2022 +0800
+
+    vim_right_feat
+
+[33mcommit 68edb702eabe7a7b3e58d177ddccbb63addc47e5[m
+Merge: 3b2ebaa 4b4b02a
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Apr 26 14:48:07 2022 +0800
+
+    Merge pull request #46 from Jingkang50/dev_PengyunWang
+    
+    added godin method, update react, fix res50
+
+[33mcommit 4b4b02a82e3120d4bc395ff0d14578d4723b2e6e[m
+Merge: 21aefc2 3b2ebaa
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Apr 26 14:48:00 2022 +0800
+
+    Merge branch 'v0.5' into dev_PengyunWang
+
+[33mcommit 3b2ebaa8621ed7398ff8e6ae8413e34f45d7cd28[m
+Merge: 4b87870 7c5e602
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Apr 26 11:41:17 2022 +0800
+
+    Merge pull request #41 from Jingkang50/dev_DejianZou
+    
+    DSVDD by Dejian Zou
+
+[33mcommit 7c5e602c2131a6b2481908515cec49cc165c1545[m
+Merge: f80e2db 4b87870
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Apr 26 11:41:09 2022 +0800
+
+    Merge branch 'v0.5' into dev_DejianZou
+
+[33mcommit 4b878709ade0e5d3172b0128015c623a811d9f4c[m
+Merge: aea7e8d e5dfb58
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Apr 26 11:40:16 2022 +0800
+
+    Merge pull request #48 from iCGY96/main
+    
+    add ARPL and ARPL-GAN
+
+[33mcommit e5dfb58c2db7bf326731dc669cf57bae38faa5a3[m
+Author: Guangyao Chen <gy.chen@foxmail.com>
+Date:   Mon Apr 25 08:39:36 2022 +0000
+
+    add ARPL and ARPL-GAN
+
+[33mcommit 34a60a66c92d005eba8d875a500c6db8250a5b2a[m
+Author: KunyuanDing <dingkunyuan1@foxmail.com>
+Date:   Sun Apr 24 19:31:31 2022 +0800
+
+    pr2
+
+[33mcommit a371222225a4b14579ff3757e125c025495c8c19[m
+Merge: df2b03d aea7e8d
+Author: KunyuanDing <dingkunyuan1@foxmail.com>
+Date:   Sun Apr 24 19:30:56 2022 +0800
+
+    Merge branch 'main' of https://github.com/Jingkang50/OpenOOD into HEAD
+
+[33mcommit 5d6f9e4a98bb401e143afb220bc72b747d24ec78[m
+Author: wanghaoqi <wanghaoqi@sensetime.com>
+Date:   Thu Apr 21 17:48:32 2022 +0800
+
+    runnable vim
+
+[33mcommit 21aefc27fb62f50cc737fe5e6e38a968ff548692[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Thu Apr 21 17:41:21 2022 +0800
+
+    update react_ver2, fix res50
+
+[33mcommit 6fb58cb9b50ada8dcefff2f7a2197911771d6e14[m
+Author: wanghaoqi <wanghaoqi@sensetime.com>
+Date:   Thu Apr 21 14:00:39 2022 +0800
+
+    runnable vim
+
+[33mcommit f2685da8de63c032d51ca712243a9a9e092ec0a8[m
+Author: wanghaoqi <wanghaoqi@sensetime.com>
+Date:   Thu Apr 21 10:08:25 2022 +0800
+
+    vim
+
+[33mcommit 5a1adfe8adc1f1341c58c65eef3eabcd04477c96[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Tue Apr 19 22:20:22 2022 +0800
+
+    add godin_ver0
+
+[33mcommit 95ce97327a6d69d9327f07dc8b594d067464f6b2[m
+Author: haoqiwang <wanghaoqi@sensetime.com>
+Date:   Mon Apr 18 20:54:17 2022 +0800
+
+    bit
+
+[33mcommit 046b4142c92a5ccbb6e4ed30070134e6e89929ce[m
+Merge: f5df694 aea7e8d
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Sat Apr 16 19:02:17 2022 +0800
+
+    merge with main
+
+[33mcommit f5df694dc6eedd932e2c4b900b1301f2a33372e5[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Sat Apr 16 18:56:32 2022 +0800
+
+    commit before pull
+
+[33mcommit d0a9ba6b1f6b07b9d3668c235b6b6382d1094dc9[m
+Merge: d22b66e 666217f
+Author: OmegaDING <dingkunyuan1@foxmail.com>
+Date:   Thu Apr 14 18:20:58 2022 +0800
+
+    Merge branch 'dev_KunyuanDing' of https://github.com/Jingkang50/OpenOOD into dev_KunyuanDing
+    add patchcore and openmax
+
+[33mcommit d22b66e01587006562c41a297cd9bfab13485329[m
+Author: OmegaDING <dingkunyuan1@foxmail.com>
+Date:   Thu Apr 14 18:17:27 2022 +0800
+
+    pull request
+
+[33mcommit df2b03d6aa482a188ee22a58f799d1e3327fdc52[m
+Author: OmegaDING <dingkunyuan1@foxmail.com>
+Date:   Thu Apr 14 17:56:49 2022 +0800
+
+    1
+
+[33mcommit 666217fba567ae04935cb75b146725b531fb0234[m
+Author: Kunyuan Ding <90272244+OmegaDING@users.noreply.github.com>
+Date:   Thu Apr 14 17:48:17 2022 +0800
+
+    Update 5_mnist_test_fsood_odin.sh
+
+[33mcommit d3cb1f8d56b4d89475b0c7e33208a37eaa8853ad[m
+Author: OmegaDING <dingkunyuan1@foxmail.com>
+Date:   Thu Apr 14 17:41:09 2022 +0800
+
+    1
+
+[33mcommit 00611f1a1a1969727ac873c6e80f577550cce94a[m
+Author: OmegaDING <dingkunyuan1@foxmail.com>
+Date:   Thu Apr 14 17:40:57 2022 +0800
+
+    1
+
+[33mcommit aea7e8dfa83e6c79831d67ff0966831acafb56c0[m
+Merge: eab6876 a6dc6ae
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Apr 13 01:10:31 2022 +0800
+
+    Merge pull request #44 from Jingkang50/dev_jkyang
+    
+    update readme
+
+[33mcommit a6dc6aeb42c7a1fb3277dd923282b1e90a6dd509[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Apr 13 01:08:54 2022 +0800
+
+    update readme
+
+[33mcommit eab68766c0967189da0aaf26c88e2eba9fe118d7[m
+Merge: 8e794f2 698106d
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Apr 13 00:59:04 2022 +0800
+
+    Merge pull request #43 from Jingkang50/dev_jkyang
+    
+    update readme
+
+[33mcommit 698106dad4a351a9d96a7297180b139e7efd0e54[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Apr 13 00:58:14 2022 +0800
+
+    update readme
+
+[33mcommit 42594fcecc2ce1b3bebe8850f4c384949041b2f1[m
+Author: haoqiwang <wanghaoqi@sensetime.com>
+Date:   Wed Apr 13 00:10:27 2022 +0800
+
+    init
+
+[33mcommit f80e2db8c8f29b93b4e758ea1ea2ad5eb198c63e[m
+Merge: 41bbc77 8e794f2
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Tue Apr 12 19:42:22 2022 +0800
+
+    add DSVDD
+
+[33mcommit 41bbc77de9d8c6ed4deb016d2668df866ea97b38[m
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Tue Apr 12 19:28:59 2022 +0800
+
+    DSVDD
+
+[33mcommit 8e794f2aed52eade0dd50232fd3336ffa9b25791[m
+Merge: 06c9281 10783c8
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Apr 12 09:49:46 2022 +0800
+
+    Merge pull request #40 from Jingkang50/dev_jkyang
+    
+    upload fsood link
+
+[33mcommit 10783c8b7959e9f27a30f28734ca62135a108d91[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Apr 12 09:49:06 2022 +0800
+
+    upload fsood link
+
+[33mcommit 06c92811657b6c80d98050ee4e4eb642e14eebd2[m
+Merge: 029057a 65f2b07
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Apr 11 19:27:46 2022 +0800
+
+    Merge pull request #39 from Jingkang50/dev_jkyang
+    
+    update fsood
+
+[33mcommit 65f2b0787305bb42a580415e571bcfc6a67af6e0[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Apr 11 19:25:26 2022 +0800
+
+    update fsood
+
+[33mcommit 029057a4abc7f937601670e00b9e73dabf82caca[m
+Merge: 93eec4c c15f36a
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Apr 11 11:28:24 2022 +0800
+
+    Merge pull request #38 from Jingkang50/dev_jkyang
+    
+    Code release to support FS-OOD
+
+[33mcommit c15f36a5cc89d7aeda7f483ad7525c789e7b89f3[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Apr 11 11:23:59 2022 +0800
+
+    release fsood
+
+[33mcommit 297903e683e31dc48744a5df875c0dc0c592afb8[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Apr 11 11:22:00 2022 +0800
+
+    release fsood
+
+[33mcommit 68463cf13e9d01982da4169539826fe405aff239[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Apr 11 11:07:19 2022 +0800
+
+    release fsood
+
+[33mcommit 5c9d599341416a90532684ed59b452b9816ccb06[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Apr 11 01:01:55 2022 +0800
+
+    load fsood
+
+[33mcommit 368eabbd9e427cdc6b0ba6d8d1249d4b9dad6ed1[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Apr 11 00:57:14 2022 +0800
+
+    load fsood
+
+[33mcommit cc1b4659f88b10b1c6bdd6c2f905c078811d95c6[m
+Merge: 2fbb2e4 93eec4c
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Apr 11 00:35:23 2022 +0800
+
+    Merge branch 'main' of https://github.com/Jingkang50/OpenOOD into dev_jkyang
+
+[33mcommit 93eec4cc936c963355b3009376d3688ebcd65d5a[m
+Merge: c437cb1 a7db522
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Sat Apr 9 11:43:52 2022 +0800
+
+    Merge pull request #36 from Jingkang50/dev_PengyunWang
+    
+    add OpenGan intergration along with addons needed for OpenGan tweaks for DRAEM
+
+[33mcommit a7db522788513eb6da89d73a4053de23230b94b5[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Fri Apr 8 23:49:45 2022 +0800
+
+    merge with latest main
+
+[33mcommit a1c9bd88977e854305844a7d143df97988bb9641[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Fri Apr 8 23:41:51 2022 +0800
+
+    merge with latest main
+
+[33mcommit bbd356f387ac966112ccc177372490ea55e96df9[m
+Author: OmegaDING <dingkunyuan1@foxmail.com>
+Date:   Fri Apr 8 19:05:01 2022 +0800
+
+    openmax2
+
+[33mcommit 2fbb2e422790c4bac3ab93ae651ee773b2f68da2[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Apr 5 16:48:04 2022 +0800
+
+    fix covid
+
+[33mcommit 06c65821530a7f6bbbcd3de3729f223899903cf9[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Sun Apr 3 15:16:20 2022 +0800
+
+    finalize cifar
+
+[33mcommit 069968a00ba11a9e9390191ec80d7bda725bd0de[m
+Merge: aef432d c437cb1
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Fri Apr 1 22:48:43 2022 +0800
+
+    Merge branch 'main' of github.com:Jingkang50/OpenOOD into dev_PengyunWang
+
+[33mcommit c437cb1916782dd69792af1eb8e5fbe1cf6f2f5f[m
+Merge: 0ca583a 212b352
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Fri Apr 1 20:42:53 2022 +0800
+
+    Merge pull request #37 from Jingkang50/dev_jkyang
+    
+    Add Flexible Transform and Fix MDS
+
+[33mcommit 212b352ae18ed8d0809d1ef585b9450cf593e861[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Fri Apr 1 20:40:16 2022 +0800
+
+    fix mds
+
+[33mcommit 9199f0effe72a43c6a24ee82754772b1bd8b0892[m
+Author: OmegaDING <dingkunyuan1@foxmail.com>
+Date:   Fri Apr 1 19:15:21 2022 +0800
+
+    openmax
+
+[33mcommit c740dca38a0b2c1b3a48f6e70da977eece8b4004[m
+Author: OmegaDING <dingkunyuan1@foxmail.com>
+Date:   Fri Apr 1 19:11:03 2022 +0800
+
+    openmax
+
+[33mcommit 5fdc06f8df6200656a5544b3cf9c0c472722aa85[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Mar 31 20:12:19 2022 +0800
+
+    fix cifar10 train
+
+[33mcommit b722154e271b90ea5d39d4bd71c17223625dec9e[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Mar 31 19:51:17 2022 +0800
+
+    update fsood
+
+[33mcommit aef432d8210561010dab264902f2ab5e10fe05ec[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Sun Mar 27 21:18:20 2022 +0800
+
+    add react_ver1
+
+[33mcommit 7fb88f0a820a25957473a590e14c5760d84c8e18[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Sat Mar 26 16:37:10 2022 +0800
+
+    add react ver_0
+
+[33mcommit 1191d8679e2215da2c6c54293ef48b963999330e[m
+Author: Zitang Zhou <937582111@qq.com>
+Date:   Sat Mar 26 16:24:49 2022 +0800
+
+    add CutPaste
+
+[33mcommit 6624f10fa53c5631fecc17ee2acac4627d1d2bdd[m
+Merge: 2ad5230 0ca583a
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Sat Mar 19 22:09:19 2022 +0800
+
+    update before push
+
+[33mcommit 0ca583ac2f6410cbe995dd1cb77249856d7b2246[m
+Merge: 2c585fc 741751f
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Sat Mar 19 22:00:26 2022 +0800
+
+    Merge pull request #33 from Jingkang50/dev_DejianZou
+    
+    Kdad by Dejian Zou
+
+[33mcommit 741751f9c55301e20a5f4fcbfc388cf3056f350e[m
+Merge: d30b7e1 2c585fc
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Sat Mar 19 20:51:01 2022 +0800
+
+    2022-3-19
+
+[33mcommit 8944fcd291f457ec38f43984003b758cebf92aa2[m
+Merge: 3bbd26b 2c585fc
+Author: OmegaDING <dingkunyuan1@foxmail.com>
+Date:   Sat Mar 19 20:34:18 2022 +0800
+
+    patchcore
+
+[33mcommit cec12a630a5de5947b0d70bb1c829a848d0ab152[m
+Merge: 68ec8cf 2c585fc
+Author: Zitang Zhou <937582111@qq.com>
+Date:   Sat Mar 19 16:55:50 2022 +0800
+
+    cutpaste
+
+[33mcommit 68ec8cfcf044ea3b96913592b5d253f505a568d4[m
+Author: Zitang Zhou <937582111@qq.com>
+Date:   Sat Mar 19 16:26:14 2022 +0800
+
+    cutpaste
+
+[33mcommit d30b7e1f1e30b5afabb9aaefcd0d8422d796fc72[m
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Sat Mar 19 15:11:10 2022 +0800
+
+    2022-3-19
+
+[33mcommit 7b936bb0d0673898a714fe11a605a9de7bf94a33[m
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Sat Mar 19 15:07:22 2022 +0800
+
+    2022-3-19
+
+[33mcommit d5d9088494049722edca0bc69416b121e893c689[m
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Sat Mar 19 14:50:24 2022 +0800
+
+    2022-3-19
+
+[33mcommit 3bbd26b0e06fe34935ca0908db39b2093d07a978[m
+Author: OmegaDING <dingkunyuan1@foxmail.com>
+Date:   Sat Mar 19 14:05:31 2022 +0800
+
+    patchcore
+
+[33mcommit 03b665f16f288555645b7f1a324494c7b3ec60a5[m
+Author: OmegaDING <dingkunyuan1@foxmail.com>
+Date:   Sat Mar 19 13:47:44 2022 +0800
+
+    patchcore
+
+[33mcommit dc3645905a08289343a038956f794c4d53262e7e[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Sat Mar 12 21:33:13 2022 +0800
+
+    update for special case for loading multi network checkpoint
+
+[33mcommit bc77ee34d6151911f15b338c7b8ff2fabaa21302[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Sat Mar 5 23:10:06 2022 +0800
+
+    update network/utils for multi-networks support
+
+[33mcommit b88859271263da00c9badb441dc754c107225a27[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Tue Feb 22 22:01:11 2022 +0800
+
+    add DRAEM ver_3
+
+[33mcommit 5b2ec343624c0ff19fef1a61d6b4dae496c76679[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Sat Feb 19 13:51:37 2022 +0800
+
+    add DRAEM ver_1
+
+[33mcommit 39cc9bc454ac1a1096af15c52e1e9cc72c8f9598[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Thu Feb 10 19:25:39 2022 +0800
+
+    keep update with main branch
+
+[33mcommit 1a7d7353092d1540e74f1a08fde1eea5e6ab3f8b[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Sun Jan 30 19:59:24 2022 +0800
+
+    add DRAEM ver_0
+
+[33mcommit c63b70c3625958a0d982a36d4559041dea3dc444[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Feb 9 23:42:59 2022 +0800
+
+    Update README.md
+
+[33mcommit b132ef3e95616037a6b1e27b83ea8748d5ba11c5[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Feb 7 23:27:54 2022 +0800
+
+    Update README.md
+
+[33mcommit 021733636f4be53d75829730701b6081a73012ec[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Feb 7 20:12:18 2022 +0800
+
+    update readme
+
+[33mcommit 5618beed8a34a3bd85a7fe51b6c7d876d62cd72e[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Feb 7 18:51:37 2022 +0800
+
+    complete sae
+
+[33mcommit 238eb226e7296d1eb7569064c0afe3ecaea0f99e[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Feb 3 18:26:07 2022 +0800
+
+    reframe
+
+[33mcommit 801fa2dddbb5fbc6b6d9fd7c8d6550a67eff0865[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Feb 3 18:25:39 2022 +0800
+
+    reframe
+
+[33mcommit 2ad5230c78e2e514939afbeae30613bbd6253449[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Sat Mar 12 23:00:07 2022 +0800
+
+    add OpenGan ver_0
+
+[33mcommit 9c8e1bfc5b1c297aafc2ea218e58f32be8c2e782[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Sat Mar 12 22:47:01 2022 +0800
+
+    add configs for tin/cifar dataset, update extract pipeline
+
+[33mcommit 868dac30bd10cd87b9012dc6c265b2c1d05f42f1[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Sat Mar 12 22:39:03 2022 +0800
+
+    allows res18 to accept images with different input size
+
+[33mcommit a48ff0f8ba377c6ef75a6b711367bd7440c6f13a[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Sat Mar 12 22:36:33 2022 +0800
+
+    use imagelist to read DRAEM image's anomaly status
+
+[33mcommit 2c585fc95cd12d5ae61ade00162ed5caeab89a0f[m
+Merge: 5f84cce 032dd65
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Sat Mar 12 21:36:56 2022 +0800
+
+    Merge pull request #35 from Jingkang50/dev_network_utils
+    
+    update for special case for loading multi network checkpoint
+
+[33mcommit 032dd65f7cc349bb500026c1f1962de34606092c[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Sat Mar 12 21:33:13 2022 +0800
+
+    update for special case for loading multi network checkpoint
+
+[33mcommit 5f84cce6ca73843a11e6c162dd0bb799ee385833[m
+Merge: 1cbd7fb 77227fa
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Sat Mar 12 20:10:33 2022 +0800
+
+    Merge pull request #34 from Jingkang50/dev_network_utils
+    
+    update network/utils for multi-networks support
+
+[33mcommit 77227fa789df54e332a44390cf6590359aa3d332[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Sat Mar 5 23:10:06 2022 +0800
+
+    update network/utils for multi-networks support
+
+[33mcommit e630a9d5d3f131bc7189e5704fa23373a139fa45[m
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Fri Mar 4 09:35:34 2022 +0800
+
+    remove useless files
+
+[33mcommit 7d1f09d15ac4f626fad549515dc55cc41e4351e0[m
+Merge: 6a2bba0 7814eb8
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Sun Feb 27 19:23:01 2022 +0800
+
+    version 1.5
+
+[33mcommit 6a2bba0f4be3b7aef60272dbcc4aa21bc15d88dc[m
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Thu Feb 24 15:35:45 2022 +0800
+
+    version 1.4
+
+[33mcommit 7814eb89467d7325f891b3080818ba68f6c27bcc[m
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Wed Feb 23 21:36:08 2022 +0800
+
+    version 1.3
+
+[33mcommit 1cbd7fbe4c0e3a668e10db7b0a7e3d9114dd9e9d[m
+Merge: 9622088 d9e5a70
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Feb 23 20:29:10 2022 +0800
+
+    Merge pull request #29
+    
+    Dev pengyun wang
+
+[33mcommit d9e5a705c6da99a2dcf322910c85b1ee823c8ccb[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Tue Feb 22 22:01:11 2022 +0800
+
+    add DRAEM ver_3
+
+[33mcommit 9bd7a20ba8d7f34441190430a784c5df9e1bef07[m
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Tue Feb 22 15:34:39 2022 +0800
+
+    version 1.2
+
+[33mcommit 0c34e74ed24002b192c133a2cd5a830f1afc1926[m
+Merge: 61c2ea7 907a7ec
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Sat Feb 19 19:53:19 2022 +0800
+
+    version 1.1
+
+[33mcommit 61c2ea753f1b9348f10fae268f27d22736adc39a[m
+Author: JediWarriorZou <dejianzou1206@gmail.com>
+Date:   Sat Feb 19 19:44:11 2022 +0800
+
+    version1.0
+
+[33mcommit bdfc247fc0aa7df15c2456cf5f3f661fbc9c99c9[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Sat Feb 19 13:51:37 2022 +0800
+
+    add DRAEM ver_1
+
+[33mcommit cf1cd246b98dc133c7da7737eb2cd7756e030063[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Thu Feb 10 19:25:39 2022 +0800
+
+    keep update with main branch
+
+[33mcommit 46113c7ba612429d11740bf3dacd0795cc80ada0[m
+Author: Prophet-C <samiya578fhj@gmail.com>
+Date:   Sun Jan 30 19:59:24 2022 +0800
+
+    add DRAEM ver_0
+
+[33mcommit 962208819d1f8a47d10cd441bd8b10f89521acbf[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Feb 9 23:42:59 2022 +0800
+
+    Update README.md
+
+[33mcommit a9f720debc5591a786d2685807d4a01cd5d3c6c6[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Feb 7 23:27:54 2022 +0800
+
+    Update README.md
+
+[33mcommit 62cafefab484624eaf7a2a77fc85d0c53cd0584a[m
+Merge: 7591515 85bcc33
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Feb 7 20:16:07 2022 +0800
+
+    Merge pull request #19 from Jingkang50/dev_jkyang
+    
+    update readme
+
+[33mcommit 85bcc33f3716ebed87dba148214bd42e130b90ee[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Feb 7 20:12:18 2022 +0800
+
+    update readme
+
+[33mcommit 7591515b4edbe214b8dcb128cdf9c81f25a20840[m
+Merge: 94280c4 68d1119
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Feb 7 18:55:04 2022 +0800
+
+    Merge pull request #18 from Jingkang50/dev_jkyang
+    
+    complete sae
+
+[33mcommit 68d1119e0b695cd612adba627a60484c938d4dfc[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Feb 7 18:51:37 2022 +0800
+
+    complete sae
+
+[33mcommit 94280c43f9d41da3cb80be4d2fbbb14e7548d67c[m
+Merge: 907a7ec 54b647c
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Feb 3 18:28:23 2022 +0800
+
+    Merge pull request #17 from Jingkang50/dev_jkyang
+
+[33mcommit 54b647c85ed00adc85efcfa3404a3e1392c130e0[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Feb 3 18:26:07 2022 +0800
+
+    reframe
+
+[33mcommit 7530cbddae0a868d4cec17d3a1ac959517dae9d0[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Feb 3 18:25:39 2022 +0800
+
+    reframe
+
+[33mcommit 907a7ec36bca5c4a07046b4c3b2166c159308e8d[m
+Merge: ff8fa30 6c94dec
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Jan 20 16:30:50 2022 +0800
+
+    Merge pull request #16 from Jingkang50/dev_jkyang
+    
+    fix mds
+
+[33mcommit 6c94dece317abb9e450b4c37d05ae06ecfbe3403[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Jan 20 15:39:11 2022 +0800
+
+    fix mds
+
+[33mcommit ff8fa307b29da526584ede7d79ba3474806d72b9[m
+Merge: 73a68af fc3eeef
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Jan 17 16:42:18 2022 +0800
+
+    Merge pull request #15 from Jingkang50/dev_jkyang
+    
+    refracture inference into postprocessor
+
+[33mcommit fc3eeefe92aca19186e1b3a05675a4e52b301e67[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Jan 17 16:41:21 2022 +0800
+
+    refracture inference into postprocessor
+
+[33mcommit 73a68af3515ce332dd06b87287c9131d731fe5a4[m
+Merge: d37b8fa 0c8dd6f
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Jan 17 14:18:15 2022 +0800
+
+    Merge pull request #14
+    
+    fix odin
+
+[33mcommit 0c8dd6ff463f7090cead0e33b0546a38e3fbe8d1[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Jan 17 14:16:12 2022 +0800
+
+    fix odin
+
+[33mcommit d37b8fa000048a5919a04ac554c3167eee9da844[m
+Merge: fd1a0b9 0873f4e
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Jan 13 20:22:04 2022 +0800
+
+    Merge pull request #13 from Jingkang50/dev_jkyang
+    
+    fix _get_started_0_4
+
+[33mcommit 0873f4ebe213ea822b9cd0fef193642e103ad327[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Jan 13 20:21:26 2022 +0800
+
+    fix _get_started_0_4
+
+[33mcommit fd1a0b98e5cfbc3edd9c9c9519dd5283da4dc37c[m
+Merge: 0b62c84 ac4b16b
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Jan 13 17:59:42 2022 +0800
+
+    Merge pull request #12
+    
+    delete udg and fix mnist train
+
+[33mcommit ac4b16b15fac980db4f8f33ea7531d04c06932ac[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Jan 13 17:58:14 2022 +0800
+
+    fix 0_mnist_train
+
+[33mcommit cf549db6dade45465fa72cf182d77f2ae9e220a4[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Jan 13 11:54:55 2022 +0800
+
+    delete udg
+
+[33mcommit 0b62c843d82204229be7fac51e42305813b896e7[m
+Merge: f1d937d 3c8c3ad
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Jan 12 20:54:02 2022 +0800
+
+    Merge pull request #11 from Jingkang50/dev_jkyang
+    
+    fix Dict type
+
+[33mcommit 3c8c3ad2ae78e49d4cdc35ab29ca467b5752519f[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Jan 12 20:53:16 2022 +0800
+
+    fix Dict type
+
+[33mcommit f1d937d92955fc6941a49aa04dd1c9bde1c5fe70[m
+Merge: cf0ae84 22f0db4
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Jan 12 19:48:15 2022 +0800
+
+    Merge branch 'main' of https://github.com/Jingkang50/OpenOOD into main
+
+[33mcommit cf0ae843e1fc46bcdb489a6623479d7162c1334e[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Jan 12 19:47:56 2022 +0800
+
+    rename codespell
+
+[33mcommit 22f0db41b64374a9de136eb41ba8b515c15a849a[m
+Merge: 361fff9 dbe0b07
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Jan 12 15:34:29 2022 +0800
+
+    Merge pull request #10 from Jingkang50:dev_jkyang
+    
+    rename codespell
+
+[33mcommit dbe0b07ab7311c70fb3f3e71e8e063bd22d59d5a[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Jan 12 15:33:43 2022 +0800
+
+    rename codespell
+
+[33mcommit 361fff9a9f975b190b9f9b79ef9f3d73856c184a[m
+Merge: d5596f1 e542970
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Jan 12 15:30:21 2022 +0800
+
+    Merge pull request #9
+    
+    add scripts
+
+[33mcommit e542970dab4a4dcb1981ebf6415f8d8867616eb6[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Jan 12 15:28:56 2022 +0800
+
+    add scripts
+
+[33mcommit 50dad4b6c3862dfe27979fd0c3905700e1282515[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Wed Jan 12 15:09:03 2022 +0800
+
+    update readme
+
+[33mcommit d5596f1fe7df7af24f1053b69589bb183a6c8c0c[m
+Merge: 41acd41 ec7a76c
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Jan 11 22:57:03 2022 +0800
+
+    Merge pull request #8
+    
+    fix fsood
+
+[33mcommit ec7a76caaeac6b85a1daa22d9d1bc1db43b1b7a3[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Jan 11 22:56:00 2022 +0800
+
+    fix fsood
+
+[33mcommit 41acd4143f2eea27abff260bef1af54ba6cdca91[m
+Merge: 239dcf7 06b37aa
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Jan 11 20:42:42 2022 +0800
+
+    Merge pull request #7
+    
+    fix ood eval
+
+[33mcommit 06b37aa3ef311d0c95fd726c38ff2f6915fcc5dc[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Jan 11 20:39:53 2022 +0800
+
+    fix ood eval
+
+[33mcommit 239dcf7f126d38b1adb56f2ac5fe47745ca601cd[m
+Merge: 90642f8 defa493
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Dec 28 20:22:21 2021 +0800
+
+    Merge pull request #6
+    
+    remove symbolic link
+
+[33mcommit defa493b6cd7cc9c1953ba82935a55643a2f695a[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Dec 28 20:21:27 2021 +0800
+
+    remove symbolic link
+
+[33mcommit 90642f8290fa285535b9c44698adc6eb519c7c15[m
+Merge: 23627f1 19b2112
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Dec 28 17:16:51 2021 +0800
+
+    Merge pull request #5 from Jingkang50/Jingkang50/issue1
+    
+    finish feat ext
+
+[33mcommit 19b2112ca6a4f195d036aa5f5f7f862349c44bfe[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Tue Dec 28 17:15:26 2021 +0800
+
+    finish feat ext
+
+[33mcommit 23627f1bcbca885702b184af936197683dbe61f4[m
+Merge: db36270 a2b5d99
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Dec 27 20:06:48 2021 +0800
+
+    Merge pull request #4
+    
+    Runable openood training
+
+[33mcommit a2b5d99ce530d75292d2940d545b7130a6646b39[m
+Merge: ffd77c8 db36270
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Dec 27 20:05:35 2021 +0800
+
+    Merge branch 'jkyang' of https://github.com/Jingkang50/OpenOOD into jkyang
+
+[33mcommit ffd77c841391b9d94e927ac5f29cbb352588590b[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Dec 27 20:04:40 2021 +0800
+
+    training pass
+
+[33mcommit 333a5a14b9921b6ee23f915f2a9179be612d8791[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Dec 27 20:03:57 2021 +0800
+
+    training pass
+
+[33mcommit db362703401f802e0fabf3a3dc83e07cac3a2fca[m
+Merge: 5f4da9e cdfd48d
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Fri Dec 24 15:10:15 2021 +0800
+
+    Merge pull request #3
+    
+    init commit
+
+[33mcommit cdfd48dfc8c6f2846c492e54a5f8bcd5793135c2[m
+Merge: a803995 5f4da9e
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Dec 23 21:19:04 2021 +0800
+
+    Merge branch 'main' into jkyang
+
+[33mcommit a803995b02cca44bdf99b37c5888301357d9ef98[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Thu Dec 23 21:11:27 2021 +0800
+
+    init commit
+
+[33mcommit 5f4da9e81c64f839e973667cfaf00e565c2cd48c[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Dec 6 15:55:45 2021 +0800
+
+    Update README.md
+
+[33mcommit 41b63278859c845516ae03e508d6177ac36eb876[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Nov 29 20:44:49 2021 +0800
+
+    Update README.md
+
+[33mcommit b0d4cc122905d757b6fd6082bf867677511ca3b5[m
+Author: Jingkang Yang <jingkang001@e.ntu.edu.sg>
+Date:   Mon Nov 29 12:16:38 2021 +0800
+
+    Initial commit

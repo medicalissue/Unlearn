@@ -1,13 +1,64 @@
 postprocessor:
   name: find
-  APS_mode: True
+  APS_mode: False
   postprocessor_args:
     # Basic Fisher Energy parameters
-    fisher_power: 3  # Fisher energy power: S(x) = g^T F^{-p} g (used as p_base for adaptive mode)
+    fisher_power: 0.5  # Fisher energy power: S(x) = g^T F^{-p} g (used as p_base for adaptive mode)
+
+    # ========================================
+    # Gradient Type Selection
+    # ========================================
+    # Options: "nll", "entropy", "kl", "energy", "hellinger"
+    gradient_type: entropy  # Type of gradient to compute for Fisher matrix
+
+    # Gradient descriptions:
+    # - nll: Negative log-likelihood gradient (∇NLL) - standard supervised loss [default]
+    # - entropy: Entropy gradient (∇H) - measures prediction uncertainty (unsupervised)
+    # - kl: KL divergence from target gradient (∇KL) - similar to NLL but KL-based
+    # - energy: Energy-weighted NLL gradient (∇(E*NLL)) - emphasizes confident predictions
+    # - hellinger: Hellinger distance from target gradient (∇Hellinger) - sqrt-based distance
 
     # Adaptive Fisher Power
-    use_adaptive_power: True  # Enable adaptive fisher power: p*(x) = p_base * (1 + α*H)
-    adaptive_alpha: 1.0  # Adaptive strength (higher α = more sensitive to entropy)
+    use_adaptive_power: False  # Enable adaptive fisher power: p*(x) = p_base * (1 + α*H)
+    adaptive_metric: entropy  # Metric to use for adaptive power: "entropy" or "msp" (1-max_prob)
+    adaptive_alpha: 5.0  # Adaptive strength (higher α = more sensitive to entropy/msp)
+
+    # ========================================
+    # Fisher Aggregation Method Selection
+    # ========================================
+    # Options: "logsumexp", "separated", "normalized", "normalized", "bayesian", "dualpath", "adaptive_weight"
+    aggregation_method: logsumexp  # Default: original LogSumExp method
+
+    # --- Method 1: Separated (small-F vs large-F) ---
+    # Splits Fisher dimensions by threshold and combines inverse/forward scoring
+    sep_threshold_percentile: 50.0  # Percentile threshold to split small/large F (0-100)
+    sep_w_small: 1.0  # Weight for small-F score (inverse Fisher: g²/F^p)
+    sep_w_large: 1.0  # Weight for large-F score (forward Fisher: g²*F^q)
+    sep_large_power: 1.0  # Power q for large-F dimensions
+
+    # --- Method 2: Multiscale (percentile-based) ---
+    # Aggregates multiple percentiles of log(g²/F^p) with different weights
+    ms_percentiles: [90, 50, 10]  # Percentiles to compute (high→low F influence)
+    ms_weights: [1.0, 1.0, 1.0]  # Weights for each percentile
+
+    # --- Method 3: Normalized (group-wise normalization) ---
+    # Normalizes within Fisher value groups to balance contributions
+    norm_num_groups: 500  # Number of groups to split dimensions by F value
+
+    # **--- Method 4: Bayesian (uncertainty + confidence) ---
+    # Combines uncertainty score (small-F) with confidence score (large-F)
+    bayes_uncertainty_weight: 1.0  # Weight for uncertainty component
+    bayes_confidence_weight: 1.0  # Weight for confidence component
+
+    # ***--- Method 5: Dualpath (inverse + forward paths) ---
+    # Separate paths for inverse Fisher (g²/F^p) and forward Fisher (g²*F^p)
+    dual_alpha: 0.5  # Weight for inverse path (flat direction anomalies)
+    dual_beta: 0.5  # Weight for forward path (curvature direction anomalies)
+    dual_aggregator: logsumexp  # Aggregator for each path: "median", "mean", "logsumexp"
+
+    # --- Method 6: Adaptive Weight (sigmoid-based) ---
+    # Uses sigmoid to smoothly weight Fisher dimensions by their magnitude
+    aw_temperature: 1.0  # Temperature for sigmoid function (higher = smoother)
 
   postprocessor_sweep:
     fisher_power: [1.0, 3.0, 5.0, 7.0, 9.0]
