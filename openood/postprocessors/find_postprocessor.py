@@ -1,5 +1,6 @@
 from typing import Any
 import os
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -59,6 +60,10 @@ class FInDPostprocessor(BasePostprocessor):
         self.fisher_b_tensor = None  # Fisher matrix for bias (global)
         self.model_arch = None  # Model architecture name (set in setup)
         self.device = None  # Device will be set from model in setup()
+
+        # Gradient statistics collection (for analysis)
+        self.collect_gradient_stats = False
+        self.gradient_stats = []
 
     def _get_fisher_cache_path(self):
         """Get path to cached Fisher matrix file.
@@ -309,7 +314,7 @@ class FInDPostprocessor(BasePostprocessor):
                 elif self.fisher_gradient_type == "entropy":
                     # Entropy-based gradient: ∇_z H = p * (log(p) + 1)
                     # where H = -sum(p * log(p)) is the entropy
-                    grad_logits = probs * torch.log(probs + 1e-10)  # [batch_size, num_classes]
+                    grad_logits = probs * (torch.log(probs + 1e-10) + 1.0)  # [batch_size, num_classes]
                 elif self.fisher_gradient_type == "focal":
                     # Focal loss gradient: ∇_z L_focal = α * [(1-p_t)^γ * p - γ * p_t * (1-p_t)^(γ-1) * p * (e_y - p)]
                     # Simplified: α * (1-p_t)^(γ-1) * [p * (1-p_t) - γ * p_t * (e_y - p)]
@@ -510,8 +515,33 @@ class FInDPostprocessor(BasePostprocessor):
             # This is equivalent to selecting dimensions with largest 1/F^p
             topk_k = min(self.topk, log_terms.size(1))  # Ensure k doesn't exceed total dimensions
 
-            # For each sample, select top-k dimensions with largest contribution (largest log_terms)
-            topk_values, topk_indices = torch.topk(log_terms, k=topk_k, dim=1)  # [batch, topk_k]
+            # Only perform topk if k < total dimensions (avoid unnecessary memory allocation)
+            if topk_k < log_terms.size(1):
+                # For each sample, select top-k dimensions with largest contribution (largest log_terms)
+                topk_values, topk_indices = torch.topk(log_terms, k=topk_k, dim=1)  # [batch, topk_k]
+            else:
+                # If k >= total dimensions, use all dimensions (no selection needed)
+                topk_values = log_terms
+                topk_indices = torch.arange(log_terms.size(1), device=log_terms.device).unsqueeze(0).expand(log_terms.size(0), -1)
+
+            # Collect gradient statistics if requested
+            if self.collect_gradient_stats:
+                # Create boolean mask for selected parameters (memory efficient)
+                # topk_indices shape: [batch, topk_k]
+                total_params = log_terms.size(1) if not self.use_topk else g_batch.size(1)
+                selected_mask = torch.zeros(total_params, dtype=torch.bool, device=g_batch.device)
+                selected_mask[topk_indices.flatten()] = True
+
+                # Compute average gradient magnitude of selected parameters
+                # g_batch shape: [batch, dim], topk_indices: [batch, topk_k]
+                selected_gradients = torch.gather(g_batch, 1, topk_indices)  # [batch, topk_k]
+                avg_gradient = torch.mean(torch.abs(selected_gradients)).item()
+
+                self.gradient_stats.append({
+                    'selected_mask': selected_mask.cpu(),  # Store boolean mask (CPU to save GPU memory)
+                    'avg_gradient': avg_gradient
+                })
+
             log_terms = topk_values  # [batch, topk_k]
 
         # LogSumExp for each sample
@@ -520,12 +550,15 @@ class FInDPostprocessor(BasePostprocessor):
             torch.sum(torch.exp(log_terms - max_log), dim=1)
         )  # [batch]
 
-        # Negated log-energy (higher = more OOD)
-        # For KL gradient: reverse the sign
-        if self.test_gradient_type == "kl":
-            conf = log_energy.cpu()  # Reverse sign for KL
+        # Final score (higher = more OOD)
+        # For entropy and KL gradients: reverse the sign because they behave oppositely
+        # - NLL: ID (confident) → small gradient → small energy → need negation → high score for ID
+        # - Entropy: ID (low H) → small gradient → small energy → no negation → low score for ID (opposite!)
+        # - So for entropy: return positive log_energy to make ID → low score, OOD → high score
+        if self.test_gradient_type in ["entropy", "kl"]:
+            conf = log_energy.cpu()  # ID (small energy) → low score, OOD (large energy) → high score
         else:
-            conf = -log_energy.cpu()
+            conf = -log_energy.cpu()  # ID (small energy) → high score, OOD (large energy) → low score, then negate
 
         return pred, conf
 

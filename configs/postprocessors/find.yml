@@ -21,7 +21,7 @@ postprocessor:
     adaptive_alpha: 1.0  # Adaptive strength (higher α = more sensitive to entropy)
 
     # Top-k Fisher Selection
-    use_topk: 200000
+    use_topk: False
     topk: 200000
 
   postprocessor_sweep:
