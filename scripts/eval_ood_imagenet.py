@@ -131,6 +131,7 @@ else:
     else:
         raise NotImplementedError
 
+# Move to GPU
 net.cuda()
 net.eval()
 # a unified evaluator

@@ -29,12 +29,23 @@ class FInDPostprocessor(BasePostprocessor):
         self.use_adaptive_power = bool(self.args.get("use_adaptive_power", False))
         self.adaptive_alpha = float(self.args.get("adaptive_alpha", 1.0))
 
+        # Top-k Fisher Selection hyperparameters
+        self.use_topk = bool(self.args.get("use_topk", False))
+        self.topk = int(self.args.get("topk", 1000))
+
         # Gradient type configurations
         self.fisher_gradient_type = str(self.args.get("fisher_gradient_type", "nll"))
         self.test_gradient_type = str(self.args.get("test_gradient_type", "nll"))
 
+        # Focal loss hyperparameters
+        self.focal_gamma = float(self.args.get("focal_gamma", 2.0))
+        self.focal_alpha = float(self.args.get("focal_alpha", 1.0))
+
+        # Label smoothing hyperparameters
+        self.smoothing = float(self.args.get("smoothing", 0.1))
+
         # Validate gradient types
-        valid_types = ["nll", "entropy"]
+        valid_types = ["nll", "entropy", "focal", "label_smoothing", "kl"]
         if self.fisher_gradient_type not in valid_types:
             raise ValueError(f"Invalid fisher_gradient_type: {self.fisher_gradient_type}. Must be one of {valid_types}")
         if self.test_gradient_type not in valid_types:
@@ -47,17 +58,18 @@ class FInDPostprocessor(BasePostprocessor):
         self.fisher_W_tensor = None  # Fisher matrix for weights (global)
         self.fisher_b_tensor = None  # Fisher matrix for bias (global)
         self.model_arch = None  # Model architecture name (set in setup)
+        self.device = None  # Device will be set from model in setup()
 
     def _get_fisher_cache_path(self):
-        """Get path to cached Fisher matrix file."""
+        """Get path to cached Fisher matrix file.
+
+        Filename includes: dataset, model, gradient_type, and relevant hyperparameters.
+        """
         # Get dataset name
         dataset_name = self.config.dataset.name if hasattr(self.config, 'dataset') else 'default'
 
         # Get model architecture name
         model_name = self.model_arch if self.model_arch else 'unknown'
-
-        # Create filename with dataset and model
-        filename = f"fisher_{dataset_name}_{model_name}.pt"
 
         # Try multiple sources for checkpoint path
         checkpoint_path = None
@@ -65,6 +77,36 @@ class FInDPostprocessor(BasePostprocessor):
             checkpoint_path = getattr(self.config.network, 'checkpoint', None)
         if checkpoint_path is None and hasattr(self.config, 'ckpt_path'):
             checkpoint_path = self.config.ckpt_path
+
+        # Extract checkpoint filename (without extension) if available
+        ckpt_name = ""
+        if checkpoint_path:
+            ckpt_filename = os.path.basename(checkpoint_path)
+            # Remove extension (.pth, .pt, .ckpt, etc.)
+            ckpt_name = os.path.splitext(ckpt_filename)[0]
+
+        # Build hyperparameter string based on gradient type
+        grad_type = self.fisher_gradient_type
+        if grad_type == "focal":
+            hyperparam_str = f"gamma{self.focal_gamma}_alpha{self.focal_alpha}"
+        elif grad_type == "label_smoothing":
+            hyperparam_str = f"smooth{self.smoothing}"
+        else:
+            # For nll, entropy, kl: no additional hyperparameters
+            hyperparam_str = ""
+
+        # Create filename: fisher_{dataset}_{model}_{ckpt_name}_{grad_type}[_{hyperparams}].pt
+        if ckpt_name:
+            if hyperparam_str:
+                filename = f"fisher_{dataset_name}_{model_name}_{ckpt_name}_{grad_type}_{hyperparam_str}.pt"
+            else:
+                filename = f"fisher_{dataset_name}_{model_name}_{ckpt_name}_{grad_type}.pt"
+        else:
+            # No checkpoint path, use simpler naming
+            if hyperparam_str:
+                filename = f"fisher_{dataset_name}_{model_name}_{grad_type}_{hyperparam_str}.pt"
+            else:
+                filename = f"fisher_{dataset_name}_{model_name}_{grad_type}.pt"
 
         # If no checkpoint path found, use a default cache directory
         if checkpoint_path is None:
@@ -88,9 +130,10 @@ class FInDPostprocessor(BasePostprocessor):
             return False
 
         try:
-            cache = torch.load(cache_path, map_location='cuda')
+            # Load to CPU first, then move to the correct device
+            cache = torch.load(cache_path, map_location='cpu')
 
-            # Verify compatibility
+            # Verify compatibility: basic parameters
             if cache.get('num_classes') != self.num_classes:
                 print(f"Warning: Cached num_classes ({cache.get('num_classes')}) doesn't match current ({self.num_classes})")
                 return False
@@ -101,11 +144,37 @@ class FInDPostprocessor(BasePostprocessor):
                 print(f"Warning: Cached model ({cache.get('model_arch')}) doesn't match current ({self.model_arch})")
                 return False
 
-            self.fisher_W_tensor = cache['fisher_W'].cuda()
-            self.fisher_b_tensor = cache['fisher_b'].cuda() if cache['fisher_b'] is not None else None
+            # Verify compatibility: gradient configuration
+            grad_config = cache.get('gradient_config', {})
+            cached_grad_type = grad_config.get('fisher_gradient_type', 'nll')  # Default to 'nll' for old caches
+
+            if cached_grad_type != self.fisher_gradient_type:
+                print(f"Warning: Cached gradient type ({cached_grad_type}) doesn't match current ({self.fisher_gradient_type})")
+                return False
+
+            # Verify hyperparameters for focal loss
+            if self.fisher_gradient_type == "focal":
+                cached_gamma = grad_config.get('focal_gamma')
+                cached_alpha = grad_config.get('focal_alpha')
+                if cached_gamma != self.focal_gamma or cached_alpha != self.focal_alpha:
+                    print(f"Warning: Cached focal hyperparameters (gamma={cached_gamma}, alpha={cached_alpha}) "
+                          f"don't match current (gamma={self.focal_gamma}, alpha={self.focal_alpha})")
+                    return False
+
+            # Verify hyperparameters for label smoothing
+            if self.fisher_gradient_type == "label_smoothing":
+                cached_smoothing = grad_config.get('smoothing')
+                if cached_smoothing != self.smoothing:
+                    print(f"Warning: Cached smoothing ({cached_smoothing}) doesn't match current ({self.smoothing})")
+                    return False
+
+            # Move to the device (will be moved to correct device in setup when self.device is set)
+            self.fisher_W_tensor = cache['fisher_W']
+            self.fisher_b_tensor = cache['fisher_b'] if cache['fisher_b'] is not None else None
 
             print(f"✓ Loaded Fisher matrix from cache: {cache_path}")
             print(f"  Dataset: {cache.get('dataset_name')}, Model: {cache.get('model_arch')}")
+            print(f"  Gradient type: {cached_grad_type}")
             return True
         except Exception as e:
             print(f"Warning: Failed to load Fisher cache: {e}")
@@ -114,17 +183,31 @@ class FInDPostprocessor(BasePostprocessor):
     def _save_fisher_matrix(self, cache_path):
         """Save Fisher matrix to cache."""
         try:
+            # Build gradient config dictionary
+            grad_config = {
+                'fisher_gradient_type': self.fisher_gradient_type,
+            }
+
+            # Add hyperparameters based on gradient type
+            if self.fisher_gradient_type == "focal":
+                grad_config['focal_gamma'] = self.focal_gamma
+                grad_config['focal_alpha'] = self.focal_alpha
+            elif self.fisher_gradient_type == "label_smoothing":
+                grad_config['smoothing'] = self.smoothing
+
             cache = {
                 'fisher_W': self.fisher_W_tensor.cpu(),
                 'fisher_b': self.fisher_b_tensor.cpu() if self.fisher_b_tensor is not None else None,
                 'num_classes': self.num_classes,
                 'dataset_name': self.config.dataset.name,
                 'model_arch': self.model_arch,
-                'feature_dim': self.fisher_W_tensor.shape[-1]
+                'feature_dim': self.fisher_W_tensor.shape[-1],
+                'gradient_config': grad_config
             }
             torch.save(cache, cache_path)
             print(f"✓ Saved Fisher matrix to cache: {cache_path}")
             print(f"  Dataset: {self.config.dataset.name}, Model: {self.model_arch}")
+            print(f"  Gradient type: {self.fisher_gradient_type}")
         except Exception as e:
             print(f"Warning: Failed to save Fisher cache: {e}")
 
@@ -147,11 +230,7 @@ class FInDPostprocessor(BasePostprocessor):
                         if isinstance(module, nn.Linear):
                             return module
 
-        # Try net.module for DataParallel
-        if hasattr(net, 'module'):
-            return self._get_fc_layer(net.module)
-
-        # Last resort: search all modules for the last Linear layer
+        # Search all modules for the last Linear layer
         linear_layers = [m for m in net.modules() if isinstance(m, nn.Linear)]
         if linear_layers:
             return linear_layers[-1]
@@ -163,12 +242,21 @@ class FInDPostprocessor(BasePostprocessor):
         import tqdm
         net.eval()
 
+        # Detect device from model parameters
+        self.device = next(net.parameters()).device
+        print(f"Device: {self.device}")
+
         # Get model architecture name
         self.model_arch = net.__class__.__name__
 
         # Try to load from cache first
         cache_path = self._get_fisher_cache_path()
+        print(f"Looking for Fisher matrix at: {cache_path}")
         if self._load_fisher_matrix(cache_path):
+            # Move cached Fisher matrices to the correct device
+            self.fisher_W_tensor = self.fisher_W_tensor.to(self.device)
+            if self.fisher_b_tensor is not None:
+                self.fisher_b_tensor = self.fisher_b_tensor.to(self.device)
             return  # Successfully loaded from cache
 
         # Cache miss - compute Fisher matrix
@@ -197,8 +285,8 @@ class FInDPostprocessor(BasePostprocessor):
         # Compute Fisher matrix
         print(f"Computing Fisher Information Matrix...")
         for batch in tqdm.tqdm(id_loader, desc="Fisher Matrix"):
-            data = batch['data'].cuda()
-            labels = batch['label'].cuda()
+            data = batch['data'].to(self.device)
+            labels = batch['label'].to(self.device)
 
             with torch.no_grad():
                 # Extract features and logits
@@ -222,6 +310,41 @@ class FInDPostprocessor(BasePostprocessor):
                     # Entropy-based gradient: ∇_z H = p * (log(p) + 1)
                     # where H = -sum(p * log(p)) is the entropy
                     grad_logits = probs * torch.log(probs + 1e-10)  # [batch_size, num_classes]
+                elif self.fisher_gradient_type == "focal":
+                    # Focal loss gradient: ∇_z L_focal = α * [(1-p_t)^γ * p - γ * p_t * (1-p_t)^(γ-1) * p * (e_y - p)]
+                    # Simplified: α * (1-p_t)^(γ-1) * [p * (1-p_t) - γ * p_t * (e_y - p)]
+                    p_t = probs[torch.arange(len(labels)), labels]  # [batch_size]
+                    one_minus_pt = 1.0 - p_t  # [batch_size]
+
+                    # Create one-hot encoding
+                    one_hot = torch.zeros_like(probs)
+                    one_hot[torch.arange(len(labels)), labels] = 1.0
+
+                    # Focal weight: (1-p_t)^(γ-1) with epsilon for numerical stability
+                    focal_weight = torch.pow(one_minus_pt + 1e-10, self.focal_gamma - 1.0)  # [batch_size]
+
+                    # Gradient: α * (1-p_t)^(γ-1) * [p * (1-p_t) - γ * p_t * (e_y - p)]
+                    term1 = probs * one_minus_pt.unsqueeze(1)  # [batch_size, num_classes]
+                    term2 = self.focal_gamma * p_t.unsqueeze(1) * (one_hot - probs)  # [batch_size, num_classes]
+                    grad_logits = self.focal_alpha * focal_weight.unsqueeze(1) * (term1 - term2)
+                elif self.fisher_gradient_type == "label_smoothing":
+                    # Label smoothing gradient: ∇_z L_ls = p - [(1-ε)*e_y + ε/K]
+                    # where ε is smoothing factor, K is num_classes
+                    smooth_value = self.smoothing / self.num_classes
+
+                    # Smoothed labels: (1-ε)*e_y + ε/K for all classes
+                    grad_logits = probs.clone()  # [batch_size, num_classes]
+                    grad_logits -= smooth_value  # Subtract ε/K from all
+                    grad_logits[torch.arange(len(labels)), labels] -= (1.0 - self.smoothing)  # Additional (1-ε) for true class
+                elif self.fisher_gradient_type == "kl":
+                    # KL divergence from uniform distribution gradient
+                    # KL(p || u) = sum(p * log(p/u)) = sum(p * log(p)) - sum(p * log(u))
+                    # where u = 1/K (uniform distribution)
+                    # ∇_z KL = p * (log(p) + 1 + log(K))
+                    # Peaked (ID) produces large gradient → large Fisher Energy → low OOD score ✓
+                    # Uniform (OOD) produces small gradient → small Fisher Energy → high OOD score ✓
+                    log_K = torch.log(torch.tensor(self.num_classes, dtype=torch.float32, device=probs.device))
+                    grad_logits = probs * (torch.log(probs + 1e-10) + 1.0 + log_K)  # [batch_size, num_classes]
 
                 # Compute gradient w.r.t. FC weight: ∇_W L = grad_logits^T @ features
                 # Shape: [batch_size, num_classes, feature_dim]
@@ -264,6 +387,16 @@ class FInDPostprocessor(BasePostprocessor):
             pred: Class predictions [batch_size]
             conf: OOD confidence scores [batch_size] (higher = more OOD)
         """
+        # Ensure device is set (in case postprocess is called without setup)
+        if self.device is None:
+            self.device = next(net.parameters()).device
+
+        # Ensure Fisher matrices are on the correct device
+        if self.fisher_W_tensor.device != self.device:
+            self.fisher_W_tensor = self.fisher_W_tensor.to(self.device)
+            if self.fisher_b_tensor is not None:
+                self.fisher_b_tensor = self.fisher_b_tensor.to(self.device)
+
         # Get FC layer
         fc = self._get_fc_layer(net)
 
@@ -291,6 +424,39 @@ class FInDPostprocessor(BasePostprocessor):
             # Entropy-based gradient: ∇_z H = p * (log(p) + 1)
             # where H = -sum(p * log(p)) is the entropy
             grad_logits = probs * (torch.log(probs + 1e-10) + 1.0)  # [batch, num_classes]
+        elif self.test_gradient_type == "focal":
+            # Focal loss gradient using predicted labels
+            pred_labels = logits.argmax(dim=-1)  # [batch]
+            p_t = probs[torch.arange(len(pred_labels)), pred_labels]  # [batch]
+            one_minus_pt = 1.0 - p_t  # [batch]
+
+            # Create one-hot encoding for predicted labels
+            one_hot = torch.zeros_like(probs)
+            one_hot[torch.arange(len(pred_labels)), pred_labels] = 1.0
+
+            # Focal weight: (1-p_t)^(γ-1) with epsilon for numerical stability
+            focal_weight = torch.pow(one_minus_pt + 1e-10, self.focal_gamma - 1.0)  # [batch]
+
+            # Gradient: α * (1-p_t)^(γ-1) * [p * (1-p_t) - γ * p_t * (e_y - p)]
+            term1 = probs * one_minus_pt.unsqueeze(1)  # [batch, num_classes]
+            term2 = self.focal_gamma * p_t.unsqueeze(1) * (one_hot - probs)  # [batch, num_classes]
+            grad_logits = self.focal_alpha * focal_weight.unsqueeze(1) * (term1 - term2)
+        elif self.test_gradient_type == "label_smoothing":
+            # Label smoothing gradient using predicted labels
+            pred_labels = logits.argmax(dim=-1)  # [batch]
+            smooth_value = self.smoothing / self.num_classes
+
+            # Smoothed labels: (1-ε)*e_y + ε/K for all classes
+            grad_logits = probs.clone()  # [batch, num_classes]
+            grad_logits -= smooth_value  # Subtract ε/K from all
+            grad_logits[torch.arange(len(pred_labels)), pred_labels] -= (1.0 - self.smoothing)  # Additional (1-ε) for predicted class
+        elif self.test_gradient_type == "kl":
+            # KL divergence from uniform distribution gradient (NOT negated at test time)
+            # KL(p || u) = sum(p * log(p/u)) where u = 1/K
+            # ∇_z KL = p * (log(p) + 1 + log(K))
+            # Peaked (ID) gets larger magnitude gradient
+            log_K = torch.log(torch.tensor(self.num_classes, dtype=torch.float32, device=probs.device))
+            grad_logits = -probs * (torch.log(probs + 1e-10) + 1.0 + log_K)  # [batch, num_classes]
 
         # Compute gradient w.r.t. FC parameters (batched)
         # ∇_W L = grad_logits^T ⊗ features
@@ -337,6 +503,17 @@ class FInDPostprocessor(BasePostprocessor):
         log_F_powered = fisher_power_adaptive.unsqueeze(1) * torch.log(F_vec + eps_f).unsqueeze(0)  # [batch, dim]
         log_terms = log_g_squared - log_F_powered  # [batch, dim]
 
+        # Apply Top-k Fisher selection if enabled
+        if self.use_topk:
+            # Select Top-k smallest Fisher values (dimension with largest 1/F^p contribution)
+            # Since we want smallest F values, we select based on -log(F), which gives largest values
+            # This is equivalent to selecting dimensions with largest 1/F^p
+            topk_k = min(self.topk, log_terms.size(1))  # Ensure k doesn't exceed total dimensions
+
+            # For each sample, select top-k dimensions with largest contribution (largest log_terms)
+            topk_values, topk_indices = torch.topk(log_terms, k=topk_k, dim=1)  # [batch, topk_k]
+            log_terms = topk_values  # [batch, topk_k]
+
         # LogSumExp for each sample
         max_log = torch.max(log_terms, dim=1, keepdim=True)[0]  # [batch, 1]
         log_energy = max_log.squeeze(1) + torch.log(
@@ -344,27 +521,57 @@ class FInDPostprocessor(BasePostprocessor):
         )  # [batch]
 
         # Negated log-energy (higher = more OOD)
-        conf = -log_energy.cpu()
+        # For KL gradient: reverse the sign
+        if self.test_gradient_type == "kl":
+            conf = log_energy.cpu()  # Reverse sign for KL
+        else:
+            conf = -log_energy.cpu()
 
         return pred, conf
+
+    def inference(self, net, data_loader, progress=True):
+        """Run inference on data_loader."""
+        pred_list, conf_list, label_list = super().inference(net, data_loader, progress)
+        return pred_list, conf_list, label_list
 
     def set_hyperparam(self, hyperparam: list):
         """Set hyperparameters for APS mode.
 
         Args:
-            hyperparam: List containing [fisher_power] or [fisher_power, adaptive_alpha]
+            hyperparam: List containing parameters in order:
+                - [fisher_power] (base case)
+                - [fisher_power, adaptive_alpha] (if use_adaptive_power=True)
+                - [fisher_power, topk] (if use_topk=True, not adaptive)
+                - [fisher_power, adaptive_alpha, topk] (if both enabled)
         """
         self.fisher_power = hyperparam[0]
-        if len(hyperparam) > 1:
-            self.adaptive_alpha = hyperparam[1]
+        idx = 1
+
+        # Handle adaptive_alpha if enabled
+        if self.use_adaptive_power and len(hyperparam) > idx:
+            self.adaptive_alpha = hyperparam[idx]
+            idx += 1
+
+        # Handle topk if enabled
+        if self.use_topk and len(hyperparam) > idx:
+            self.topk = int(hyperparam[idx])
 
     def get_hyperparam(self):
         """Get current hyperparameters for APS mode.
 
         Returns:
-            List containing [fisher_power] or [fisher_power, adaptive_alpha] if adaptive mode enabled
+            List containing parameters based on enabled features:
+                - [fisher_power] (base case)
+                - [fisher_power, adaptive_alpha] (if use_adaptive_power=True)
+                - [fisher_power, topk] (if use_topk=True, not adaptive)
+                - [fisher_power, adaptive_alpha, topk] (if both enabled)
         """
+        params = [self.fisher_power]
+
         if self.use_adaptive_power:
-            return [self.fisher_power, self.adaptive_alpha]
-        else:
-            return [self.fisher_power]
+            params.append(self.adaptive_alpha)
+
+        if self.use_topk:
+            params.append(self.topk)
+
+        return params

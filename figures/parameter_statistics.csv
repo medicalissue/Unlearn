@@ -1,0 +1,4 @@
+k,unique_params_selected,coverage_percent,unique_classes_touched,unique_features_touched,total_params,num_samples
+1,4078,0.1990239141044412,534,1170,2049000,
+2,23294,1.136847242557345,865,2016,2049000,
+5,147515,7.199365544167887,1000,2035,2049000,

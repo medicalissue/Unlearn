@@ -5,13 +5,26 @@ postprocessor:
     # Basic Fisher Energy parameters
     fisher_power: 9  # Fisher energy power: S(x) = g^T F^{-p} g (used as p_base for adaptive mode)
 
+    # Gradient type: "nll", "entropy", "focal", "label_smoothing", "kl"
     fisher_gradient_type: nll
-    test_gradient_type: entropy
+    test_gradient_type: nll
+
+    # Focal loss hyperparameters (only used when gradient type is "focal")
+    focal_gamma: 0.5  # Focusing parameter (higher = more focus on hard examples)
+    focal_alpha: 1.0  # Class balance parameter
+
+    # Label smoothing hyperparameters (only used when gradient type is "label_smoothing")
+    smoothing: 0.1  # Smoothing factor ε (0 = no smoothing, 1 = uniform)
 
     # Adaptive Fisher Power
-    use_adaptive_power: True  # Enable adaptive fisher power: p*(x) = p_base * (1 + α*H)
+    use_adaptive_power: False  # Enable adaptive fisher power: p*(x) = p_base * (1 + α*H)
     adaptive_alpha: 1.0  # Adaptive strength (higher α = more sensitive to entropy)
+
+    # Top-k Fisher Selection
+    use_topk: 200000
+    topk: 200000
 
   postprocessor_sweep:
     fisher_power: [1.0, 3.0, 5.0, 7.0, 9.0]
     adaptive_alpha: [1.0, 2.0, 3.0, 4.0, 5.0]  # Only used when use_adaptive_power is True
+    topk: 200000

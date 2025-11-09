@@ -1,0 +1,12 @@
+metric,value
+samples_processed,49000
+k_per_sample,5000
+unique_params_selected,2037351
+total_params,2049000
+coverage_percent,99.43147877013178
+weight_params_selected,2036356
+bias_params_selected,995
+unique_classes_touched,1000
+unique_features_touched,2048
+adjacent_pairs,2028722
+avg_gap,1.0057180599649864
