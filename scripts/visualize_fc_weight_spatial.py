@@ -327,9 +327,18 @@ def compute_topk_avg_spatial_activation(features, fc_weight, fc_bias, predicted_
     return spatial_activation_avg, topk_info, fisher_weighted_grad
 
 
-def visualize_spatial_activation(image_path, model, preprocessor, fisher_W, fisher_power=1.0, output_path=None):
+def visualize_spatial_activation(image_path, model, preprocessor, fisher_W, fisher_power=1.0, topk=10, output_path=None):
     """
     Visualize spatial activation for a single image using Fisher-weighted selection.
+
+    Args:
+        image_path: Path to image file
+        model: Neural network model
+        preprocessor: Image preprocessing pipeline
+        fisher_W: Fisher Information Matrix
+        fisher_power: Fisher power parameter
+        topk: Number of top-k parameters to average
+        output_path: Optional path to save visualization
 
     Returns:
         fig: matplotlib figure
@@ -360,9 +369,9 @@ def visualize_spatial_activation(image_path, model, preprocessor, fisher_W, fish
     else:
         raise ValueError("Cannot find FC layer")
 
-    # Compute averaged spatial activation for top-10 parameters (GradCAM-style)
+    # Compute averaged spatial activation for top-k parameters (GradCAM-style)
     spatial_activation, topk_info, fisher_weighted_grad_all = compute_topk_avg_spatial_activation(
-        features, fc_weight, fc_bias, pred_class, fisher_W, fisher_power, k=10
+        features, fc_weight, fc_bias, pred_class, fisher_W, fisher_power, k=topk
     )
 
     # Resize original image to match feature map size
@@ -392,77 +401,75 @@ def visualize_spatial_activation(image_path, model, preprocessor, fisher_W, fish
     # Use RdBu_r for heatmap to show both positive and negative
     heatmap_cmap = 'RdBu_r'
 
-    # Column 1: Spatial activation heatmap (averaged over top-10)
+    # Column 1: Spatial activation heatmap (averaged over top-k)
     im1 = axes[1].imshow(spatial_activation, cmap=heatmap_cmap, interpolation='bilinear')
-    axes[1].set_title(f'Spatial Activation (Top-10 Avg)\nFisher Power: {fisher_power:.1f}',
+    axes[1].set_title(f'Spatial Activation (Top-{topk} Avg)\nFisher Power: {fisher_power:.1f}',
                      fontsize=11)
     axes[1].axis('off')
     axes[1].set_aspect('equal')
     plt.colorbar(im1, ax=axes[1], fraction=0.046, pad=0.04)
 
-    # Column 2: GradCAM-style overlay (normalize to [-1, 1] then ReLU)
+    # Column 2: Enhanced GradCAM-style overlay
     axes[2].imshow(img_square)
 
-    # Normalize spatial activation to [-1, 1] range first
+    # Normalize spatial activation to [0, 1] range
     activation_gradcam = spatial_activation.copy()
     activation_min = activation_gradcam.min()
     activation_max = activation_gradcam.max()
     activation_range = activation_max - activation_min
 
     if activation_range > 0:
-        # Normalize to [-1, 1]
-        activation_gradcam = 2 * (activation_gradcam - activation_min) / activation_range - 1
-        # Apply ReLU: only keep positive values (above 0 in normalized range)
-        activation_gradcam = np.maximum(activation_gradcam, 0)
+        # Normalize to [0, 1]
+        activation_gradcam = (activation_gradcam - activation_min) / activation_range
     else:
         activation_gradcam = np.zeros_like(activation_gradcam)
 
-    # Resize to match image size BEFORE cutting off
+    # Resize to match image size with smooth interpolation
     zoom_factor = (size / H, size / W)
-    activation_resized = zoom(activation_gradcam, zoom_factor, order=1)
+    activation_resized = zoom(activation_gradcam, zoom_factor, order=3)  # Cubic interpolation for smoothness
 
-    # Remap values to emphasize blue: compress high values, expand low values
-    # This makes more of the colormap go to blue/cyan regions
-    activation_remapped = activation_resized.copy()
-    mask = activation_remapped > 0
-    if mask.any():
-        # Apply power transformation to shift distribution toward lower values (more blue)
-        activation_remapped[mask] = activation_remapped[mask] ** 3  # Higher power = more blue
+    # Apply Gaussian smoothing for better visual quality
+    from scipy.ndimage import gaussian_filter
+    activation_smooth = gaussian_filter(activation_resized, sigma=2.0)
 
-    # Create RGBA image with jet colormap (red -> yellow -> green -> blue)
-    from matplotlib.colors import ListedColormap
+    # Enhance contrast using histogram equalization-like transform
+    # Apply power transformation to make important regions stand out
+    activation_enhanced = np.clip(activation_smooth, 0, 1) ** 0.7  # Lower power = more contrast
+
+    # Create RGBA image with YlOrRd colormap (Yellow -> Orange -> Red)
+    # Low values: transparent, High values: Yellow -> Orange -> Red
     import matplotlib.cm as cm
+    import matplotlib
+    cmap = matplotlib.colormaps.get_cmap('YlOrRd')
+    rgba = cmap(activation_enhanced)
 
-    # Use 'jet' colormap (red -> yellow -> green -> cyan -> blue)
-    cmap = cm.get_cmap('jet')
-    rgba = cmap(activation_remapped)
-
-    # Make pixels below 0.5 transparent (per-pixel alpha based on activation value)
-    # Above 0.5: visible with alpha=0.7, below 0.5: transparent
-    alpha_mask = np.where(activation_resized >= 0.5, 0.7, 0.0)
-    rgba[..., 3] = alpha_mask
+    # Smooth alpha channel for natural blending
+    # Use activation value directly for alpha (higher activation = more visible)
+    alpha_base = 0.7
+    alpha_channel = alpha_base * activation_smooth  # Direct proportional to activation
+    rgba[..., 3] = alpha_channel
 
     im2 = axes[2].imshow(rgba, interpolation='bilinear')
-    axes[2].set_title(f'GradCAM-style Overlay\n(>0.5: Red→Yellow→Green→Blue)', fontsize=11)
+    axes[2].set_title(f'Enhanced Overlay (Top-{topk})\nYellow→Orange→Red', fontsize=11)
     axes[2].axis('off')
     axes[2].set_aspect('equal')
 
-    # Column 3: Top-10 parameter info
-    # Show Fisher-weighted gradients for the top-10 parameters used in averaging
-    fisher_grads_top10 = [info['fisher_grad'] for info in topk_info]
+    # Column 3: Top-k parameter info
+    # Show Fisher-weighted gradients for the top-k parameters used in averaging
+    fisher_grads_topk = [info['fisher_grad'] for info in topk_info]
 
-    # Create bar plot highlighting top-10 parameters
-    axes[3].bar(range(len(topk_info)), fisher_grads_top10, color='darkgreen', alpha=0.7)
+    # Create bar plot highlighting top-k parameters
+    axes[3].bar(range(len(topk_info)), fisher_grads_topk, color='darkgreen', alpha=0.7)
     axes[3].set_xlabel('Parameter Rank', fontsize=10)
     axes[3].set_ylabel('Fisher-weighted Gradient', fontsize=10)
-    axes[3].set_title(f'Top-10 Parameters (Averaged)', fontsize=11)
+    axes[3].set_title(f'Top-{topk} Parameters (Averaged)', fontsize=11)
     axes[3].set_yscale('log')
     axes[3].grid(True, alpha=0.3, axis='y')
 
     # Add annotations for top-3
     for i in range(min(3, len(topk_info))):
-        axes[3].text(i, fisher_grads_top10[i],
-                    f'{fisher_grads_top10[i]:.1e}',
+        axes[3].text(i, fisher_grads_topk[i],
+                    f'{fisher_grads_topk[i]:.1e}',
                     ha='center', va='bottom', fontsize=7, color='darkgreen', fontweight='bold')
 
     plt.tight_layout()
@@ -547,7 +554,7 @@ def main():
             print(f"\n[{i+1}/{len(image_paths)}] [{label}] Processing {os.path.basename(img_path)}...")
 
             # Visualize
-            fig, info = visualize_spatial_activation(img_path, model, preprocessor, fisher_W, args.fisher_power)
+            fig, info = visualize_spatial_activation(img_path, model, preprocessor, fisher_W, args.fisher_power, args.topk)
 
             # Update title to include ID/OOD label (prepend to existing title)
             filename = os.path.basename(img_path)
@@ -555,7 +562,7 @@ def main():
 
             # Print info
             print(f"  Predicted class: {info['pred_class']} (prob: {info['pred_prob']:.3f})")
-            print(f"  Top-10 params averaged for spatial activation:")
+            print(f"  Top-{args.topk} params averaged for spatial activation:")
             for top_info in info['topk_info'][:3]:  # Show top-3
                 print(f"    Rank {top_info['rank']}: class={top_info['class']}, channel={top_info['channel']}, "
                       f"weight={top_info['weight']:.4f}, fisher_grad={top_info['fisher_grad']:.6e}")
