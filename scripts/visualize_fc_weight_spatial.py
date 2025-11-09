@@ -63,6 +63,8 @@ def parse_args():
                         help='Path to Fisher matrix cache file (if not specified, will auto-detect)')
     parser.add_argument('--fisher-power', type=float, default=1.0,
                         help='Fisher power parameter (p in F^{-p})')
+    parser.add_argument('--topk', type=int, default=10,
+                        help='Number of top-k parameters to average for spatial activation')
 
     return parser.parse_args()
 
@@ -243,6 +245,88 @@ def compute_topk_spatial_activation(features, fc_weight, fc_bias, predicted_clas
     return selected_class, selected_channel, spatial_activation, weight_value, gradient_value, fisher_weighted_grad_value, fisher_weighted_grad
 
 
+def compute_topk_avg_spatial_activation(features, fc_weight, fc_bias, predicted_class, fisher_W, fisher_power=1.0, k=10):
+    """
+    Compute averaged spatial activation for top-k selected FC weights using Fisher.
+
+    Similar to GradCAM, this averages spatial activations from multiple top-k parameters.
+
+    Args:
+        features: Feature maps before GAP, shape [B, C, H, W]
+        fc_weight: FC layer weight matrix, shape [num_classes, feature_dim]
+        fc_bias: FC layer bias, shape [num_classes] or None
+        predicted_class: Predicted class index
+        fisher_W: Fisher matrix for FC weights, shape [num_classes, feature_dim]
+        fisher_power: Fisher power parameter (p in F^{-p})
+        k: Number of top parameters to average (default: 10)
+
+    Returns:
+        spatial_activation_avg: Averaged spatial heatmap, shape [H, W]
+        topk_info: List of dicts with info for each top-k parameter
+        fisher_weighted_grad_all: All Fisher-weighted gradient values
+    """
+    B, C, H, W = features.shape
+    assert B == 1, "Only single image supported"
+    num_classes = fc_weight.shape[0]
+
+    # Global Average Pooling
+    z = features.mean(dim=(2, 3)).squeeze(0)  # Shape: [C]
+
+    # Compute logits and probabilities
+    logits = F.linear(z.unsqueeze(0), fc_weight, fc_bias)  # [1, num_classes]
+    probs = F.softmax(logits, dim=-1).squeeze(0)  # [num_classes]
+
+    # Compute NLL gradient: ∇_z L = p - e_y_pred
+    grad_logits = probs.clone()  # [num_classes]
+    grad_logits[predicted_class] -= 1.0
+
+    # Compute gradient w.r.t. FC weight for ALL classes
+    grad_W = torch.einsum('c,d->cd', grad_logits, z)  # [num_classes, C]
+
+    # Flatten gradients and Fisher matrix
+    grad_W_flat = grad_W.flatten()  # [num_classes * C]
+    fisher_W_flat = fisher_W.flatten()  # [num_classes * C]
+
+    # Compute Fisher-weighted gradient: |g / F^p| for ALL parameters
+    fisher_weighted_grad = torch.abs(grad_W_flat) / (fisher_W_flat ** fisher_power + 1e-10)
+
+    # Get top-k parameters
+    topk_values, topk_indices = torch.topk(fisher_weighted_grad, k=min(k, len(fisher_weighted_grad)), largest=True)
+
+    # Compute spatial activation for each top-k parameter and average
+    spatial_activations = []
+    topk_info = []
+
+    for i, (idx, fisher_grad_val) in enumerate(zip(topk_indices, topk_values)):
+        idx = idx.item()
+
+        # Convert flat index to (class, channel)
+        param_class = idx // C
+        param_channel = idx % C
+
+        weight_val = fc_weight[param_class, param_channel].item()
+        grad_val = grad_W[param_class, param_channel].item()
+
+        # Compute spatial activation: W_{c,i} * F_{i,h,w}
+        channel_feature = features[0, param_channel].cpu().numpy()  # Shape: [H, W]
+        spatial_act = weight_val * channel_feature
+
+        spatial_activations.append(spatial_act)
+        topk_info.append({
+            'rank': i + 1,
+            'class': param_class,
+            'channel': param_channel,
+            'weight': weight_val,
+            'gradient': grad_val,
+            'fisher_grad': fisher_grad_val.item()
+        })
+
+    # Average spatial activations
+    spatial_activation_avg = np.mean(spatial_activations, axis=0)  # Shape: [H, W]
+
+    return spatial_activation_avg, topk_info, fisher_weighted_grad
+
+
 def visualize_spatial_activation(image_path, model, preprocessor, fisher_W, fisher_power=1.0, output_path=None):
     """
     Visualize spatial activation for a single image using Fisher-weighted selection.
@@ -276,9 +360,9 @@ def visualize_spatial_activation(image_path, model, preprocessor, fisher_W, fish
     else:
         raise ValueError("Cannot find FC layer")
 
-    # Compute spatial activation for bottom-1 parameter (across all classes)
-    top1_class, top1_channel, spatial_activation, weight_value, grad_value, fisher_weighted_grad_value, fisher_weighted_grad_all = compute_topk_spatial_activation(
-        features, fc_weight, fc_bias, pred_class, fisher_W, fisher_power, rank=1, use_min=False
+    # Compute averaged spatial activation for top-10 parameters (GradCAM-style)
+    spatial_activation, topk_info, fisher_weighted_grad_all = compute_topk_avg_spatial_activation(
+        features, fc_weight, fc_bias, pred_class, fisher_W, fisher_power, k=10
     )
 
     # Resize original image to match feature map size
@@ -308,9 +392,9 @@ def visualize_spatial_activation(image_path, model, preprocessor, fisher_W, fish
     # Use RdBu_r for heatmap to show both positive and negative
     heatmap_cmap = 'RdBu_r'
 
-    # Column 1: Spatial activation heatmap (show both positive and negative)
+    # Column 1: Spatial activation heatmap (averaged over top-10)
     im1 = axes[1].imshow(spatial_activation, cmap=heatmap_cmap, interpolation='bilinear')
-    axes[1].set_title(f'Spatial Activation (Bottom-1)\nClass: {top1_class}, Ch: {top1_channel}, W: {weight_value:.4f}',
+    axes[1].set_title(f'Spatial Activation (Top-10 Avg)\nFisher Power: {fisher_power:.1f}',
                      fontsize=11)
     axes[1].axis('off')
     axes[1].set_aspect('equal')
@@ -363,28 +447,23 @@ def visualize_spatial_activation(image_path, model, preprocessor, fisher_W, fish
     axes[2].axis('off')
     axes[2].set_aspect('equal')
 
-    # Column 3: Fisher-weighted gradient distribution
-    fisher_grad_np = fisher_weighted_grad_all.cpu().numpy()
-    top_k = 20
-    top_indices = np.argsort(fisher_grad_np)[-top_k:][::-1]
-    top_values = fisher_grad_np[top_indices]
+    # Column 3: Top-10 parameter info
+    # Show Fisher-weighted gradients for the top-10 parameters used in averaging
+    fisher_grads_top10 = [info['fisher_grad'] for info in topk_info]
 
-    # Create bar plot with selected channel highlighted
-    colors = ['red' if i == top1_channel else 'gray' for i in top_indices]
-    axes[3].bar(range(top_k), top_values, color=colors, alpha=0.7)
-    axes[3].set_xlabel('Channel Rank', fontsize=10)
+    # Create bar plot highlighting top-10 parameters
+    axes[3].bar(range(len(topk_info)), fisher_grads_top10, color='darkgreen', alpha=0.7)
+    axes[3].set_xlabel('Parameter Rank', fontsize=10)
     axes[3].set_ylabel('Fisher-weighted Gradient', fontsize=10)
-    axes[3].set_title(f'Top-{top_k} Channels (Red=Top-1)', fontsize=11)
+    axes[3].set_title(f'Top-10 Parameters (Averaged)', fontsize=11)
     axes[3].set_yscale('log')
     axes[3].grid(True, alpha=0.3, axis='y')
 
-    # Add value annotation for selected channel
-    selected_rank_in_top20 = np.where(top_indices == top1_channel)[0]
-    if len(selected_rank_in_top20) > 0:
-        selected_rank_in_top20 = selected_rank_in_top20[0]
-        axes[3].text(selected_rank_in_top20, top_values[selected_rank_in_top20],
-                    f'{top_values[selected_rank_in_top20]:.1f}',
-                    ha='center', va='bottom', fontsize=8, color='red', fontweight='bold')
+    # Add annotations for top-3
+    for i in range(min(3, len(topk_info))):
+        axes[3].text(i, fisher_grads_top10[i],
+                    f'{fisher_grads_top10[i]:.1e}',
+                    ha='center', va='bottom', fontsize=7, color='darkgreen', fontweight='bold')
 
     plt.tight_layout()
 
@@ -396,11 +475,7 @@ def visualize_spatial_activation(image_path, model, preprocessor, fisher_W, fish
     info = {
         'pred_class': pred_class,
         'pred_prob': pred_prob,
-        'top1_class': top1_class,
-        'top1_channel': top1_channel,
-        'weight_value': weight_value,
-        'gradient_value': grad_value,
-        'fisher_weighted_grad_value': fisher_weighted_grad_value,
+        'topk_info': topk_info,
         'spatial_activation': spatial_activation
     }
 
@@ -480,9 +555,11 @@ def main():
 
             # Print info
             print(f"  Predicted class: {info['pred_class']} (prob: {info['pred_prob']:.3f})")
-            print(f"  Top-1 param: class={info['top1_class']}, channel={info['top1_channel']}, weight={info['weight_value']:.4f}, "
-                  f"grad={info['gradient_value']:.4f}, fisher_grad={info['fisher_weighted_grad_value']:.6f}, "
-                  f"activation=[{info['spatial_activation'].min():.4f}, {info['spatial_activation'].max():.4f}]")
+            print(f"  Top-10 params averaged for spatial activation:")
+            for top_info in info['topk_info'][:3]:  # Show top-3
+                print(f"    Rank {top_info['rank']}: class={top_info['class']}, channel={top_info['channel']}, "
+                      f"weight={top_info['weight']:.4f}, fisher_grad={top_info['fisher_grad']:.6e}")
+            print(f"  Spatial activation range: [{info['spatial_activation'].min():.4f}, {info['spatial_activation'].max():.4f}]")
 
             # Save to PDF
             pdf.savefig(fig, bbox_inches='tight')
