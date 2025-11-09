@@ -163,9 +163,15 @@ def find_fisher_cache(checkpoint_path, arch, num_classes, dataset='imagenet200')
     return os.path.join(ckpt_dir, cache_name)
 
 
-def compute_topk_spatial_activation(features, fc_weight, fc_bias, predicted_class, fisher_W, fisher_power=1.0, rank=1, use_min=False):
+def compute_topk_spatial_activation(features, fc_weight, fc_bias, predicted_class, fisher_W, fisher_power=1.0, rank=1, use_min=True):
     """
     Compute spatial activation for top-k selected FC weight using Fisher.
+
+    This follows FInD postprocessor logic:
+    1. Compute gradients for ALL classes (not just predicted)
+    2. Flatten all parameters: [num_classes * feature_dim]
+    3. Compute Fisher-weighted gradient for all parameters
+    4. Select top-k parameters globally
 
     Args:
         features: Feature maps before GAP, shape [B, C, H, W]
@@ -178,18 +184,17 @@ def compute_topk_spatial_activation(features, fc_weight, fc_bias, predicted_clas
         use_min: If True, select from bottom-k channels instead
 
     Returns:
-        selected_channel: Channel index at specified rank
+        selected_class: Class index of selected parameter
+        selected_channel: Channel index of selected parameter
         spatial_activation: Spatial heatmap, shape [H, W]
         weight_value: The FC weight value W_{c,i}
         gradient_value: The NLL gradient value
-        fisher_weighted_grad_value: The Fisher-weighted gradient value for selected channel
-        fisher_weighted_grad_all: All Fisher-weighted gradient values, shape [C]
+        fisher_weighted_grad_value: The Fisher-weighted gradient value for selected parameter
+        fisher_weighted_grad_all: All Fisher-weighted gradient values, shape [num_classes * C]
     """
     B, C, H, W = features.shape
     assert B == 1, "Only single image supported"
-
-    # Get FC weights for predicted class
-    class_weights = fc_weight[predicted_class]  # Shape: [C]
+    num_classes = fc_weight.shape[0]
 
     # Global Average Pooling
     z = features.mean(dim=(2, 3)).squeeze(0)  # Shape: [C]
@@ -198,41 +203,44 @@ def compute_topk_spatial_activation(features, fc_weight, fc_bias, predicted_clas
     logits = F.linear(z.unsqueeze(0), fc_weight, fc_bias)  # [1, num_classes]
     probs = F.softmax(logits, dim=-1).squeeze(0)  # [num_classes]
 
-    # Compute NLL gradient: ∇_z L = p - e_y
+    # Compute NLL gradient: ∇_z L = p - e_y_pred
     grad_logits = probs.clone()  # [num_classes]
     grad_logits[predicted_class] -= 1.0
 
-    # Compute gradient w.r.t. FC weight for predicted class: grad_W[c, :] = grad_logits[c] * z
-    grad_W = grad_logits[predicted_class] * z  # [C]
+    # Compute gradient w.r.t. FC weight for ALL classes
+    # grad_W[c, i] = grad_logits[c] * z[i]
+    grad_W = torch.einsum('c,d->cd', grad_logits, z)  # [num_classes, C]
 
-    # Get Fisher matrix for predicted class
-    fisher_class = fisher_W[predicted_class]  # [C]
+    # Flatten gradients and Fisher matrix
+    grad_W_flat = grad_W.flatten()  # [num_classes * C]
+    fisher_W_flat = fisher_W.flatten()  # [num_classes * C]
 
-    # Compute Fisher-weighted gradient: |g_i / F_i^p|
-    # Add epsilon for numerical stability
-    fisher_weighted_grad = torch.abs(grad_W) / (fisher_class ** fisher_power + 1e-10)
+    # Compute Fisher-weighted gradient: |g / F^p| for ALL parameters
+    fisher_weighted_grad = torch.abs(grad_W_flat) / (fisher_W_flat ** fisher_power + 1e-10)
 
-    # Get top-k channels and select the one at specified rank
+    # Get top-k parameters and select the one at specified rank
     if use_min:
-        # Get smallest values
-        topk_values, topk_indices = torch.topk(fisher_weighted_grad, k=min(rank, C), largest=False)
+        topk_values, topk_indices = torch.topk(fisher_weighted_grad, k=min(rank, len(fisher_weighted_grad)), largest=False)
     else:
-        # Get largest values
-        topk_values, topk_indices = torch.topk(fisher_weighted_grad, k=min(rank, C), largest=True)
+        topk_values, topk_indices = torch.topk(fisher_weighted_grad, k=min(rank, len(fisher_weighted_grad)), largest=True)
 
-    # Select channel at specified rank (rank-1 because 0-indexed)
-    selected_channel = topk_indices[rank - 1].item()
+    # Select parameter at specified rank (rank-1 because 0-indexed)
+    selected_idx = topk_indices[rank - 1].item()
 
-    weight_value = class_weights[selected_channel].item()
-    gradient_value = grad_W[selected_channel].item()
-    fisher_weighted_grad_value = fisher_weighted_grad[selected_channel].item()
+    # Convert flat index to (class, channel)
+    selected_class = selected_idx // C
+    selected_channel = selected_idx % C
+
+    weight_value = fc_weight[selected_class, selected_channel].item()
+    gradient_value = grad_W[selected_class, selected_channel].item()
+    fisher_weighted_grad_value = fisher_weighted_grad[selected_idx].item()
 
     # Compute spatial activation for this channel
     # contribution_{h,w} = W_{c,i} * F_{i,h,w}
     channel_feature = features[0, selected_channel].cpu().numpy()  # Shape: [H, W]
     spatial_activation = weight_value * channel_feature
 
-    return selected_channel, spatial_activation, weight_value, gradient_value, fisher_weighted_grad_value, fisher_weighted_grad
+    return selected_class, selected_channel, spatial_activation, weight_value, gradient_value, fisher_weighted_grad_value, fisher_weighted_grad
 
 
 def visualize_spatial_activation(image_path, model, preprocessor, fisher_W, fisher_power=1.0, output_path=None):
@@ -268,24 +276,13 @@ def visualize_spatial_activation(image_path, model, preprocessor, fisher_W, fish
     else:
         raise ValueError("Cannot find FC layer")
 
-    # Compute spatial activations for top-1, top-2, and top-5 channels
-    results = []
-    for rank in [1, 2, 5]:
-        channel, spatial_act, weight_val, grad_val, fisher_grad_val, fisher_grad_all = compute_topk_spatial_activation(
-            features, fc_weight, fc_bias, pred_class, fisher_W, fisher_power, rank=rank, use_min=False
-        )
-        results.append({
-            'rank': rank,
-            'channel': channel,
-            'spatial_activation': spatial_act,
-            'weight_value': weight_val,
-            'gradient_value': grad_val,
-            'fisher_weighted_grad_value': fisher_grad_val,
-            'fisher_weighted_grad_all': fisher_grad_all
-        })
+    # Compute spatial activation for bottom-1 parameter (across all classes)
+    top1_class, top1_channel, spatial_activation, weight_value, grad_value, fisher_weighted_grad_value, fisher_weighted_grad_all = compute_topk_spatial_activation(
+        features, fc_weight, fc_bias, pred_class, fisher_W, fisher_power, rank=1, use_min=False
+    )
 
     # Resize original image to match feature map size
-    H, W = results[0]['spatial_activation'].shape
+    H, W = spatial_activation.shape
 
     # Center crop image to square
     width, height = img_pil.size
@@ -294,95 +291,100 @@ def visualize_spatial_activation(image_path, model, preprocessor, fisher_W, fish
     top = (height - size) // 2
     img_square = img_pil.crop((left, top, left + size, top + size))
 
-    # Create visualization with 3 rows (top-1, top-2, top-5) × 4 columns (original, heatmap, overlay, distribution)
-    fig, axes = plt.subplots(3, 4, figsize=(20, 15))
+    # Create visualization with 1 row × 4 columns (original, heatmap, overlay, distribution)
+    fig, axes = plt.subplots(1, 4, figsize=(20, 5))
 
     filename = os.path.basename(image_path)
 
     # Import zoom for later use
     from scipy.ndimage import zoom
 
-    # Loop through each rank (row)
-    for row_idx, result in enumerate(results):
-        rank = result['rank']
-        channel = result['channel']
-        spatial_activation = result['spatial_activation']
-        weight_value = result['weight_value']
-        fisher_weighted_grad_all = result['fisher_weighted_grad_all']
+    # Column 0: Original image
+    axes[0].imshow(img_square)
+    axes[0].set_title(f'{filename}\nClass: {pred_class}, Prob: {pred_prob:.3f}', fontsize=12)
+    axes[0].axis('off')
+    axes[0].set_aspect('equal')
 
-        # Column 0: Original image (only in first row with title)
-        if row_idx == 0:
-            axes[row_idx, 0].imshow(img_square)
-            axes[row_idx, 0].set_title(f'{filename}\nClass: {pred_class}, Prob: {pred_prob:.3f}', fontsize=12)
-        else:
-            axes[row_idx, 0].imshow(img_square)
-            axes[row_idx, 0].set_title(f'Top-{rank}', fontsize=12, fontweight='bold')
-        axes[row_idx, 0].axis('off')
-        axes[row_idx, 0].set_aspect('equal')
+    # Use RdBu_r for heatmap to show both positive and negative
+    heatmap_cmap = 'RdBu_r'
 
-        # Determine colormap based on weight sign
-        if weight_value < 0:
-            heatmap_cmap = 'RdBu'  # Inverted: blue for positive
-            overlay_cmap = 'RdBu'
-        else:
-            heatmap_cmap = 'RdBu_r'  # Normal: red for positive
-            overlay_cmap = 'RdBu_r'
+    # Column 1: Spatial activation heatmap (show both positive and negative)
+    im1 = axes[1].imshow(spatial_activation, cmap=heatmap_cmap, interpolation='bilinear')
+    axes[1].set_title(f'Spatial Activation (Bottom-1)\nClass: {top1_class}, Ch: {top1_channel}, W: {weight_value:.4f}',
+                     fontsize=11)
+    axes[1].axis('off')
+    axes[1].set_aspect('equal')
+    plt.colorbar(im1, ax=axes[1], fraction=0.046, pad=0.04)
 
-        # Column 1: Spatial activation heatmap
-        im1 = axes[row_idx, 1].imshow(spatial_activation, cmap=heatmap_cmap, interpolation='bilinear')
-        axes[row_idx, 1].set_title(f'Spatial Activation (Top-{rank})\nChannel: {channel}, Weight: {weight_value:.4f}',
-                         fontsize=11)
-        axes[row_idx, 1].axis('off')
-        axes[row_idx, 1].set_aspect('equal')
-        plt.colorbar(im1, ax=axes[row_idx, 1], fraction=0.046, pad=0.04)
+    # Column 2: GradCAM-style overlay (normalize to [-1, 1] then ReLU)
+    axes[2].imshow(img_square)
 
-        # Column 2: Overlay on original image
-        axes[row_idx, 2].imshow(img_square)
+    # Normalize spatial activation to [-1, 1] range first
+    activation_gradcam = spatial_activation.copy()
+    activation_min = activation_gradcam.min()
+    activation_max = activation_gradcam.max()
+    activation_range = activation_max - activation_min
 
-        # Normalize activation to [0, 1] for overlay
-        activation_norm = spatial_activation.copy()
-        abs_max = max(abs(activation_norm.min()), abs(activation_norm.max()))
-        if abs_max > 1e-8:
-            activation_norm = activation_norm / abs_max  # [-1, 1]
-            activation_norm = (activation_norm + 1) / 2  # [0, 1]
-        else:
-            activation_norm = np.ones_like(activation_norm) * 0.5
+    if activation_range > 0:
+        # Normalize to [-1, 1]
+        activation_gradcam = 2 * (activation_gradcam - activation_min) / activation_range - 1
+        # Apply ReLU: only keep positive values (above 0 in normalized range)
+        activation_gradcam = np.maximum(activation_gradcam, 0)
+    else:
+        activation_gradcam = np.zeros_like(activation_gradcam)
 
-        # Resize to square image size
-        zoom_factor = (size / H, size / W)
-        activation_resized = zoom(activation_norm, zoom_factor, order=1)
+    # Resize to match image size BEFORE cutting off
+    zoom_factor = (size / H, size / W)
+    activation_resized = zoom(activation_gradcam, zoom_factor, order=1)
 
-        # Apply overlay
-        im2 = axes[row_idx, 2].imshow(activation_resized, cmap=overlay_cmap, alpha=0.5, interpolation='bilinear', vmin=0, vmax=1)
-        if weight_value < 0:
-            axes[row_idx, 2].set_title(f'Overlay (Alpha=0.5)\nBlue=Pos, Red=Neg', fontsize=11)
-        else:
-            axes[row_idx, 2].set_title(f'Overlay (Alpha=0.5)\nRed=Pos, Blue=Neg', fontsize=11)
-        axes[row_idx, 2].axis('off')
-        axes[row_idx, 2].set_aspect('equal')
+    # Remap values to emphasize blue: compress high values, expand low values
+    # This makes more of the colormap go to blue/cyan regions
+    activation_remapped = activation_resized.copy()
+    mask = activation_remapped > 0
+    if mask.any():
+        # Apply power transformation to shift distribution toward lower values (more blue)
+        activation_remapped[mask] = activation_remapped[mask] ** 3  # Higher power = more blue
 
-        # Column 3: Fisher-weighted gradient distribution
-        fisher_grad_np = fisher_weighted_grad_all.cpu().numpy()
-        top_k = 20
-        top_indices = np.argsort(fisher_grad_np)[-top_k:][::-1]
-        top_values = fisher_grad_np[top_indices]
+    # Create RGBA image with jet colormap (red -> yellow -> green -> blue)
+    from matplotlib.colors import ListedColormap
+    import matplotlib.cm as cm
 
-        # Create bar plot with selected channel highlighted
-        colors = ['red' if i == channel else 'gray' for i in top_indices]
-        axes[row_idx, 3].bar(range(top_k), top_values, color=colors, alpha=0.7)
-        axes[row_idx, 3].set_xlabel('Channel Rank', fontsize=10)
-        axes[row_idx, 3].set_ylabel('Fisher-weighted Gradient', fontsize=10)
-        axes[row_idx, 3].set_title(f'Top-{top_k} Channels (Red=Top-{rank})', fontsize=11)
-        axes[row_idx, 3].set_yscale('log')
-        axes[row_idx, 3].grid(True, alpha=0.3, axis='y')
+    # Use 'jet' colormap (red -> yellow -> green -> cyan -> blue)
+    cmap = cm.get_cmap('jet')
+    rgba = cmap(activation_remapped)
 
-        # Add value annotation for selected channel
-        selected_rank_in_top20 = np.where(top_indices == channel)[0]
-        if len(selected_rank_in_top20) > 0:
-            selected_rank_in_top20 = selected_rank_in_top20[0]
-            axes[row_idx, 3].text(selected_rank_in_top20, top_values[selected_rank_in_top20],
-                        f'{top_values[selected_rank_in_top20]:.1f}',
-                        ha='center', va='bottom', fontsize=8, color='red', fontweight='bold')
+    # Make pixels below 0.5 transparent (per-pixel alpha based on activation value)
+    # Above 0.5: visible with alpha=0.7, below 0.5: transparent
+    alpha_mask = np.where(activation_resized >= 0.5, 0.7, 0.0)
+    rgba[..., 3] = alpha_mask
+
+    im2 = axes[2].imshow(rgba, interpolation='bilinear')
+    axes[2].set_title(f'GradCAM-style Overlay\n(>0.5: Red→Yellow→Green→Blue)', fontsize=11)
+    axes[2].axis('off')
+    axes[2].set_aspect('equal')
+
+    # Column 3: Fisher-weighted gradient distribution
+    fisher_grad_np = fisher_weighted_grad_all.cpu().numpy()
+    top_k = 20
+    top_indices = np.argsort(fisher_grad_np)[-top_k:][::-1]
+    top_values = fisher_grad_np[top_indices]
+
+    # Create bar plot with selected channel highlighted
+    colors = ['red' if i == top1_channel else 'gray' for i in top_indices]
+    axes[3].bar(range(top_k), top_values, color=colors, alpha=0.7)
+    axes[3].set_xlabel('Channel Rank', fontsize=10)
+    axes[3].set_ylabel('Fisher-weighted Gradient', fontsize=10)
+    axes[3].set_title(f'Top-{top_k} Channels (Red=Top-1)', fontsize=11)
+    axes[3].set_yscale('log')
+    axes[3].grid(True, alpha=0.3, axis='y')
+
+    # Add value annotation for selected channel
+    selected_rank_in_top20 = np.where(top_indices == top1_channel)[0]
+    if len(selected_rank_in_top20) > 0:
+        selected_rank_in_top20 = selected_rank_in_top20[0]
+        axes[3].text(selected_rank_in_top20, top_values[selected_rank_in_top20],
+                    f'{top_values[selected_rank_in_top20]:.1f}',
+                    ha='center', va='bottom', fontsize=8, color='red', fontweight='bold')
 
     plt.tight_layout()
 
@@ -394,7 +396,12 @@ def visualize_spatial_activation(image_path, model, preprocessor, fisher_W, fish
     info = {
         'pred_class': pred_class,
         'pred_prob': pred_prob,
-        'results': results  # Store all results for top-1, top-2, top-5
+        'top1_class': top1_class,
+        'top1_channel': top1_channel,
+        'weight_value': weight_value,
+        'gradient_value': grad_value,
+        'fisher_weighted_grad_value': fisher_weighted_grad_value,
+        'spatial_activation': spatial_activation
     }
 
     return fig, info
@@ -427,51 +434,29 @@ def main():
                       std=[0.229, 0.224, 0.225])
     ])
 
-    # Get ID images: Random cat images from ImageNet-1K validation
-    # Cat classes in ImageNet-1K: 281-285 (tabby, tiger cat, Persian cat, Siamese cat, Egyptian cat)
-    cat_classes = list(range(281, 286))  # [281, 282, 283, 284, 285]
-
-    print("Collecting ID images (cats from ImageNet-1K val)...")
+    # Get ID images from temp/ID folder
+    print("Collecting ID images (from temp/ID folder)...")
     id_image_paths = []
-    val_dir = 'data/images_largescale/imagenet_1k/val'
-
-    # Load validation labels to filter cat images
-    import json
-    val_labels_file = 'data/benchmark_imglist/imagenet/test_imagenet.txt'
-    if os.path.exists(val_labels_file):
-        with open(val_labels_file, 'r') as f:
-            val_data = [line.strip().split() for line in f if line.strip()]
-            for img_path, label in val_data:
-                if int(label) in cat_classes:
-                    full_path = os.path.join('data/images_largescale', img_path)
-                    if os.path.exists(full_path):
-                        id_image_paths.append(full_path)
-
-    # If no labeled file, just get first few val images as fallback
-    if len(id_image_paths) == 0:
-        print("  Warning: Could not find labeled validation file, using first images from val")
-        id_image_paths = sorted(glob(os.path.join(val_dir, '*.JPEG')))[:args.num_images]
-    else:
-        # Randomly sample cat images
-        import random
-        random.seed(42)
-        id_image_paths = random.sample(id_image_paths, min(args.num_images, len(id_image_paths)))
-
-    print(f"  Found {len(id_image_paths)} ID images (cats)")
-
-    # Get OOD images from temp/OOD folder
-    print("Collecting OOD images (from temp/OOD folder)...")
-    ood_image_paths = []
     for ext in ['*.JPEG', '*.jpg', '*.png', '*.JPG', '*.PNG']:
-        ood_image_paths.extend(glob(f'temp/OOD/{ext}', recursive=False))
+        id_image_paths.extend(glob(f'temp/ID/{ext}', recursive=False))
+    id_image_paths = sorted(set(id_image_paths))  # Remove duplicates and sort
+    if len(id_image_paths) == 0:
+        print("  Warning: No ID images found in temp/ID folder")
+    print(f"  Found {len(id_image_paths)} ID images")
+
+    # Get OOD images from temp folder (root level)
+    print("Collecting OOD images (from temp/ folder)...")
+    ood_image_paths = []
+    for ext in ['*.JPEG', '*.jpg', '*.png', '*.JPG', '*.PNG', '*.jpeg']:
+        ood_image_paths.extend(glob(f'temp/{ext}', recursive=False))
     ood_image_paths = sorted(set(ood_image_paths))  # Remove duplicates and sort
     if len(ood_image_paths) == 0:
-        print("  Warning: No OOD images found in temp/OOD folder")
+        print("  Warning: No OOD images found in temp/ folder")
     print(f"  Found {len(ood_image_paths)} OOD images")
 
     # Combine ID and OOD images
     image_paths = id_image_paths + ood_image_paths
-    image_labels = ['ID (Cat)'] * len(id_image_paths) + ['OOD'] * len(ood_image_paths)
+    image_labels = ['ID (Pizza)'] * len(id_image_paths) + ['OOD (Donuts)'] * len(ood_image_paths)
 
     print(f"\nTotal: {len(image_paths)} images ({len(id_image_paths)} ID + {len(ood_image_paths)} OOD)")
 
@@ -495,9 +480,9 @@ def main():
 
             # Print info
             print(f"  Predicted class: {info['pred_class']} (prob: {info['pred_prob']:.3f})")
-            print(f"  Top-1 channel: {info['top1_channel']}, weight: {info['weight_value']:.4f}")
-            print(f"  Gradient: {info['gradient_value']:.4f}, Fisher-weighted: {info['fisher_weighted_grad']:.6f}")
-            print(f"  Activation range: [{info['activation_min']:.4f}, {info['activation_max']:.4f}]")
+            print(f"  Top-1 param: class={info['top1_class']}, channel={info['top1_channel']}, weight={info['weight_value']:.4f}, "
+                  f"grad={info['gradient_value']:.4f}, fisher_grad={info['fisher_weighted_grad_value']:.6f}, "
+                  f"activation=[{info['spatial_activation'].min():.4f}, {info['spatial_activation'].max():.4f}]")
 
             # Save to PDF
             pdf.savefig(fig, bbox_inches='tight')
