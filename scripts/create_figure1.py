@@ -64,17 +64,21 @@ def load_fisher_matrix(fisher_cache_path):
 
 def compute_topk_avg_spatial_activation(features, fc_weight, fc_bias, predicted_class, fisher_W, fisher_power=1.0, k=10):
     """
-    Compute averaged Fisher-weighted spatial contributions for top-k selected FC weights.
+    Compute averaged Fisher-weighted Grad-CAM spatial contributions for top-k selected FC weights.
 
-    Returns Fisher-weighted spatial contribution: (|grad_i| / F_i^p) * |F_{i,h,w}|
-    This properly shows which spatial regions contribute to high OOD scores.
+    Uses Grad-CAM approach: gradient of output w.r.t. feature maps as weights.
+    Returns Fisher-weighted Grad-CAM contribution: (|grad_i| / F_i^p) * (∂y/∂F_i) * F_{i,h,w}
+    This shows which spatial regions contribute to high OOD scores using actual gradient influence.
     """
     B, C, H, W = features.shape
     assert B == 1, "Only single image supported"
     num_classes = fc_weight.shape[0]
 
+    # Enable gradient computation for features
+    features_grad = features.clone().detach().requires_grad_(True)
+
     # Global Average Pooling
-    z = features.mean(dim=(2, 3)).squeeze(0)  # Shape: [C]
+    z = features_grad.mean(dim=(2, 3)).squeeze(0)  # Shape: [C]
 
     # Compute logits and probabilities
     logits = F.linear(z.unsqueeze(0), fc_weight, fc_bias)  # [1, num_classes]
@@ -84,7 +88,7 @@ def compute_topk_avg_spatial_activation(features, fc_weight, fc_bias, predicted_
     grad_logits = probs.clone()  # [num_classes]
     grad_logits[predicted_class] -= 1.0
 
-    # Compute gradient w.r.t. FC weight for ALL classes
+    # Compute gradient w.r.t. FC weight for ALL classes (for Fisher weighting)
     grad_W = torch.einsum('c,d->cd', grad_logits, z)  # [num_classes, C]
 
     # Flatten gradients and Fisher matrix
@@ -97,7 +101,13 @@ def compute_topk_avg_spatial_activation(features, fc_weight, fc_bias, predicted_
     # Get top-k parameters
     topk_values, topk_indices = torch.topk(fisher_weighted_grad, k=min(k, len(fisher_weighted_grad)), largest=True)
 
-    # Compute Fisher-weighted spatial contributions for each top-k parameter and average
+    # Compute gradient w.r.t. feature maps for Grad-CAM
+    # Use predicted class logit for gradient computation
+    target_logit = logits[0, predicted_class]
+    target_logit.backward(retain_graph=True)
+    feature_grads = features_grad.grad  # Shape: [1, C, H, W]
+
+    # Compute Fisher-weighted Grad-CAM spatial contributions for each top-k parameter and average
     spatial_contributions = []
 
     for i, (idx, fisher_grad_val) in enumerate(zip(topk_indices, topk_values)):
@@ -108,25 +118,28 @@ def compute_topk_avg_spatial_activation(features, fc_weight, fc_bias, predicted_
         param_channel = idx % C
 
         # Get spatial feature map for this channel
-        channel_feature = features[0, param_channel].cpu().numpy()  # Shape: [H, W]
+        channel_feature = features[0, param_channel].detach().cpu().numpy()  # Shape: [H, W]
 
-        # Compute Fisher-weighted spatial contribution
-        # fisher_weighted_spatial = (|grad_i| / F_i^p) * |F_{i,h,w}|
-        fisher_weighted_spatial = fisher_grad_val.item() * np.abs(channel_feature)
+        # Get Grad-CAM weight: global average pooling of gradients for this channel
+        grad_cam_weight = feature_grads[0, param_channel].mean().item()
 
-        spatial_contributions.append(fisher_weighted_spatial)
+        # Compute Fisher-weighted Grad-CAM spatial contribution
+        # (|grad_i| / F_i^p) * (∂y/∂F_i) * F_{i,h,w}
+        fisher_weighted_gradcam = fisher_grad_val.item() * grad_cam_weight * channel_feature
 
-    # Average Fisher-weighted spatial contributions
+        spatial_contributions.append(fisher_weighted_gradcam)
+
+    # Average Fisher-weighted Grad-CAM spatial contributions
     spatial_contribution_avg = np.mean(spatial_contributions, axis=0)  # Shape: [H, W]
 
     return spatial_contribution_avg
 
 
-def create_overlay(img_square, spatial_activation, global_min, global_max):
+def create_overlay(img_square, spatial_activation):
     """
-    Create enhanced overlay visualization with log-scale normalization.
+    Create enhanced overlay visualization with per-sample max-min normalization.
 
-    Uses log-scale to handle large dynamic range, with diverging colormap:
+    Uses per-sample normalization to handle dynamic range, with diverging colormap:
     - Green: Low values (ID)
     - Yellow: Medium values
     - Red: High values (OOD)
@@ -134,8 +147,6 @@ def create_overlay(img_square, spatial_activation, global_min, global_max):
     Args:
         img_square: PIL Image (square cropped)
         spatial_activation: numpy array [H, W] with spatial activation values
-        global_min: float, global minimum across all images (for consistent scale)
-        global_max: float, global maximum across all images (for consistent scale)
 
     Returns:
         overlay: PIL Image with overlay applied
@@ -143,19 +154,15 @@ def create_overlay(img_square, spatial_activation, global_min, global_max):
     H, W = spatial_activation.shape
     size = img_square.size[0]  # Assume square
 
-    # Signed log-scale normalization to preserve negative values
-    # Apply signed log transform: sign(x) * log(1 + |x|)
-    activation_log = np.sign(spatial_activation) * np.log1p(np.abs(spatial_activation))
+    # Per-sample max-min normalization
+    sample_min = spatial_activation.min()
+    sample_max = spatial_activation.max()
+    sample_range = sample_max - sample_min
 
-    # Normalize using global log scale for consistency (preserving sign)
-    global_log_min = np.sign(global_min) * np.log1p(np.abs(global_min))
-    global_log_max = np.sign(global_max) * np.log1p(np.abs(global_max))
-    global_log_range = global_log_max - global_log_min
-
-    if global_log_range > 0:
-        activation_gradcam = (activation_log - global_log_min) / global_log_range
+    if sample_range > 0:
+        activation_gradcam = (spatial_activation - sample_min) / sample_range
     else:
-        activation_gradcam = np.zeros_like(activation_log)
+        activation_gradcam = np.zeros_like(spatial_activation)
 
     # Clip to [0, 1] (negative values will map to lower end of range)
     activation_gradcam = np.clip(activation_gradcam, 0, 1)
@@ -314,16 +321,16 @@ def main():
         label = "ID" if i < len(id_images) else "OOD"
         print(f"  {label} {os.path.basename(img_path)}: min={act.min():.4e}, max={act.max():.4e}, mean={act.mean():.4e}")
 
-    # Second pass: create overlays with log-scale normalization
-    print("\nCreating overlays with log-scale normalization (Green=low, Red=high)...")
+    # Second pass: create overlays with per-sample max-min normalization
+    print("\nCreating overlays with per-sample max-min normalization (Green=low, Red=high)...")
     id_results = []
     for i, img_square in enumerate(all_img_squares[:len(id_images)]):
-        overlay = create_overlay(img_square, all_spatial_activations[i], global_min, global_max)
+        overlay = create_overlay(img_square, all_spatial_activations[i])
         id_results.append((img_square, overlay))
 
     ood_results = []
     for i, img_square in enumerate(all_img_squares[len(id_images):]):
-        overlay = create_overlay(img_square, all_spatial_activations[len(id_images) + i], global_min, global_max)
+        overlay = create_overlay(img_square, all_spatial_activations[len(id_images) + i])
         ood_results.append((img_square, overlay))
 
     # Create Figure 1 layout: 2 rows × 4 columns
