@@ -137,6 +137,9 @@ def compute_gtg_topk_gradcam(features, fc_weight, fc_bias, predicted_class, k=10
     """
     Compute Grad-CAM using top-k parameters selected by g^T g (gradient magnitude squared).
 
+    Args:
+        k: Number of top parameters to use. If k=-1, use all parameters.
+
     Returns averaged spatial activation map from top-k parameters.
     """
     B, C, H, W = features.shape
@@ -166,8 +169,11 @@ def compute_gtg_topk_gradcam(features, fc_weight, fc_bias, predicted_class, k=10
     # Compute g^T g (gradient magnitude squared)
     gtg = grad_W_flat ** 2
 
-    # Get top-k parameters
-    topk_values, topk_indices = torch.topk(gtg, k=min(k, len(gtg)), largest=True)
+    # Get top-k parameters (or all if k=-1)
+    if k == -1:
+        topk_indices = torch.arange(len(gtg))
+    else:
+        topk_values, topk_indices = torch.topk(gtg, k=min(k, len(gtg)), largest=True)
 
     # Compute gradient w.r.t. feature maps for Grad-CAM
     target_logit = logits[0, predicted_class]
@@ -205,6 +211,9 @@ def compute_fisher_weighted_gradcam(features, fc_weight, fc_bias, predicted_clas
     """
     Compute averaged Fisher-weighted Grad-CAM spatial contributions for top-k selected FC weights.
 
+    Args:
+        k: Number of top parameters to use. If k=-1, use all parameters.
+
     Uses g^2 / F^p (gradient squared over Fisher) for parameter selection.
     Returns Fisher-weighted Grad-CAM contribution: (g^2 / F^p) * (∂y/∂F_i) * F_{i,h,w}
     """
@@ -236,8 +245,12 @@ def compute_fisher_weighted_gradcam(features, fc_weight, fc_bias, predicted_clas
     # Compute Fisher-weighted gradient: g^2 / F^p for ALL parameters
     fisher_weighted_grad = (grad_W_flat ** 2) / (fisher_W_flat ** fisher_power + 1e-10)
 
-    # Get top-k parameters
-    topk_values, topk_indices = torch.topk(fisher_weighted_grad, k=min(k, len(fisher_weighted_grad)), largest=True)
+    # Get top-k parameters (or all if k=-1)
+    if k == -1:
+        topk_indices = torch.arange(len(fisher_weighted_grad))
+        topk_values = fisher_weighted_grad
+    else:
+        topk_values, topk_indices = torch.topk(fisher_weighted_grad, k=min(k, len(fisher_weighted_grad)), largest=True)
 
     # Compute gradient w.r.t. feature maps for Grad-CAM
     # Use predicted class logit for gradient computation
@@ -273,18 +286,14 @@ def compute_fisher_weighted_gradcam(features, fc_weight, fc_bias, predicted_clas
     return spatial_contribution_avg
 
 
-def create_overlay(img_square, spatial_activation):
+def create_overlay(img_square, spatial_activation, use_colorful=False):
     """
     Create enhanced overlay visualization with per-sample max-min normalization.
-
-    Uses per-sample normalization to handle dynamic range, with diverging colormap:
-    - Green: Low values (ID)
-    - Yellow: Medium values
-    - Red: High values (OOD)
 
     Args:
         img_square: PIL Image (square cropped)
         spatial_activation: numpy array [H, W] with spatial activation values
+        use_colorful: bool, if True use turbo colormap (for OOD), else use Reds (for ID)
 
     Returns:
         overlay: PIL Image with overlay applied
@@ -312,24 +321,32 @@ def create_overlay(img_square, spatial_activation):
     # Ensure non-negative values before power transform
     activation_resized = np.clip(activation_resized, 0, 1)
 
-    # Apply power transform to make red easier to achieve
-    activation_smooth = activation_resized   # Reduced from 3.0 to 1.5 for easier red
+    # Apply power transform to emphasize high values
+    activation_smooth = activation_resized  # Power transform for emphasis
 
-    # Gentle power transform for better visualization without losing absolute scale
-    # Use a power close to 1.0 to preserve relative magnitudes
-    # activation_smooth is already in [0, 1] from global normalization
-    activation_enhanced = activation_smooth ** 2  # Square root for gentle enhancement
+    # Gentle power transform for better visualization
+    activation_enhanced = activation_smooth ** 10
 
-    # Create RGBA image with RdYlGn_r colormap (reversed: Green=low, Yellow=mid, Red=high)
-    cmap = matplotlib.colormaps.get_cmap('RdYlGn_r')
-    rgba = cmap(activation_enhanced)
+    if use_colorful:
+        # Use turbo colormap for OOD: blue-cyan-green-yellow-red
+        cmap = matplotlib.colormaps.get_cmap('turbo')
+        rgba = cmap(activation_enhanced)
 
-    # Alpha channel: fixed range to ensure visibility
-    # Use linear scaling based on enhanced activation
-    alpha_min = 0.6  # Increased from 0.4 for more visibility
-    alpha_max = 0.7  # Increased from 0.8 for more visibility
-    alpha_channel = alpha_min + (alpha_max - alpha_min) * activation_enhanced
-    rgba[..., 3] = alpha_channel
+        # Alpha channel: make low values transparent
+        alpha_min = 0.7
+        alpha_max = 0.8
+        alpha_channel = alpha_min + (alpha_max - alpha_min) * (activation_enhanced ** 2)
+        rgba[..., 3] = alpha_channel
+    else:
+        # Use Reds colormap for ID: transparent to red
+        cmap = matplotlib.colormaps.get_cmap('turbo')
+        rgba = cmap(activation_enhanced)
+
+        # Alpha channel: make low values transparent
+        alpha_min = 0.7
+        alpha_max = 0.8
+        alpha_channel = alpha_min + (alpha_max - alpha_min) * (activation_enhanced ** 2)
+        rgba[..., 3] = alpha_channel
 
     # Convert to PIL Image
     rgba_uint8 = (rgba * 255).astype(np.uint8)
@@ -368,7 +385,7 @@ def main():
 
     # Process images
     fisher_power = 9.0
-    topk = 1000
+    topk = -1
 
     print("\nComputing spatial activations for all methods...")
     results = []  # List of (img_square, nll_gradcam, kl_gradcam, gtg_gradcam, fisher_gradcam)
@@ -420,11 +437,14 @@ def main():
     # Create overlays for all methods
     print("\nCreating overlays with per-sample max-min normalization...")
     all_overlays = []
-    for img_square, nll_gradcam, kl_gradcam, gtg_gradcam, fisher_gradcam in results:
-        nll_overlay = create_overlay(img_square, nll_gradcam)
-        kl_overlay = create_overlay(img_square, kl_gradcam)
-        gtg_overlay = create_overlay(img_square, gtg_gradcam)
-        fisher_overlay = create_overlay(img_square, fisher_gradcam)
+    for i, (img_square, nll_gradcam, kl_gradcam, gtg_gradcam, fisher_gradcam) in enumerate(results):
+        # Use colorful colormap for OOD (index 1), regular for ID (index 0)
+        use_colorful = (i == 1)
+
+        nll_overlay = create_overlay(img_square, nll_gradcam, use_colorful=use_colorful)
+        kl_overlay = create_overlay(img_square, kl_gradcam, use_colorful=use_colorful)
+        gtg_overlay = create_overlay(img_square, gtg_gradcam, use_colorful=use_colorful)
+        fisher_overlay = create_overlay(img_square, fisher_gradcam, use_colorful=use_colorful)
         all_overlays.append((img_square, nll_overlay, kl_overlay, gtg_overlay, fisher_overlay))
 
     # Create Figure 1 layout: 2 rows × 5 columns
