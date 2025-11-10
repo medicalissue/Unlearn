@@ -62,13 +62,151 @@ def load_fisher_matrix(fisher_cache_path):
     return fisher_W
 
 
-def compute_topk_avg_spatial_activation(features, fc_weight, fc_bias, predicted_class, fisher_W, fisher_power=1.0, k=10):
+def compute_nll_gradcam(features, fc_weight, fc_bias, predicted_class):
+    """
+    Compute Grad-CAM using NLL (Negative Log-Likelihood) as the target.
+
+    Returns spatial activation map based on NLL gradient.
+    """
+    B, C, H, W = features.shape
+    assert B == 1, "Only single image supported"
+    num_classes = fc_weight.shape[0]
+
+    # Enable gradient computation for features
+    features_grad = features.clone().detach().requires_grad_(True)
+
+    # Global Average Pooling
+    z = features_grad.mean(dim=(2, 3)).squeeze(0)  # Shape: [C]
+
+    # Compute logits and probabilities
+    logits = F.linear(z.unsqueeze(0), fc_weight, fc_bias)  # [1, num_classes]
+    probs = F.softmax(logits, dim=-1).squeeze(0)  # [num_classes]
+
+    # NLL: -log(p_pred)
+    nll = -torch.log(probs[predicted_class] + 1e-10)
+
+    # Backprop to get gradients w.r.t. features
+    nll.backward()
+    feature_grads = features_grad.grad  # Shape: [1, C, H, W]
+
+    # Grad-CAM: ReLU(weighted combination of feature maps)
+    weights = feature_grads.mean(dim=(2, 3), keepdim=True)  # [1, C, 1, 1]
+    gradcam = (weights * features).sum(dim=1).squeeze(0)  # [H, W]
+    gradcam = F.relu(gradcam).detach().cpu().numpy()
+
+    return gradcam
+
+
+def compute_kl_uniform_gradcam(features, fc_weight, fc_bias, predicted_class):
+    """
+    Compute Grad-CAM using KL divergence over uniform distribution as the target.
+
+    Returns spatial activation map based on KL(pred || uniform) gradient.
+    """
+    B, C, H, W = features.shape
+    assert B == 1, "Only single image supported"
+    num_classes = fc_weight.shape[0]
+
+    # Enable gradient computation for features
+    features_grad = features.clone().detach().requires_grad_(True)
+
+    # Global Average Pooling
+    z = features_grad.mean(dim=(2, 3)).squeeze(0)  # Shape: [C]
+
+    # Compute logits and probabilities
+    logits = F.linear(z.unsqueeze(0), fc_weight, fc_bias)  # [1, num_classes]
+    probs = F.softmax(logits, dim=-1).squeeze(0)  # [num_classes]
+
+    # KL divergence: KL(p || uniform) = sum(p * log(p * num_classes))
+    uniform_prob = 1.0 / num_classes
+    kl_div = (probs * (torch.log(probs + 1e-10) - torch.log(torch.tensor(uniform_prob)))).sum()
+
+    # Backprop to get gradients w.r.t. features
+    kl_div.backward()
+    feature_grads = features_grad.grad  # Shape: [1, C, H, W]
+
+    # Grad-CAM: ReLU(weighted combination of feature maps)
+    weights = feature_grads.mean(dim=(2, 3), keepdim=True)  # [1, C, 1, 1]
+    gradcam = (weights * features).sum(dim=1).squeeze(0)  # [H, W]
+    gradcam = F.relu(gradcam).detach().cpu().numpy()
+
+    return gradcam
+
+
+def compute_gtg_topk_gradcam(features, fc_weight, fc_bias, predicted_class, k=10):
+    """
+    Compute Grad-CAM using top-k parameters selected by g^T g (gradient magnitude squared).
+
+    Returns averaged spatial activation map from top-k parameters.
+    """
+    B, C, H, W = features.shape
+    assert B == 1, "Only single image supported"
+    num_classes = fc_weight.shape[0]
+
+    # Enable gradient computation for features
+    features_grad = features.clone().detach().requires_grad_(True)
+
+    # Global Average Pooling
+    z = features_grad.mean(dim=(2, 3)).squeeze(0)  # Shape: [C]
+
+    # Compute logits and probabilities
+    logits = F.linear(z.unsqueeze(0), fc_weight, fc_bias)  # [1, num_classes]
+    probs = F.softmax(logits, dim=-1).squeeze(0)  # [num_classes]
+
+    # Compute NLL gradient: ∇_z L = p - e_y_pred
+    grad_logits = probs.clone()  # [num_classes]
+    grad_logits[predicted_class] -= 1.0
+
+    # Compute gradient w.r.t. FC weight for ALL classes
+    grad_W = torch.einsum('c,d->cd', grad_logits, z)  # [num_classes, C]
+
+    # Flatten gradients
+    grad_W_flat = grad_W.flatten()  # [num_classes * C]
+
+    # Compute g^T g (gradient magnitude squared)
+    gtg = grad_W_flat ** 2
+
+    # Get top-k parameters
+    topk_values, topk_indices = torch.topk(gtg, k=min(k, len(gtg)), largest=True)
+
+    # Compute gradient w.r.t. feature maps for Grad-CAM
+    target_logit = logits[0, predicted_class]
+    target_logit.backward(retain_graph=True)
+    feature_grads = features_grad.grad  # Shape: [1, C, H, W]
+
+    # Compute Grad-CAM spatial contributions for each top-k parameter and average
+    spatial_contributions = []
+
+    for idx in topk_indices:
+        idx = idx.item()
+
+        # Convert flat index to (class, channel)
+        param_class = idx // C
+        param_channel = idx % C
+
+        # Get spatial feature map for this channel
+        channel_feature = features[0, param_channel].detach().cpu().numpy()  # Shape: [H, W]
+
+        # Get Grad-CAM weight: global average pooling of gradients for this channel
+        grad_cam_weight = feature_grads[0, param_channel].mean().item()
+
+        # Compute Grad-CAM spatial contribution
+        gradcam_contribution = grad_cam_weight * channel_feature
+
+        spatial_contributions.append(gradcam_contribution)
+
+    # Average Grad-CAM spatial contributions
+    spatial_contribution_avg = np.mean(spatial_contributions, axis=0)  # Shape: [H, W]
+
+    return spatial_contribution_avg
+
+
+def compute_fisher_weighted_gradcam(features, fc_weight, fc_bias, predicted_class, fisher_W, fisher_power=1.0, k=10):
     """
     Compute averaged Fisher-weighted Grad-CAM spatial contributions for top-k selected FC weights.
 
-    Uses Grad-CAM approach: gradient of output w.r.t. feature maps as weights.
-    Returns Fisher-weighted Grad-CAM contribution: (|grad_i| / F_i^p) * (∂y/∂F_i) * F_{i,h,w}
-    This shows which spatial regions contribute to high OOD scores using actual gradient influence.
+    Uses g^2 / F^p (gradient squared over Fisher) for parameter selection.
+    Returns Fisher-weighted Grad-CAM contribution: (g^2 / F^p) * (∂y/∂F_i) * F_{i,h,w}
     """
     B, C, H, W = features.shape
     assert B == 1, "Only single image supported"
@@ -95,8 +233,8 @@ def compute_topk_avg_spatial_activation(features, fc_weight, fc_bias, predicted_
     grad_W_flat = grad_W.flatten()  # [num_classes * C]
     fisher_W_flat = fisher_W.flatten()  # [num_classes * C]
 
-    # Compute Fisher-weighted gradient: |g / F^p| for ALL parameters
-    fisher_weighted_grad = torch.abs(grad_W_flat) / (fisher_W_flat ** fisher_power + 1e-10)
+    # Compute Fisher-weighted gradient: g^2 / F^p for ALL parameters
+    fisher_weighted_grad = (grad_W_flat ** 2) / (fisher_W_flat ** fisher_power + 1e-10)
 
     # Get top-k parameters
     topk_values, topk_indices = torch.topk(fisher_weighted_grad, k=min(k, len(fisher_weighted_grad)), largest=True)
@@ -124,7 +262,7 @@ def compute_topk_avg_spatial_activation(features, fc_weight, fc_bias, predicted_
         grad_cam_weight = feature_grads[0, param_channel].mean().item()
 
         # Compute Fisher-weighted Grad-CAM spatial contribution
-        # (|grad_i| / F_i^p) * (∂y/∂F_i) * F_{i,h,w}
+        # (g^2 / F^p) * (∂y/∂F_i) * F_{i,h,w}
         fisher_weighted_gradcam = fisher_grad_val.item() * grad_cam_weight * channel_feature
 
         spatial_contributions.append(fisher_weighted_gradcam)
@@ -171,13 +309,16 @@ def create_overlay(img_square, spatial_activation):
     zoom_factor = (size / H, size / W)
     activation_resized = zoom(activation_gradcam, zoom_factor, order=3)  # Cubic
 
-    # Apply Gaussian smoothing
-    activation_smooth = activation_resized ** 3.0 #gaussian_filter(activation_resized, sigma=-10) 
+    # Ensure non-negative values before power transform
+    activation_resized = np.clip(activation_resized, 0, 1)
+
+    # Apply power transform to make red easier to achieve
+    activation_smooth = activation_resized   # Reduced from 3.0 to 1.5 for easier red
 
     # Gentle power transform for better visualization without losing absolute scale
     # Use a power close to 1.0 to preserve relative magnitudes
     # activation_smooth is already in [0, 1] from global normalization
-    activation_enhanced = activation_smooth  # Square root for gentle enhancement
+    activation_enhanced = activation_smooth ** 2  # Square root for gentle enhancement
 
     # Create RGBA image with RdYlGn_r colormap (reversed: Green=low, Yellow=mid, Red=high)
     cmap = matplotlib.colormaps.get_cmap('RdYlGn_r')
@@ -185,8 +326,8 @@ def create_overlay(img_square, spatial_activation):
 
     # Alpha channel: fixed range to ensure visibility
     # Use linear scaling based on enhanced activation
-    alpha_min = 0.4
-    alpha_max = 0.8
+    alpha_min = 0.6  # Increased from 0.4 for more visibility
+    alpha_max = 0.7  # Increased from 0.8 for more visibility
     alpha_channel = alpha_min + (alpha_max - alpha_min) * activation_enhanced
     rgba[..., 3] = alpha_channel
 
@@ -199,50 +340,6 @@ def create_overlay(img_square, spatial_activation):
     result = Image.alpha_composite(img_rgba, overlay_img)
 
     return result.convert('RGB')
-
-
-def process_image(img_path, model, preprocessor, fisher_W, fisher_power=1.0, topk=10):
-    """
-    Process a single image and return original + overlay.
-
-    Returns:
-        img_square: Square cropped original image (PIL)
-        overlay_img: Overlay image (PIL)
-    """
-    # Load and preprocess image
-    img_pil = Image.open(img_path).convert('RGB')
-    img_tensor = preprocessor(img_pil).unsqueeze(0)
-
-    # Create feature extractor
-    feature_extractor = FeatureExtractor(model)
-
-    # Forward pass
-    with torch.no_grad():
-        logits, features = feature_extractor(img_tensor)
-
-    # Get prediction
-    pred_class = torch.argmax(logits, dim=1).item()
-
-    # Get FC layer weights and bias
-    fc_weight = model.fc.weight.data
-    fc_bias = model.fc.bias.data if model.fc.bias is not None else None
-
-    # Compute averaged spatial activation for top-k parameters
-    spatial_activation = compute_topk_avg_spatial_activation(
-        features, fc_weight, fc_bias, pred_class, fisher_W, fisher_power, k=topk
-    )
-
-    # Center crop image to square
-    width, height = img_pil.size
-    size = min(width, height)
-    left = (width - size) // 2
-    top = (height - size) // 2
-    img_square = img_pil.crop((left, top, left + size, top + size))
-
-    # Create overlay
-    overlay_img = create_overlay(img_square, spatial_activation)
-
-    return img_square, overlay_img
 
 
 def main():
@@ -263,27 +360,22 @@ def main():
         trn.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
 
-    # Image paths
-    id_images = [
-        'temp/ID/ILSVRC2012_val_00036290.JPEG',
-        'temp/ID/ILSVRC2012_val_00049821.JPEG',
-    ]
-
-    ood_images = [
-        'temp/OOD/quokka-2676171_1280.jpg',
-        'temp/OOD/shuttlecock_016_0082.png',
+    # Image paths - only 2 images
+    images = [
+        ('temp/ID/ILSVRC2012_val_00037071.JPEG', 'ID'),
+        ('temp/OOD/quokka-2676171_1280.jpg', 'OOD'),
     ]
 
     # Process images
     fisher_power = 9.0
-    topk = 100
+    topk = 1000
 
-    # First pass: compute all spatial activations
-    print("\nComputing spatial activations...")
-    all_spatial_activations = []
-    all_img_squares = []
+    print("\nComputing spatial activations for all methods...")
+    results = []  # List of (img_square, nll_gradcam, kl_gradcam, gtg_gradcam, fisher_gradcam)
 
-    for img_path in id_images + ood_images:
+    for img_path, label in images:
+        print(f"\nProcessing {label}: {os.path.basename(img_path)}")
+
         img_pil = Image.open(img_path).convert('RGB')
         img_tensor = preprocessor(img_pil).unsqueeze(0)
 
@@ -295,7 +387,18 @@ def main():
         fc_weight = model.fc.weight.data
         fc_bias = model.fc.bias.data if model.fc.bias is not None else None
 
-        spatial_activation = compute_topk_avg_spatial_activation(
+        # Compute four different Grad-CAM methods
+        print("  Computing NLL Grad-CAM...")
+        nll_gradcam = compute_nll_gradcam(features, fc_weight, fc_bias, pred_class)
+
+        print("  Computing KL-uniform Grad-CAM...")
+        kl_gradcam = compute_kl_uniform_gradcam(features, fc_weight, fc_bias, pred_class)
+
+        print("  Computing g^Tg top-k Grad-CAM...")
+        gtg_gradcam = compute_gtg_topk_gradcam(features, fc_weight, fc_bias, pred_class, k=topk)
+
+        print("  Computing Fisher-weighted (g^2/F^p) Grad-CAM...")
+        fisher_gradcam = compute_fisher_weighted_gradcam(
             features, fc_weight, fc_bias, pred_class, fisher_W, fisher_power, k=topk
         )
 
@@ -306,58 +409,51 @@ def main():
         top = (height - size) // 2
         img_square = img_pil.crop((left, top, left + size, top + size))
 
-        all_spatial_activations.append(spatial_activation)
-        all_img_squares.append(img_square)
+        # Print statistics
+        print(f"  NLL Grad-CAM: min={nll_gradcam.min():.4e}, max={nll_gradcam.max():.4e}, mean={nll_gradcam.mean():.4e}")
+        print(f"  KL Grad-CAM: min={kl_gradcam.min():.4e}, max={kl_gradcam.max():.4e}, mean={kl_gradcam.mean():.4e}")
+        print(f"  g^Tg Grad-CAM: min={gtg_gradcam.min():.4e}, max={gtg_gradcam.max():.4e}, mean={gtg_gradcam.mean():.4e}")
+        print(f"  Fisher Grad-CAM: min={fisher_gradcam.min():.4e}, max={fisher_gradcam.max():.4e}, mean={fisher_gradcam.mean():.4e}")
 
-    # Compute global min/max for log-scale normalization
-    global_min = min(act.min() for act in all_spatial_activations)
-    global_max = max(act.max() for act in all_spatial_activations)
-    print(f"\nGlobal activation range: [{global_min:.6e}, {global_max:.6e}]")
-    print(f"Log-scale range: [{np.log1p(np.abs(global_min)):.6e}, {np.log1p(np.abs(global_max)):.6e}]")
+        results.append((img_square, nll_gradcam, kl_gradcam, gtg_gradcam, fisher_gradcam))
 
-    # Print activation statistics
-    print("\nActivation statistics:")
-    for i, (img_path, act) in enumerate(zip(id_images + ood_images, all_spatial_activations)):
-        label = "ID" if i < len(id_images) else "OOD"
-        print(f"  {label} {os.path.basename(img_path)}: min={act.min():.4e}, max={act.max():.4e}, mean={act.mean():.4e}")
+    # Create overlays for all methods
+    print("\nCreating overlays with per-sample max-min normalization...")
+    all_overlays = []
+    for img_square, nll_gradcam, kl_gradcam, gtg_gradcam, fisher_gradcam in results:
+        nll_overlay = create_overlay(img_square, nll_gradcam)
+        kl_overlay = create_overlay(img_square, kl_gradcam)
+        gtg_overlay = create_overlay(img_square, gtg_gradcam)
+        fisher_overlay = create_overlay(img_square, fisher_gradcam)
+        all_overlays.append((img_square, nll_overlay, kl_overlay, gtg_overlay, fisher_overlay))
 
-    # Second pass: create overlays with per-sample max-min normalization
-    print("\nCreating overlays with per-sample max-min normalization (Green=low, Red=high)...")
-    id_results = []
-    for i, img_square in enumerate(all_img_squares[:len(id_images)]):
-        overlay = create_overlay(img_square, all_spatial_activations[i])
-        id_results.append((img_square, overlay))
-
-    ood_results = []
-    for i, img_square in enumerate(all_img_squares[len(id_images):]):
-        overlay = create_overlay(img_square, all_spatial_activations[len(id_images) + i])
-        ood_results.append((img_square, overlay))
-
-    # Create Figure 1 layout: 2 rows × 4 columns
-    # Row 1: ID1 orig, ID1 overlay, OOD1 orig, OOD1 overlay
-    # Row 2: ID2 orig, ID2 overlay, OOD2 orig, OOD2 overlay
+    # Create Figure 1 layout: 2 rows × 5 columns
+    # Each row corresponds to one image (ID or OOD)
+    # Columns: [Original, NLL, KL-uniform, g^Tg top-k, g^2/F^p]
 
     print("\nCreating Figure 1...")
-    fig, axes = plt.subplots(2, 4, figsize=(16, 8))
+    fig, axes = plt.subplots(2, 5, figsize=(20, 8))
 
     # Remove all axes
     for ax in axes.flat:
         ax.axis('off')
         ax.set_aspect('equal')
 
-    # Row 0: First ID and OOD pair
-    axes[0, 0].imshow(id_results[0][0])  # ID1 original
-    axes[0, 1].imshow(id_results[0][1])  # ID1 overlay
-    axes[0, 2].imshow(ood_results[0][0])  # OOD1 original
-    axes[0, 3].imshow(ood_results[0][1])  # OOD1 overlay
+    # Row 0: ID image
+    axes[0, 0].imshow(all_overlays[0][0])  # Original
+    axes[0, 1].imshow(all_overlays[0][1])  # NLL
+    axes[0, 2].imshow(all_overlays[0][2])  # KL-uniform
+    axes[0, 3].imshow(all_overlays[0][3])  # g^Tg top-k
+    axes[0, 4].imshow(all_overlays[0][4])  # g^2/F^p
 
-    # Row 1: Second ID and OOD pair
-    axes[1, 0].imshow(id_results[1][0])  # ID2 original
-    axes[1, 1].imshow(id_results[1][1])  # ID2 overlay
-    axes[1, 2].imshow(ood_results[1][0])  # OOD2 original
-    axes[1, 3].imshow(ood_results[1][1])  # OOD2 overlay
+    # Row 1: OOD image (quokka)
+    axes[1, 0].imshow(all_overlays[1][0])  # Original
+    axes[1, 1].imshow(all_overlays[1][1])  # NLL
+    axes[1, 2].imshow(all_overlays[1][2])  # KL-uniform
+    axes[1, 3].imshow(all_overlays[1][3])  # g^Tg top-k
+    axes[1, 4].imshow(all_overlays[1][4])  # g^2/F^p
 
-    # Tight layout with minimal spacing
+    # Tight layout with equal spacing (no titles)
     plt.subplots_adjust(wspace=0.02, hspace=0.02, left=0, right=1, top=1, bottom=0)
 
     # Save
