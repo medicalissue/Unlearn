@@ -122,14 +122,20 @@ def compute_topk_avg_spatial_activation(features, fc_weight, fc_bias, predicted_
     return spatial_contribution_avg
 
 
-def create_overlay(img_square, spatial_activation, all_activations):
+def create_overlay(img_square, spatial_activation, global_min, global_max):
     """
-    Create enhanced overlay visualization with global absolute scaling.
+    Create enhanced overlay visualization with log-scale normalization.
+
+    Uses log-scale to handle large dynamic range, with diverging colormap:
+    - Green: Low values (ID)
+    - Yellow: Medium values
+    - Red: High values (OOD)
 
     Args:
         img_square: PIL Image (square cropped)
         spatial_activation: numpy array [H, W] with spatial activation values
-        all_activations: list of all spatial activations for computing global scale
+        global_min: float, global minimum across all images (for consistent scale)
+        global_max: float, global maximum across all images (for consistent scale)
 
     Returns:
         overlay: PIL Image with overlay applied
@@ -137,19 +143,21 @@ def create_overlay(img_square, spatial_activation, all_activations):
     H, W = spatial_activation.shape
     size = img_square.size[0]  # Assume square
 
-    # Use global min/max across all images for consistent scaling
-    global_min = min(act.min() for act in all_activations)
-    global_max = max(act.max() for act in all_activations)
-    global_range = global_max - global_min
+    # Signed log-scale normalization to preserve negative values
+    # Apply signed log transform: sign(x) * log(1 + |x|)
+    activation_log = np.sign(spatial_activation) * np.log1p(np.abs(spatial_activation))
 
-    # Normalize using global scale
-    activation_gradcam = spatial_activation.copy()
-    if global_range > 0:
-        activation_gradcam = (activation_gradcam - global_min) / global_range
+    # Normalize using global log scale for consistency (preserving sign)
+    global_log_min = np.sign(global_min) * np.log1p(np.abs(global_min))
+    global_log_max = np.sign(global_max) * np.log1p(np.abs(global_max))
+    global_log_range = global_log_max - global_log_min
+
+    if global_log_range > 0:
+        activation_gradcam = (activation_log - global_log_min) / global_log_range
     else:
-        activation_gradcam = np.zeros_like(activation_gradcam)
+        activation_gradcam = np.zeros_like(activation_log)
 
-    # Clip to [0, 1]
+    # Clip to [0, 1] (negative values will map to lower end of range)
     activation_gradcam = np.clip(activation_gradcam, 0, 1)
 
     # Resize to match image size with smooth interpolation
@@ -157,18 +165,22 @@ def create_overlay(img_square, spatial_activation, all_activations):
     activation_resized = zoom(activation_gradcam, zoom_factor, order=3)  # Cubic
 
     # Apply Gaussian smoothing
-    activation_smooth = gaussian_filter(activation_resized, sigma=2.0)
+    activation_smooth = activation_resized ** 3.0 #gaussian_filter(activation_resized, sigma=-10) 
 
-    # Enhance contrast
-    activation_enhanced = np.clip(activation_smooth, 0, 1) ** 0.7
+    # Gentle power transform for better visualization without losing absolute scale
+    # Use a power close to 1.0 to preserve relative magnitudes
+    # activation_smooth is already in [0, 1] from global normalization
+    activation_enhanced = activation_smooth  # Square root for gentle enhancement
 
-    # Create RGBA image with YlOrRd colormap
-    cmap = matplotlib.colormaps.get_cmap('YlOrRd')
+    # Create RGBA image with RdYlGn_r colormap (reversed: Green=low, Yellow=mid, Red=high)
+    cmap = matplotlib.colormaps.get_cmap('RdYlGn_r')
     rgba = cmap(activation_enhanced)
 
-    # Alpha channel proportional to activation
-    alpha_base = 0.7
-    alpha_channel = alpha_base * activation_smooth
+    # Alpha channel: fixed range to ensure visibility
+    # Use linear scaling based on enhanced activation
+    alpha_min = 0.4
+    alpha_max = 0.8
+    alpha_channel = alpha_min + (alpha_max - alpha_min) * activation_enhanced
     rgba[..., 3] = alpha_channel
 
     # Convert to PIL Image
@@ -247,7 +259,7 @@ def main():
     # Image paths
     id_images = [
         'temp/ID/ILSVRC2012_val_00036290.JPEG',
-        'temp/ID/ILSVRC2012_val_00037071.JPEG',
+        'temp/ID/ILSVRC2012_val_00049821.JPEG',
     ]
 
     ood_images = [
@@ -257,9 +269,9 @@ def main():
 
     # Process images
     fisher_power = 9.0
-    topk = 10
+    topk = 100
 
-    # First pass: compute all spatial activations for global scaling
+    # First pass: compute all spatial activations
     print("\nComputing spatial activations...")
     all_spatial_activations = []
     all_img_squares = []
@@ -290,16 +302,28 @@ def main():
         all_spatial_activations.append(spatial_activation)
         all_img_squares.append(img_square)
 
-    # Second pass: create overlays with global scaling
-    print("\nCreating overlays with global scaling...")
+    # Compute global min/max for log-scale normalization
+    global_min = min(act.min() for act in all_spatial_activations)
+    global_max = max(act.max() for act in all_spatial_activations)
+    print(f"\nGlobal activation range: [{global_min:.6e}, {global_max:.6e}]")
+    print(f"Log-scale range: [{np.log1p(np.abs(global_min)):.6e}, {np.log1p(np.abs(global_max)):.6e}]")
+
+    # Print activation statistics
+    print("\nActivation statistics:")
+    for i, (img_path, act) in enumerate(zip(id_images + ood_images, all_spatial_activations)):
+        label = "ID" if i < len(id_images) else "OOD"
+        print(f"  {label} {os.path.basename(img_path)}: min={act.min():.4e}, max={act.max():.4e}, mean={act.mean():.4e}")
+
+    # Second pass: create overlays with log-scale normalization
+    print("\nCreating overlays with log-scale normalization (Green=low, Red=high)...")
     id_results = []
     for i, img_square in enumerate(all_img_squares[:len(id_images)]):
-        overlay = create_overlay(img_square, all_spatial_activations[i], all_spatial_activations)
+        overlay = create_overlay(img_square, all_spatial_activations[i], global_min, global_max)
         id_results.append((img_square, overlay))
 
     ood_results = []
     for i, img_square in enumerate(all_img_squares[len(id_images):]):
-        overlay = create_overlay(img_square, all_spatial_activations[len(id_images) + i], all_spatial_activations)
+        overlay = create_overlay(img_square, all_spatial_activations[len(id_images) + i], global_min, global_max)
         ood_results.append((img_square, overlay))
 
     # Create Figure 1 layout: 2 rows × 4 columns

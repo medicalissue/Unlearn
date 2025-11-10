@@ -464,7 +464,7 @@ def visualize_spatial_activation(image_path, model, preprocessor, fisher_W, fish
     axes[3].set_ylabel('Fisher-weighted Gradient', fontsize=10)
     axes[3].set_title(f'Top-{topk} Parameters (Averaged)', fontsize=11)
     axes[3].set_yscale('log')
-    axes[3].grid(True, alpha=0.3, axis='y')
+    axes[3].grid(True, alpha=0.6, axis='y')
 
     # Add annotations for top-3
     for i in range(min(3, len(topk_info))):
